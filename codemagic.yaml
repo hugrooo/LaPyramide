@@ -7,13 +7,9 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
-      groups:
-        # Tu devras créer un groupe de variables dans l'interface Codemagic nommé "appstore_credentials"
-        # Et y mettre ces clés API d'App Store Connect :
-        # - APP_STORE_CONNECT_ISSUER_ID
-        # - APP_STORE_CONNECT_KEY_IDENTIFIER
-        # - APP_STORE_CONNECT_PRIVATE_KEY
-        - appstore_credentials
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: fr.mirix.pyramide
     scripts:
       - name: Install dependencies
         script: |
@@ -21,35 +17,15 @@ workflows:
       - name: Install CocoaPods
         script: |
           find . -name "Podfile" -execdir pod install \;
-      - name: Set up code signing settings on Apple Developer Portal
-        script: |
-          app-store-connect setup-key \
-            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
-            --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY"
-          
-          keychain initialize
-          
-          # Fetch and create certificates/profiles if they don't exist
-          app-store-connect fetch-signing-files "fr.mirix.pyramide" --type IOS_APP_STORE --create
-          
-          keychain add-certificates
-          xcode-project use-profiles
-      - name: Build Flutter iOS project
-        script: |
-          flutter build ios --release --no-codesign
       - name: Build iOS Application
         script: |
-          xcode-project build-ipa \
-            --project "ios/Runner.xcodeproj" \
-            --scheme "Runner"
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
     publishing:
       app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        auth: integration
         submit_to_testflight: true
         submit_to_app_store: false
