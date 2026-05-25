@@ -1,0 +1,45 @@
+workflows:
+  ios-testflight:
+    name: Build & Publish to TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      groups:
+        # Tu devras créer un groupe de variables dans l'interface Codemagic nommé "appstore_credentials"
+        # Et y mettre ces clés API d'App Store Connect :
+        # - APP_STORE_CONNECT_ISSUER_ID
+        # - APP_STORE_CONNECT_KEY_IDENTIFIER
+        # - APP_STORE_CONNECT_PRIVATE_KEY
+        - appstore_credentials
+    scripts:
+      - name: Install dependencies
+        script: |
+          flutter packages pub get
+      - name: Install CocoaPods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Set up code signing settings on Apple Developer Portal
+        script: |
+          app-store-connect setup-key \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY"
+          
+          # Fetch code signing files
+          xcode-project use-profiles
+      - name: Build iOS Application
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        # Set this to true to upload to TestFlight
+        submit_to_testflight: true
+        submit_to_app_store: false

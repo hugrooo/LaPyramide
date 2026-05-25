@@ -1,0 +1,26 @@
+{
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "la-pyramide-54588",
+          "appId": "1:545021164365:android:fbf3f4d308ff5df7271504",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "la-pyramide-54588",
+          "configurations": {
+            "android": "1:545021164365:android:fbf3f4d308ff5df7271504",
+            "ios": "1:545021164365:ios:c6bc2670797aa9cf271504",
+            "web": "1:545021164365:web:03588e2ea44bb42b271504"
+          }
+        }
+      }
+    }
+  }
+}

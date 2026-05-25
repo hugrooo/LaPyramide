@@ -1,0 +1,95 @@
+{
+  "@@locale": "fr",
+  "appName": "La Pyramide",
+
+  "disclaimer_title": "⚠️ Consommation responsable",
+  "disclaimer_body": "Ce jeu est destiné aux personnes majeures (18 ans et plus). L'abus d'alcool est dangereux pour la santé. Jouez de manière responsable et ne conduisez jamais après avoir bu.",
+  "disclaimer_checkbox": "J'ai 18 ans ou plus et j'accepte ces conditions",
+  "disclaimer_confirm": "Entrer dans le jeu",
+
+  "home_title": "La Pyramide",
+  "home_subtitle": "Le jeu de cartes du chaos",
+  "home_play_local": "🃏 Jouer en local",
+  "home_play_online": "🌐 Jouer en ligne",
+  "home_rules": "📖 Règles du jeu",
+  "home_settings": "⚙️ Paramètres",
+
+  "auth_title": "Se connecter",
+  "auth_google": "Continuer avec Google",
+  "auth_apple": "Continuer avec Apple",
+  "auth_anonymous": "Jouer sans compte",
+
+  "lobby_players_title": "Les joueurs",
+  "lobby_add_player": "Ajouter un joueur",
+  "lobby_player_name": "Nom du joueur",
+  "lobby_start_game": "Lancer la partie !",
+  "lobby_min_players": "Minimum 2 joueurs requis",
+  "lobby_pyramid_size": "Taille de la pyramide",
+  "lobby_variants": "Variantes",
+  "lobby_bluff_mode": "Mode Bluff",
+  "lobby_double_bet": "Double Mise",
+  "lobby_super_challenge": "Super Challenge",
+
+  "online_room_code": "Code de salle",
+  "online_create_room": "Créer une salle",
+  "online_join_room": "Rejoindre",
+  "online_enter_code": "Entrer le code",
+  "online_waiting": "En attente des joueurs...",
+  "online_ready": "Prêt !",
+  "online_start": "Lancer la partie",
+  "online_players_connected": "{count} joueur(s) connecté(s)",
+  "@online_players_connected": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "game_reveal_card": "Retourner la carte",
+  "game_its_your_turn": "C'est ton tour !",
+  "game_pass_phone": "Passe le téléphone à",
+  "game_tap_to_continue": "Appuie pour continuer",
+  "game_drink_sips": "{name} doit boire {sips} gorgée(s) !",
+  "@game_drink_sips": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "sips": { "type": "int" }
+    }
+  },
+  "game_bluff_question": "{name} bluffe-t-il ?",
+  "@game_bluff_question": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "game_challenge": "Je Challenge !",
+  "game_accept": "J'accepte",
+  "game_bluff_caught": "BLUFF DÉMASQUÉ ! 😈",
+  "game_bluff_success": "PAS DE BLUFF ! ✅",
+  "game_row_sips": "Rangée {row} — {sips} gorgée(s)",
+  "@game_row_sips": {
+    "placeholders": {
+      "row": { "type": "int" },
+      "sips": { "type": "int" }
+    }
+  },
+
+  "scoreboard_title": "Résultats",
+  "scoreboard_winner": "Vainqueur",
+  "scoreboard_most_drunk": "Le plus assoiffé 🍺",
+  "scoreboard_best_bluffer": "Meilleur Bluffeur 😈",
+  "scoreboard_total_sips": "{sips} gorgées au total",
+  "@scoreboard_total_sips": {
+    "placeholders": {
+      "sips": { "type": "int" }
+    }
+  },
+  "scoreboard_play_again": "Rejouer !",
+  "scoreboard_home": "Accueil",
+
+  "rules_title": "Règles du jeu",
+  "settings_title": "Paramètres",
+  "settings_sound": "Sons",
+  "settings_vibration": "Vibrations",
+  "settings_language": "Langue",
+  "settings_color_blind": "Mode daltonien"
+}

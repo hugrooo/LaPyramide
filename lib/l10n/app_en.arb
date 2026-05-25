@@ -1,0 +1,95 @@
+{
+  "@@locale": "en",
+  "appName": "The Pyramid",
+
+  "disclaimer_title": "⚠️ Drink Responsibly",
+  "disclaimer_body": "This game is intended for adults aged 18 and over. Excessive alcohol consumption is harmful to your health. Play responsibly and never drink and drive.",
+  "disclaimer_checkbox": "I am 18 or older and accept these conditions",
+  "disclaimer_confirm": "Enter the game",
+
+  "home_title": "The Pyramid",
+  "home_subtitle": "The card game of chaos",
+  "home_play_local": "🃏 Play Locally",
+  "home_play_online": "🌐 Play Online",
+  "home_rules": "📖 Rules",
+  "home_settings": "⚙️ Settings",
+
+  "auth_title": "Sign In",
+  "auth_google": "Continue with Google",
+  "auth_apple": "Continue with Apple",
+  "auth_anonymous": "Play without account",
+
+  "lobby_players_title": "Players",
+  "lobby_add_player": "Add a player",
+  "lobby_player_name": "Player name",
+  "lobby_start_game": "Start the game!",
+  "lobby_min_players": "At least 2 players required",
+  "lobby_pyramid_size": "Pyramid size",
+  "lobby_variants": "Variants",
+  "lobby_bluff_mode": "Bluff Mode",
+  "lobby_double_bet": "Double Bet",
+  "lobby_super_challenge": "Super Challenge",
+
+  "online_room_code": "Room Code",
+  "online_create_room": "Create Room",
+  "online_join_room": "Join",
+  "online_enter_code": "Enter the code",
+  "online_waiting": "Waiting for players...",
+  "online_ready": "Ready!",
+  "online_start": "Start Game",
+  "online_players_connected": "{count} player(s) connected",
+  "@online_players_connected": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "game_reveal_card": "Reveal card",
+  "game_its_your_turn": "It's your turn!",
+  "game_pass_phone": "Pass the phone to",
+  "game_tap_to_continue": "Tap to continue",
+  "game_drink_sips": "{name} must drink {sips} sip(s)!",
+  "@game_drink_sips": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "sips": { "type": "int" }
+    }
+  },
+  "game_bluff_question": "Is {name} bluffing?",
+  "@game_bluff_question": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "game_challenge": "I Challenge!",
+  "game_accept": "I Accept",
+  "game_bluff_caught": "BLUFF CAUGHT! 😈",
+  "game_bluff_success": "NO BLUFF! ✅",
+  "game_row_sips": "Row {row} — {sips} sip(s)",
+  "@game_row_sips": {
+    "placeholders": {
+      "row": { "type": "int" },
+      "sips": { "type": "int" }
+    }
+  },
+
+  "scoreboard_title": "Results",
+  "scoreboard_winner": "Winner",
+  "scoreboard_most_drunk": "Most Thirsty 🍺",
+  "scoreboard_best_bluffer": "Best Bluffer 😈",
+  "scoreboard_total_sips": "{sips} total sips",
+  "@scoreboard_total_sips": {
+    "placeholders": {
+      "sips": { "type": "int" }
+    }
+  },
+  "scoreboard_play_again": "Play Again!",
+  "scoreboard_home": "Home",
+
+  "rules_title": "Game Rules",
+  "settings_title": "Settings",
+  "settings_sound": "Sounds",
+  "settings_vibration": "Vibrations",
+  "settings_language": "Language",
+  "settings_color_blind": "Color blind mode"
+}
