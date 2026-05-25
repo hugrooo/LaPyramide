@@ -3,6 +3,8 @@ workflows:
     name: Build & Publish to TestFlight
     instance_type: mac_mini_m2
     max_build_duration: 120
+    integrations:
+      app_store_connect: la_pyramide
     environment:
       flutter: stable
       xcode: latest
