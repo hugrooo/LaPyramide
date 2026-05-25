@@ -411,6 +411,8 @@ class OnlineGameScreen extends ConsumerWidget {
     ).id;
     final isHost = hostId == currentUserId;
 
+    final me = state.players.firstWhere((p) => p.id == currentUserId, orElse: () => state.players.first);
+
     if (state.phase == GamePhase.revealing) {
       return Center(
         child: Text(
