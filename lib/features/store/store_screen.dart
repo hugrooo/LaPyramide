@@ -98,13 +98,20 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             text: price,
             paddingHorizontal: 16,
             gradient: isPopular ? const LinearGradient(colors: [PyraTheme.primaryPink, Colors.pinkAccent]) : PyraTheme.festiveGradient,
-            onPressed: () {
+            onPressed: () async {
               if (product != null) {
                 ref.read(storeServiceProvider).buyProduct(product);
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Boutique non configurée sur App Store Connect')),
-                );
+                // Achat fictif pour le mode de développement/simulateur
+                await ref.read(storeServiceProvider).addCoinsFictitiously(coins);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Achat fictif de $coins pièces réussi (Simulateur / Dev mode) !'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
               }
             },
           ),

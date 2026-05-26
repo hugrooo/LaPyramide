@@ -107,7 +107,7 @@ class SettingsScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
                       Center(
                         child: Text(
-                          'La Pyramide v1.0.0',
+                          'Pyramide Party v1.0.1',
                           style: TextStyle(
                               color: PyraTheme.textMuted, fontSize: 12),
                         ),

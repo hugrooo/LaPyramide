@@ -141,12 +141,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/home',
             name: 'home',
-            pageBuilder: (context, state) => const NoTransitionPage(child: HomeScreen()),
+            pageBuilder: (context, state) => _fadeTransition(context, state, const HomeScreen()),
           ),
           GoRoute(
             path: '/rules',
             name: 'rules',
-            pageBuilder: (context, state) => const NoTransitionPage(child: RulesScreen()),
+            pageBuilder: (context, state) => _fadeTransition(context, state, const RulesScreen()),
           ),
           GoRoute(
             path: '/leaderboard',

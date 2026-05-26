@@ -102,4 +102,14 @@ class StoreService {
       print("Ajout de $coinsToAdd pièces au compte ${user.uid}");
     }
   }
+
+  Future<void> addCoinsFictitiously(int amount) async {
+    final user = _ref.read(authStateChangesProvider).value;
+    if (user == null) return;
+    final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}/coins');
+    final snapshot = await dbRef.get();
+    final currentCoins = (snapshot.value as int?) ?? 0;
+    await dbRef.set(currentCoins + amount);
+    print("Achat fictif: Ajout de $amount pièces au compte ${user.uid}");
+  }
 }

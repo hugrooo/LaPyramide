@@ -146,77 +146,30 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (player2 != null)
-            _buildPodiumStep(player2, 2, 120, PyraTheme.primaryCyan),
-          if (player2 == null) const SizedBox(width: 100),
+            Expanded(
+              child: _buildPodiumStep(player2, 2, 120, PyraTheme.primaryCyan),
+            ),
+          if (player2 == null) const Expanded(child: SizedBox()),
           
           if (player1 != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: _buildPodiumStep(player1, 1, 160, PyraTheme.primaryYellow),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: _buildPodiumStep(player1, 1, 160, PyraTheme.primaryYellow),
+              ),
             ),
             
           if (player3 != null)
-            _buildPodiumStep(player3, 3, 100, PyraTheme.primaryPink),
-          if (player3 == null) const SizedBox(width: 100),
+            Expanded(
+              child: _buildPodiumStep(player3, 3, 100, PyraTheme.primaryPink),
+            ),
+          if (player3 == null) const Expanded(child: SizedBox()),
         ],
       ),
     ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, curve: Curves.easeOutBack);
   }
 
   Widget _buildPodiumStep(Map<String, dynamic> player, int rank, double height, Color color) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        // Avatar
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color.withOpacity(0.2),
-            border: Border.all(color: color, width: 2),
-            boxShadow: [BoxShadow(color: color.withOpacity(0.5), blurRadius: 10)],
-          ),
-          child: Center(
-            child: Text(
-              rank == 1 ? '👑' : '👤',
-              style: const TextStyle(fontSize: 24),
-            ),
-          ),
-        ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1,1), end: const Offset(1.05, 1.05), duration: 1500.ms),
-        const SizedBox(height: 8),
-        // Nom
-        Text(
-          player['name'],
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        Text(
-          '${player['totalSips']}',
-          style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 16),
-        ),
-        const SizedBox(height: 8),
-        // Step 3D
-        Transform(
-          transform: Matrix4.identity()
-            ..setEntry(3, 2, 0.01)
-            ..rotateX(-0.2), // Incline vers l'arrière
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            width: 90,
-            height: height,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  color.withOpacity(0.8),
-                  color.withOpacity(0.2),
-                ],
-              ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
     final String name = player['name'] ?? 'Inconnu';
     final String emoji = player['emoji'] ?? '😎';
     final int xp = player['xp'] ?? 0;
@@ -224,64 +177,66 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
 
     final isFirst = rank == 1;
 
-    return Expanded(
-      child: Container(
-        height: height,
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            if (isFirst)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 8),
-                child: Icon(Icons.star_rounded, color: PyraTheme.primaryYellow, size: 32),
-              ),
-            Text(
-              emoji,
-              style: const TextStyle(fontSize: 32),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (isFirst)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: Icon(Icons.star_rounded, color: PyraTheme.primaryYellow, size: 32),
             ),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                border: Border.all(color: color.withOpacity(0.5), width: 2),
-                boxShadow: [
-                  BoxShadow(color: color.withOpacity(0.3), blurRadius: 20, spreadRadius: 2),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '$rank',
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                    ),
+          Text(
+            emoji,
+            style: const TextStyle(fontSize: 32),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            height: height,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              border: Border.all(color: color.withOpacity(0.5), width: 2),
+              boxShadow: [
+                BoxShadow(color: color.withOpacity(0.3), blurRadius: 20, spreadRadius: 2),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '$rank',
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Text(
                     name,
                     style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
                   ),
-                  Text(
-                    '$xp XP',
-                    style: const TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                  Text(
-                    'Niv. $level',
-                    style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
+                ),
+                Text(
+                  '$xp XP',
+                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+                Text(
+                  'Niv. $level',
+                  style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
