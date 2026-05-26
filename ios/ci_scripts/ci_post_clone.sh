@@ -13,6 +13,9 @@ git clone https://github.com/flutter/flutter.git --depth 1 -b stable $HOME/flutt
 # Add Flutter to the path.
 export PATH="$PATH:$HOME/flutter/bin"
 
+# Disable Swift Package Manager globally in Xcode Cloud's Flutter to use CocoaPods for all plugins.
+flutter config --no-enable-swift-package-manager
+
 # Pre-download Development Binaries.
 flutter precache --ios
 
