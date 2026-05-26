@@ -125,42 +125,45 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ).animate().scale(delay: 500.ms),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 28),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Spacer(flex: 1),
+                // Colonne principale centrée prenant tout l'espace disponible
+                Positioned.fill(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Spacer(flex: 1),
 
-                      // Logo / Titre
-                      _buildLogo(context, l10n),
+                        // Logo / Titre
+                        _buildLogo(context, l10n),
 
-                      const Spacer(flex: 1),
+                        const Spacer(flex: 1),
 
-                      // Boutons principaux
-                      _buildButtons(context, l10n),
-                      
-                      if (_savedRoomCode != null) ...[
-                        const SizedBox(height: 24),
-                        const Text('Partie en cours détectée', style: TextStyle(color: PyraTheme.textSecondary, fontSize: 12)),
-                        const SizedBox(height: 8),
-                        PulsarButton(
-                          text: 'Rejoindre $_savedRoomCode',
-                          gradient: PyraTheme.festiveGradient,
-                          onPressed: () {
-                            HapticFeedback.lightImpact();
-                            context.pushNamed('onlineGame', pathParameters: {'roomId': _savedRoomCode!});
-                          },
-                        ).animate().fadeIn().slideY(),
+                        // Boutons principaux
+                        _buildButtons(context, l10n),
+
+                        if (_savedRoomCode != null) ...[
+                          const SizedBox(height: 24),
+                          const Text('Partie en cours détectée', style: TextStyle(color: PyraTheme.textSecondary, fontSize: 12)),
+                          const SizedBox(height: 8),
+                          PulsarButton(
+                            text: 'Rejoindre $_savedRoomCode',
+                            gradient: PyraTheme.festiveGradient,
+                            onPressed: () {
+                              HapticFeedback.lightImpact();
+                              context.pushNamed('onlineGame', pathParameters: {'roomId': _savedRoomCode!});
+                            },
+                          ).animate().fadeIn().slideY(),
+                        ],
+
+                        const Spacer(flex: 1),
+
+                        // Boutons secondaires
+                        _buildSecondaryButtons(context, l10n),
+
+                        const SizedBox(height: 32),
                       ],
-
-                      const Spacer(flex: 1),
-
-                      // Boutons secondaires
-                      _buildSecondaryButtons(context, l10n),
-
-                      const SizedBox(height: 32),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -262,24 +265,30 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _SecondaryButton(
-          label: l10n.home_rules,
-          onPressed: () => context.pushNamed('rules'),
-        ).animate().fadeIn(delay: 700.ms, duration: 600.ms),
+        Flexible(
+          child: _SecondaryButton(
+            label: l10n.home_rules,
+            onPressed: () => context.pushNamed('rules'),
+          ).animate().fadeIn(delay: 700.ms, duration: 600.ms),
+        ),
 
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
 
-        _SecondaryButton(
-          label: 'Classement',
-          onPressed: () => context.pushNamed('leaderboard'),
-        ).animate().fadeIn(delay: 750.ms, duration: 600.ms),
+        Flexible(
+          child: _SecondaryButton(
+            label: 'Classement',
+            onPressed: () => context.pushNamed('leaderboard'),
+          ).animate().fadeIn(delay: 750.ms, duration: 600.ms),
+        ),
 
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
 
-        _SecondaryButton(
-          label: l10n.home_settings,
-          onPressed: () => context.pushNamed('settings'),
-        ).animate().fadeIn(delay: 800.ms, duration: 600.ms),
+        Flexible(
+          child: _SecondaryButton(
+            label: l10n.home_settings,
+            onPressed: () => context.pushNamed('settings'),
+          ).animate().fadeIn(delay: 800.ms, duration: 600.ms),
+        ),
       ],
     );
   }
@@ -299,7 +308,7 @@ class _SecondaryButton extends StatelessWidget {
         onPressed();
       },
       child: GlassContainer(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: Border.all(
           color: PyraTheme.primaryPurple.withOpacity(0.4),
           width: 1.5,
@@ -308,9 +317,12 @@ class _SecondaryButton extends StatelessWidget {
         opacity: 0.3,
         child: Text(
           label,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: PyraTheme.textSecondary,
-                fontSize: 14,
+                fontSize: 13,
               ),
         ),
       ),
