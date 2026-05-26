@@ -213,13 +213,13 @@ class DistributionScreen extends ConsumerWidget {
           ],
         );
       case 1:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
           children: [
             _ChoiceButton(label: '⬆️ Plus', color: PyraTheme.primaryOrange, onPressed: () => onChoice('plus')),
-            const SizedBox(width: 8),
             _ChoiceButton(label: '⏸️ Égal', color: Colors.grey, onPressed: () => onChoice('egal')),
-            const SizedBox(width: 8),
             _ChoiceButton(label: '⬇️ Moins', color: PyraTheme.primaryPurple, onPressed: () => onChoice('moins')),
           ],
         );

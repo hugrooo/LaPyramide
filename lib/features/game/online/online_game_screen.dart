@@ -157,7 +157,7 @@ class OnlineGameScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                return _buildGameUI(context, ref, state, user.uid);
+                return SizedBox.expand(child: _buildGameUI(context, ref, state, user.uid));
               },
               loading: () => const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPink)),
               error: (err, _) => Center(child: Text('Erreur: $err', style: const TextStyle(color: Colors.red))),
@@ -443,12 +443,51 @@ class OnlineGameScreen extends ConsumerWidget {
     final me = state.players.firstWhere((p) => p.id == currentUserId, orElse: () => state.players.first);
 
     if (state.phase == GamePhase.revealing) {
-      return Center(
-        child: Text(
-          isHost ? 'Appuie sur la carte à révéler !' : 'L\'hôte retourne les cartes...',
-          style: const TextStyle(color: PyraTheme.textSecondary, fontSize: 18),
-        ).animate(onPlay: (c) => c.repeat(reverse: true)).fade(duration: 1.seconds),
-      );
+      if (isHost) {
+        // Bouton dédié pour l'hôte — solution robuste si la carte pyramide est hors écran
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                '👇 Appuie pour révéler !',
+                style: TextStyle(color: PyraTheme.textSecondary, fontSize: 16),
+              ).animate(onPlay: (c) => c.repeat(reverse: true)).fade(duration: 1.seconds),
+              const SizedBox(height: 12),
+              PulsarButton(
+                text: '🃏 Retourner la carte',
+                gradient: PyraTheme.festiveGradient,
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  ref.read(randomEventProvider.notifier).tryTriggerEvent(probability: 0.2);
+                  final event = ref.read(randomEventProvider);
+                  ref.read(randomEventProvider.notifier).clearEvent();
+                  final newState = GameLogic.revealCurrentCard(state);
+                  if (event != null) {
+                    service.updateGameState(newState.copyWith(
+                      currentRandomEvent: {
+                        'title': event.title,
+                        'description': event.description,
+                        'emoji': event.emoji,
+                        'type': event.type,
+                      }
+                    ));
+                  } else {
+                    service.updateGameState(newState);
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      } else {
+        return Center(
+          child: Text(
+            'L\'hôte retourne les cartes...',
+            style: const TextStyle(color: PyraTheme.textSecondary, fontSize: 18),
+          ).animate(onPlay: (c) => c.repeat(reverse: true)).fade(duration: 1.seconds),
+        );
+      }
     }
 
     if (state.phase == GamePhase.bluffing && state.pendingDrinks.isNotEmpty) {

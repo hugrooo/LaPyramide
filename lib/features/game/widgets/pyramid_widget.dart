@@ -101,14 +101,14 @@ class PyramidWidget extends StatelessWidget {
         cardIdx == currentCardIndex &&
         phase == GamePhase.revealing;
 
-    return FlippableCardWidget(
+    final cardWidget = FlippableCardWidget(
       card: card,
       isRevealed: card.isRevealed,
       isActive: isActive,
       width: 52,
       height: 72,
       glowColor: rowColor,
-      onTap: isActive ? onRevealCard : null,
+      onTap: null, // géré par le GestureDetector externe
     )
         .animate(target: isActive ? 1 : 0)
         .scale(
@@ -123,5 +123,15 @@ class PyramidWidget extends StatelessWidget {
           angle: 0.5,
         )
         .animate(onPlay: isActive ? (ctrl) => ctrl.repeat(reverse: true) : null);
+
+    // GestureDetector EXTÉRIEUR aux animations pour capter les taps sans interférence
+    if (isActive && onRevealCard != null) {
+      return GestureDetector(
+        onTap: onRevealCard,
+        behavior: HitTestBehavior.opaque,
+        child: cardWidget,
+      );
+    }
+    return cardWidget;
   }
 }
