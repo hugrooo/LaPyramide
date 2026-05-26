@@ -228,7 +228,7 @@ class OnlineGameScreen extends ConsumerWidget {
             RandomEventOverlay(
               eventMap: gameStateAsync.value!.currentRandomEvent!,
               onClose: () {
-                final hostId = gameStateAsync.value!.players.firstWhere((p) => gameStateAsync.value!.presence[p.id] == true).id;
+                final hostId = gameStateAsync.value!.players.isNotEmpty ? gameStateAsync.value!.players.first.id : '';
                 if (hostId == user.uid) {
                    ref.read(onlineGameServiceProvider).updateGameState(
                      gameStateAsync.value!.copyWith(currentRandomEvent: {})
@@ -310,10 +310,7 @@ class OnlineGameScreen extends ConsumerWidget {
     final service = ref.read(onlineGameServiceProvider);
     
     // Identifier l'hôte pour le contrôle du jeu (seul l'hôte révèle les cartes)
-    final hostId = state.players.firstWhere(
-      (p) => state.presence[p.id] == true, 
-      orElse: () => state.players.isNotEmpty ? state.players.first : Player(id: '', name: '', photoUrl: null, isReady: false)
-    ).id;
+    final hostId = state.players.isNotEmpty ? state.players.first.id : '';
     final isHost = hostId == currentUserId;
     
     // Identifier le joueur actuel
@@ -440,10 +437,7 @@ class OnlineGameScreen extends ConsumerWidget {
   }
 
   Widget _buildActionZone(BuildContext context, WidgetRef ref, GameState state, String currentUserId, OnlineGameService service) {
-    final hostId = state.players.firstWhere(
-      (p) => state.presence[p.id] == true, 
-      orElse: () => state.players.isNotEmpty ? state.players.first : Player(id: '', name: '', photoUrl: null, isReady: false)
-    ).id;
+    final hostId = state.players.isNotEmpty ? state.players.first.id : '';
     final isHost = hostId == currentUserId;
 
     final me = state.players.firstWhere((p) => p.id == currentUserId, orElse: () => state.players.first);
