@@ -12,6 +12,7 @@ import '../models/card_model.dart';
 import '../models/game_state.dart';
 import '../models/player_model.dart';
 import '../online/online_game_service.dart';
+import '../services/random_event_service.dart';
 import '../widgets/drink_and_bluff_widgets.dart';
 import '../widgets/player_hand_widget.dart';
 import '../widgets/pyramid_widget.dart';
@@ -92,13 +93,10 @@ class OnlineGameScreen extends ConsumerWidget {
                   return Dialog(
                     backgroundColor: Colors.transparent,
                     elevation: 0,
-                    child: Container(
+                    child: GlassContainer(
+                      innerGlow: true,
                       padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.redAccent.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
+                      border: Border.all(color: Colors.redAccent, width: 2),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -222,6 +220,22 @@ class OnlineGameScreen extends ConsumerWidget {
           // Overlay Taunt
           if (gameStateAsync.value?.lastTaunt != null)
             TauntOverlay(tauntData: gameStateAsync.value!.lastTaunt!),
+
+          // Overlay Random Event
+          if (gameStateAsync.value != null && 
+              gameStateAsync.value!.currentRandomEvent != null && 
+              gameStateAsync.value!.currentRandomEvent!.isNotEmpty)
+            RandomEventOverlay(
+              eventMap: gameStateAsync.value!.currentRandomEvent!,
+              onClose: () {
+                final hostId = gameStateAsync.value!.players.firstWhere((p) => gameStateAsync.value!.presence[p.id] == true).id;
+                if (hostId == user.uid) {
+                   ref.read(onlineGameServiceProvider).updateGameState(
+                     gameStateAsync.value!.copyWith(currentRandomEvent: {})
+                   );
+                }
+              },
+            ),
         ],
       ),
     );
@@ -230,9 +244,10 @@ class OnlineGameScreen extends ConsumerWidget {
   Widget _buildSecretMissionBtn(BuildContext context, String? mission) {
     if (mission == null) return const SizedBox.shrink();
     return ActionChip(
-      backgroundColor: PyraTheme.bgCard,
+      backgroundColor: PyraTheme.bgSurface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       avatar: const Icon(Icons.security, color: PyraTheme.primaryOrange),
-      label: const Text('Mission', style: TextStyle(color: Colors.white)),
+      label: const Text('Mission', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       onPressed: () {
         showDialog(
           context: context,
@@ -256,16 +271,19 @@ class OnlineGameScreen extends ConsumerWidget {
     final taunts = ['🍻', '🍅', '💩', '🤡', '💤', '🤣'];
     showModalBottomSheet(
       context: context,
-      backgroundColor: PyraTheme.bgDark,
-      builder: (ctx) => Padding(
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => GlassContainer(
+        innerGlow: true,
         padding: const EdgeInsets.all(24.0),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Envoyer une provocation !', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
+            const Text('Envoyer une provocation !', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+            const SizedBox(height: 24),
             Wrap(
-              spacing: 16,
+              spacing: 24,
+              runSpacing: 24,
               children: taunts.map((emoji) => GestureDetector(
                 onTap: () {
                   ref.read(onlineGameServiceProvider).sendTaunt(roomId, userId, emoji);
@@ -274,7 +292,7 @@ class OnlineGameScreen extends ConsumerWidget {
                 child: Text(emoji, style: const TextStyle(fontSize: 48)),
               )).toList(),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -304,7 +322,9 @@ class OnlineGameScreen extends ConsumerWidget {
     if (state.phase == GamePhase.miniGame) {
       return Center(
         child: GlassContainer(
+          innerGlow: true,
           padding: const EdgeInsets.all(32),
+          border: Border.all(color: PyraTheme.primaryYellow, width: 2),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -364,8 +384,23 @@ class OnlineGameScreen extends ConsumerWidget {
               onRevealCard: isHost && state.phase == GamePhase.revealing
                   ? () {
                       HapticFeedback.lightImpact();
+                      ref.read(randomEventProvider.notifier).tryTriggerEvent(probability: 0.2);
+                      final event = ref.read(randomEventProvider);
+                      ref.read(randomEventProvider.notifier).clearEvent();
+                      
                       final newState = GameLogic.revealCurrentCard(state);
-                      service.updateGameState(newState);
+                      if (event != null) {
+                         service.updateGameState(newState.copyWith(
+                           currentRandomEvent: {
+                             'title': event.title,
+                             'description': event.description,
+                             'emoji': event.emoji,
+                             'type': event.type,
+                           }
+                         ));
+                      } else {
+                         service.updateGameState(newState);
+                      }
                     }
                   : null,
             ),
@@ -448,6 +483,7 @@ class OnlineGameScreen extends ConsumerWidget {
           ).animate().shake();
         } else {
           return GlassContainer(
+            innerGlow: true,
             margin: const EdgeInsets.symmetric(horizontal: 24),
             padding: const EdgeInsets.all(24),
             border: Border.all(color: PyraTheme.primaryOrange.withOpacity(0.5), width: 2),
@@ -497,6 +533,7 @@ class OnlineGameScreen extends ConsumerWidget {
         } else {
           // Je regarde l'action des autres
           return GlassContainer(
+            innerGlow: true,
             margin: const EdgeInsets.symmetric(horizontal: 24),
             padding: const EdgeInsets.all(24),
             border: Border.all(color: PyraTheme.primaryPink.withOpacity(0.5), width: 2),
@@ -566,8 +603,8 @@ class OnlineGameScreen extends ConsumerWidget {
             ).animate().fadeIn(delay: 200.ms),
             const SizedBox(height: 12),
             SizedBox(
-              height: 160,
-              width: 110,
+              height: 180,
+              width: 125,
               child: PlayingCardWidget(card: currentCard),
             ).animate(key: ValueKey('card_${currentCard.id}')).scale(duration: 400.ms, curve: Curves.easeOutBack),
             const SizedBox(height: 32),
@@ -607,14 +644,15 @@ class OnlineGameScreen extends ConsumerWidget {
     if (state.phase == GamePhase.transition) {
       if (isHost) {
         return Center(
-          child: ElevatedButton(
+          child: PulsarButton(
+            paddingHorizontal: 64,
+            text: 'Tour Suivant',
+            gradient: PyraTheme.purplePinkGradient,
             onPressed: () {
               HapticFeedback.mediumImpact();
               final newState = GameLogic.nextCard(state);
               service.updateGameState(newState);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryPurple),
-            child: const Text('Tour Suivant', style: TextStyle(color: Colors.white)),
           ),
         );
       } else {
@@ -636,13 +674,15 @@ class OnlineGameScreen extends ConsumerWidget {
   ) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: PyraTheme.bgCard,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+        return GlassContainer(
+          innerGlow: true,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
@@ -670,9 +710,10 @@ class OnlineGameScreen extends ConsumerWidget {
               ],
             ),
           ),
-        );
-      },
-    );
+        ),
+      );
+    },
+  );
   }
 
   String _getPhaseTitle(GamePhase phase) {
@@ -722,6 +763,60 @@ class _TauntOverlayState extends State<TauntOverlay> {
             .then(delay: 1000.ms)
             .fadeOut(duration: 300.ms)
             .scale(end: const Offset(0, 0)),
+      ),
+    );
+  }
+}
+
+class RandomEventOverlay extends StatelessWidget {
+  final Map<String, dynamic> eventMap;
+  final VoidCallback onClose;
+
+  const RandomEventOverlay({super.key, required this.eventMap, required this.onClose});
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: Container(
+        color: Colors.black.withOpacity(0.8),
+        child: Center(
+          child: GlassContainer(
+            innerGlow: true,
+            padding: const EdgeInsets.all(32),
+            border: Border.all(color: PyraTheme.primaryPink, width: 2),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  eventMap['emoji'] ?? '🎲',
+                  style: const TextStyle(fontSize: 80),
+                ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack).shake(delay: 500.ms),
+                const SizedBox(height: 16),
+                Text(
+                  eventMap['title'] ?? 'Événement Aléatoire',
+                  style: const TextStyle(
+                    color: PyraTheme.primaryPink,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(delay: 200.ms),
+                const SizedBox(height: 16),
+                Text(
+                  eventMap['description'] ?? '',
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(delay: 400.ms),
+                const SizedBox(height: 32),
+                PulsarButton(
+                  text: 'Continuer',
+                  gradient: PyraTheme.festiveGradient,
+                  onPressed: onClose,
+                ).animate().slideY(begin: 0.5, end: 0, duration: 300.ms, delay: 600.ms).fadeIn(),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

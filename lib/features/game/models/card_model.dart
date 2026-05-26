@@ -15,7 +15,7 @@ extension CardSuitEmoji on CardSuit {
   bool get isRed => this == CardSuit.hearts || this == CardSuit.diamonds;
 }
 
-enum PowerType { none, shield, mirror }
+enum PowerType { none, shield, mirror, multiplier }
 
 extension PowerTypeEmoji on PowerType {
   String get emoji {
@@ -23,6 +23,7 @@ extension PowerTypeEmoji on PowerType {
       case PowerType.none: return '';
       case PowerType.shield: return '🛡️';
       case PowerType.mirror: return '🪞';
+      case PowerType.multiplier: return '⚡';
     }
   }
 
@@ -31,6 +32,7 @@ extension PowerTypeEmoji on PowerType {
       case PowerType.none: return '';
       case PowerType.shield: return 'Bouclier';
       case PowerType.mirror: return 'Miroir';
+      case PowerType.multiplier: return 'Multiplicateur (x2)';
     }
   }
 }
@@ -77,14 +79,28 @@ class PyraCard {
     return '$displayValue${suit.emoji}';
   }
 
-  /// Génère un jeu de 52 cartes mélangé
-  static List<PyraCard> generateDeck() {
+  /// Génère un jeu de 52 cartes mélangé, incluant potentiellement des pouvoirs
+  static List<PyraCard> generateDeck({bool withPowers = false}) {
     final deck = <PyraCard>[];
     for (final suit in CardSuit.values) {
       for (int v = 1; v <= 13; v++) {
         deck.add(PyraCard(suit: suit, value: v));
       }
     }
+    
+    if (withPowers) {
+      // On remplace 6 cartes (par exemple les valets et dames rouges) par des pouvoirs
+      for (int i = 0; i < deck.length; i++) {
+        if (deck[i].value == 11 && deck[i].suit.isRed) {
+          deck[i] = PyraCard(suit: deck[i].suit, value: 11, powerType: PowerType.shield);
+        } else if (deck[i].value == 12 && deck[i].suit.isRed) {
+          deck[i] = PyraCard(suit: deck[i].suit, value: 12, powerType: PowerType.mirror);
+        } else if (deck[i].value == 13 && deck[i].suit.isRed) {
+          deck[i] = PyraCard(suit: deck[i].suit, value: 13, powerType: PowerType.multiplier);
+        }
+      }
+    }
+    
     deck.shuffle();
     return deck;
   }

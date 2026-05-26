@@ -276,6 +276,7 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
     return DrinkOverlay(
       player: player,
       sips: gameState.currentSips,
+      message: gameState.lastEventMessage,
       onDismiss: () {
         // Passer au joueur suivant
         setState(() {

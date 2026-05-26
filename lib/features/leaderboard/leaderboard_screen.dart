@@ -94,17 +94,33 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                                 style: TextStyle(color: Colors.white70),
                               ),
                             )
-                          : ListView.builder(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              itemCount: _topDrinkers.length,
-                              itemBuilder: (context, index) {
-                                final player = _topDrinkers[index];
-                                final rank = index + 1;
-                                return _buildRankCard(player, rank)
-                                    .animate()
-                                    .fadeIn(delay: (index * 100).ms)
-                                    .slideX(begin: 0.2, end: 0);
-                              },
+                          : Column(
+                              children: [
+                                if (_topDrinkers.length >= 3)
+                                  _buildPodium(_topDrinkers.take(3).toList()),
+                                if (_topDrinkers.length < 3 && _topDrinkers.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 24.0),
+                                    child: _buildPodium(
+                                      _topDrinkers,
+                                      // On complète avec des vide s'il n'y en a pas 3
+                                    ),
+                                  ),
+                                Expanded(
+                                  child: ListView.builder(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    itemCount: _topDrinkers.length > 3 ? _topDrinkers.length - 3 : 0,
+                                    itemBuilder: (context, index) {
+                                      final player = _topDrinkers[index + 3];
+                                      final rank = index + 4;
+                                      return _buildRankCard(player, rank)
+                                          .animate()
+                                          .fadeIn(delay: (index * 100).ms)
+                                          .slideX(begin: 0.2, end: 0);
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                 ),
               ],
@@ -115,28 +131,129 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
     );
   }
 
-  Widget _buildRankCard(Map<String, dynamic> player, int rank) {
-    final rankEmoji = rank == 1 ? '🥇' : rank == 2 ? '🥈' : rank == 3 ? '🥉' : '#$rank';
-    final isTop3 = rank <= 3;
+  Widget _buildPodium(List<Map<String, dynamic>> top3) {
+    if (top3.isEmpty) return const SizedBox();
+    
+    final player1 = top3.isNotEmpty ? top3[0] : null;
+    final player2 = top3.length > 1 ? top3[1] : null;
+    final player3 = top3.length > 2 ? top3[2] : null;
 
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (player2 != null)
+            _buildPodiumStep(player2, 2, 120, PyraTheme.primaryCyan),
+          if (player2 == null) const SizedBox(width: 100),
+          
+          if (player1 != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: _buildPodiumStep(player1, 1, 160, PyraTheme.primaryYellow),
+            ),
+            
+          if (player3 != null)
+            _buildPodiumStep(player3, 3, 100, PyraTheme.primaryPink),
+          if (player3 == null) const SizedBox(width: 100),
+        ],
+      ),
+    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, curve: Curves.easeOutBack);
+  }
+
+  Widget _buildPodiumStep(Map<String, dynamic> player, int rank, double height, Color color) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        // Avatar
+        Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withOpacity(0.2),
+            border: Border.all(color: color, width: 2),
+            boxShadow: [BoxShadow(color: color.withOpacity(0.5), blurRadius: 10)],
+          ),
+          child: Center(
+            child: Text(
+              rank == 1 ? '👑' : '👤',
+              style: const TextStyle(fontSize: 24),
+            ),
+          ),
+        ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1,1), end: const Offset(1.05, 1.05), duration: 1500.ms),
+        const SizedBox(height: 8),
+        // Nom
+        Text(
+          player['name'],
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          '${player['totalSips']}',
+          style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 16),
+        ),
+        const SizedBox(height: 8),
+        // Step 3D
+        Transform(
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.01)
+            ..rotateX(-0.2), // Incline vers l'arrière
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            width: 90,
+            height: height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  color.withOpacity(0.8),
+                  color.withOpacity(0.2),
+                ],
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+            ),
+            child: Center(
+              child: Text(
+                '$rank',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 48,
+                  fontWeight: FontWeight.w900,
+                  shadows: [Shadow(color: Colors.black54, blurRadius: 10, offset: Offset(0, 4))],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRankCard(Map<String, dynamic> player, int rank) {
     return GlassContainer(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      color: isTop3 ? PyraTheme.primaryYellow : PyraTheme.bgCard,
-      opacity: isTop3 ? 0.2 : 0.6,
-      border: isTop3
-          ? Border.all(color: PyraTheme.primaryYellow.withOpacity(0.5), width: 1.5)
-          : Border.all(color: Colors.white.withOpacity(0.1)),
+      color: PyraTheme.bgCard,
+      opacity: 0.6,
+      border: Border.all(color: Colors.white.withOpacity(0.1)),
       child: Row(
         children: [
           SizedBox(
             width: 40,
             child: Text(
-              rankEmoji,
-              style: TextStyle(
-                  fontSize: isTop3 ? 28 : 20,
+              '#$rank',
+              style: const TextStyle(
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: isTop3 ? Colors.white : Colors.white54),
+                  color: Colors.white54),
               textAlign: TextAlign.center,
             ),
           ),

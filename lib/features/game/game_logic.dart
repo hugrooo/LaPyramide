@@ -268,6 +268,22 @@ class GameLogic {
         lastEventMessage: "🪞 ${player.name} sort le Miroir ! ${attacker.name} prend le retour de flamme : ${reflection.sips} gorgées !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
+    } else if (card.powerType == PowerType.multiplier) {
+      // Multiplicateur : renvoie le double des gorgées à l'attaquant
+      final reflection = DrinkAssignment(
+        fromPlayerId: assignment.toPlayerId,
+        toPlayerId: assignment.fromPlayerId,
+        sips: assignment.sips * 2,
+      );
+      
+      final attacker = state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
+      newState = _applyDrink(newState, reflection);
+
+      return newState.copyWith(
+        phase: GamePhase.transition,
+        lastEventMessage: "⚡ ${player.name} utilise un Multiplicateur ! ${attacker.name} prend ${reflection.sips} gorgées (x2) !",
+        lastEventTime: DateTime.now().millisecondsSinceEpoch,
+      );
     }
 
     return state;
@@ -310,6 +326,8 @@ class GameLogic {
       PyraCard(powerType: PowerType.shield),
       PyraCard(powerType: PowerType.mirror),
       PyraCard(powerType: PowerType.mirror),
+      PyraCard(powerType: PowerType.multiplier),
+      PyraCard(powerType: PowerType.multiplier),
     ];
 
     if (settings.replaceCardsWithPowers) {

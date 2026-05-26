@@ -33,8 +33,8 @@ class AudioManager {
     }
   }
 
-  void playTaunt() => playSound('audio/taunt.mp3');
-  void playDrink() => playSound('audio/drink.mp3');
-  void playBluff() => playSound('audio/bluff.mp3');
-  void playWin() => playSound('audio/win.mp3');
+  void playTaunt() => playSound('sounds/taunt.mp3');
+  void playDrink() => playSound('sounds/drink.mp3');
+  void playBluff() => playSound('sounds/bluff.mp3');
+  void playWin() => playSound('sounds/win.mp3');
 }

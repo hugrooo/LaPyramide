@@ -72,7 +72,16 @@ class PyramidWidget extends StatelessWidget {
               for (int cardIdx = 0; cardIdx < row.length; cardIdx++)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 3),
-                  child: _buildCard(context, rowIdx, cardIdx, row[cardIdx], rowColor),
+                  child: _buildCard(context, rowIdx, cardIdx, row[cardIdx], rowColor)
+                      .animate()
+                      .fadeIn(
+                          delay: (rowIdx * 100 + cardIdx * 50).ms,
+                          duration: 400.ms)
+                      .slideY(
+                          begin: 0.8,
+                          delay: (rowIdx * 100 + cardIdx * 50).ms,
+                          duration: 500.ms,
+                          curve: Curves.easeOutBack),
                 ),
             ],
           ),

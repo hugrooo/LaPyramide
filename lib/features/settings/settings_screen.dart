@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme.dart';
 import '../../shared/widgets/animated_background.dart';
+import '../auth/auth_service.dart';
+import 'settings_provider.dart';
+import '../../shared/widgets/pulsar_button.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+    final settingsNotifier = ref.read(settingsProvider.notifier);
 
-class _SettingsScreenState extends State<SettingsScreen> {
-  bool _soundEnabled = true;
-  bool _vibrationEnabled = true;
-  bool _colorBlindMode = false;
-  String _language = 'fr';
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
@@ -45,14 +42,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _SettingTile(
                             emoji: '🔊',
                             label: 'Sons',
-                            value: _soundEnabled,
-                            onChanged: (v) => setState(() => _soundEnabled = v),
+                            value: settings.soundEnabled,
+                            onChanged: (v) => settingsNotifier.toggleSound(v),
                           ),
                           _SettingTile(
                             emoji: '📳',
                             label: 'Vibrations',
-                            value: _vibrationEnabled,
-                            onChanged: (v) => setState(() => _vibrationEnabled = v),
+                            value: settings.vibrationEnabled,
+                            onChanged: (v) => settingsNotifier.toggleVibration(v),
                           ),
                         ],
                       ),
@@ -63,8 +60,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _SettingTile(
                             emoji: '👁️',
                             label: 'Mode daltonien',
-                            value: _colorBlindMode,
-                            onChanged: (v) => setState(() => _colorBlindMode = v),
+                            value: settings.colorBlindMode,
+                            onChanged: (v) => settingsNotifier.toggleColorBlindMode(v),
                           ),
                         ],
                       ),
@@ -73,12 +70,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Langue / Language',
                         children: [
                           _LanguageTile(
-                            selected: _language,
-                            onChanged: (lang) => setState(() => _language = lang),
+                            selected: 'fr',
+                            onChanged: (lang) {}, // Pas encore géré globalement
                           ),
                         ],
                       ),
                       const SizedBox(height: 32),
+                      Center(
+                        child: PulsarButton(
+                          text: '🏆 Classement des Joueurs',
+                          paddingHorizontal: 24,
+                          gradient: PyraTheme.orangeYellowGradient,
+                          onPressed: () {
+                            context.pushNamed('leaderboard');
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Consumer(
+                        builder: (context, ref, child) {
+                          return Center(
+                            child: PulsarButton(
+                              text: 'Se déconnecter',
+                              paddingHorizontal: 32,
+                              gradient: const LinearGradient(colors: [Colors.redAccent, Colors.pink]),
+                              onPressed: () async {
+                                await ref.read(authServiceProvider).signOut();
+                                if (context.mounted) {
+                                  context.goNamed('auth');
+                                }
+                              },
+                            ),
+                          );
+                        }
+                      ),
+                      const SizedBox(height: 24),
                       Center(
                         child: Text(
                           'La Pyramide v1.0.0',

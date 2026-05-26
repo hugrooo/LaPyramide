@@ -6,6 +6,7 @@ import '../../app/theme.dart';
 class PulsarButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final String text;
+  final IconData? icon;
   final Gradient? gradient;
   final double paddingVertical;
   final double paddingHorizontal;
@@ -14,8 +15,9 @@ class PulsarButton extends StatefulWidget {
     super.key,
     required this.onPressed,
     required this.text,
+    this.icon,
     this.gradient,
-    this.paddingVertical = 16.0,
+    this.paddingVertical = 18.0,
     this.paddingHorizontal = 32.0,
   });
 
@@ -37,8 +39,8 @@ class _PulsarButtonState extends State<PulsarButton>
       duration: const Duration(milliseconds: 100),
       reverseDuration: const Duration(milliseconds: 200),
     );
-    _scaleAnim = Tween<double>(begin: 1.0, end: 0.94).animate(
-      CurvedAnimation(parent: _pressController, curve: Curves.easeOut),
+    _scaleAnim = Tween<double>(begin: 1.0, end: 0.90).animate(
+      CurvedAnimation(parent: _pressController, curve: Curves.easeOutBack),
     );
   }
 
@@ -73,7 +75,7 @@ class _PulsarButtonState extends State<PulsarButton>
 
   @override
   Widget build(BuildContext context) {
-    final activeGradient = widget.gradient ?? PyraTheme.purplePinkGradient;
+    final activeGradient = widget.gradient ?? PyraTheme.cyanGradient;
     final isDisabled = widget.onPressed == null;
 
     return GestureDetector(
@@ -93,42 +95,65 @@ class _PulsarButtonState extends State<PulsarButton>
               horizontal: widget.paddingHorizontal,
             ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(32),
               gradient: isDisabled
-                  ? const LinearGradient(colors: [Color(0xFF444444), Color(0xFF555555)])
+                  ? const LinearGradient(colors: [Color(0xFF2A2D43), Color(0xFF1E2138)])
                   : activeGradient,
               boxShadow: isDisabled
                   ? []
                   : [
+                      // Glow effect
                       BoxShadow(
-                        color: activeGradient.colors.last.withOpacity(_isPressed ? 0.7 : 0.45),
-                        blurRadius: _isPressed ? 25 : 18,
-                        spreadRadius: _isPressed ? 3 : 2,
+                        color: activeGradient.colors.last.withOpacity(_isPressed ? 0.8 : 0.5),
+                        blurRadius: _isPressed ? 30 : 20,
+                        spreadRadius: _isPressed ? 4 : 2,
+                        offset: const Offset(0, 8),
                       ),
+                      // Inner highlight simulated with border
                     ],
-            ),
-            child: Text(
-              widget.text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.3,
+              border: Border.all(
+                color: Colors.white.withOpacity(isDisabled ? 0.05 : 0.4),
+                width: 1.5,
               ),
-              textAlign: TextAlign.center,
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Text and Icon
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (widget.icon != null) ...[
+                      Icon(widget.icon, color: Colors.white, size: 24),
+                      const SizedBox(width: 8),
+                    ],
+                    Text(
+                      widget.text,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ],
             ),
           )
               .animate(onPlay: (c) => c.repeat(reverse: true))
               .scale(
                 begin: const Offset(1, 1),
-                end: const Offset(1.025, 1.025),
-                duration: 1800.ms,
+                end: const Offset(1.02, 1.02),
+                duration: 2.seconds,
                 curve: Curves.easeInOut,
               )
               .shimmer(
                 duration: 3.seconds,
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withOpacity(0.25),
                 angle: 45,
+                blendMode: BlendMode.overlay,
               ),
         ),
       ),

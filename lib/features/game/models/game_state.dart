@@ -135,6 +135,7 @@ class GameState {
   final PyraCard? lastRevealedCard;
   final Map<String, bool> presence;   // Map playerId -> isOnline
   final Map<String, dynamic>? lastTaunt;
+  final Map<String, dynamic>? currentRandomEvent;
 
   const GameState({
     required this.gameId,
@@ -155,6 +156,7 @@ class GameState {
     this.lastRevealedCard,
     this.presence = const {},
     this.lastTaunt,
+    this.currentRandomEvent,
   });
 
   PyraCard? get currentCard {
@@ -185,6 +187,7 @@ class GameState {
     PyraCard? lastRevealedCard,
     Map<String, bool>? presence,
     Map<String, dynamic>? lastTaunt,
+    Map<String, dynamic>? currentRandomEvent,
   }) {
     return GameState(
       gameId: gameId,
@@ -205,6 +208,7 @@ class GameState {
       lastRevealedCard: lastRevealedCard ?? this.lastRevealedCard,
       presence: presence ?? this.presence,
       lastTaunt: lastTaunt ?? this.lastTaunt,
+      currentRandomEvent: currentRandomEvent ?? this.currentRandomEvent,
     );
   }
 
@@ -227,6 +231,7 @@ class GameState {
     'lastRevealedCard': lastRevealedCard?.toJson(),
     'presence': presence,
     'lastTaunt': lastTaunt,
+    'currentRandomEvent': currentRandomEvent,
   };
 
   factory GameState.fromJson(Map<String, dynamic> json) => GameState(
@@ -260,5 +265,6 @@ class GameState {
         : null,
     presence: json['presence'] != null ? Map<String, bool>.from(json['presence']) : {},
     lastTaunt: json['lastTaunt'] != null ? Map<String, dynamic>.from(json['lastTaunt']) : null,
+    currentRandomEvent: json['currentRandomEvent'] != null ? Map<String, dynamic>.from(json['currentRandomEvent']) : null,
   );
 }

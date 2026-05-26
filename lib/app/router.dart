@@ -11,7 +11,13 @@ import '../features/game/scoreboard_screen.dart';
 import '../features/rules/rules_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/auth/auth_screen.dart';
+import '../features/onboarding/onboarding_screen.dart';
 import '../features/leaderboard/leaderboard_screen.dart';
+import '../features/main/main_layout.dart';
+import '../features/store/store_screen.dart';
+import '../features/friends/friends_screen.dart';
+import '../features/shared/screens/coming_soon_screen.dart';
+import '../features/profile/level_screen.dart';
 
 // ─── Transitions ────────────────────────────────────────────────────────────
 
@@ -33,6 +39,24 @@ CustomTransitionPage<T> _slideRight<T>(BuildContext context, GoRouterState state
           opacity: secondaryAnimation.drive(fadeOut),
           child: child,
         ),
+      );
+    },
+  );
+}
+
+/// Fondu simple (fade) pour les onglets de navigation
+CustomTransitionPage<T> _fadeTransition<T>(BuildContext context, GoRouterState state, Widget child) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 250),
+    reverseTransitionDuration: const Duration(milliseconds: 200),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final fadeTween = Tween<double>(begin: 0.0, end: 1.0)
+          .chain(CurveTween(curve: Curves.easeOut));
+      return FadeTransition(
+        opacity: animation.drive(fadeTween),
+        child: child,
       );
     },
   );
@@ -86,36 +110,82 @@ CustomTransitionPage<T> _zoomFade<T>(BuildContext context, GoRouterState state, 
 
 // ─── Router ─────────────────────────────────────────────────────────────────
 
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _shellNavigatorKey = GlobalKey<NavigatorState>();
+
+final initialRouteProvider = Provider<String>((ref) => '/home');
+
 final routerProvider = Provider<GoRouter>((ref) {
+  final initialRoute = ref.watch(initialRouteProvider);
   return GoRouter(
-    initialLocation: '/disclaimer',
+    navigatorKey: _rootNavigatorKey,
+    initialLocation: initialRoute,
     routes: [
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        pageBuilder: (context, state) => const NoTransitionPage(child: OnboardingScreen()),
+      ),
       GoRoute(
         path: '/disclaimer',
         name: 'disclaimer',
         pageBuilder: (context, state) => _fadeSlideUp(context, state, const DisclaimerScreen()),
       ),
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        pageBuilder: (context, state) => _fadeSlideUp(context, state, const HomeScreen()),
+      ShellRoute(
+        navigatorKey: _shellNavigatorKey,
+        builder: (context, state, child) {
+          // Wrapper pour la barre de navigation
+          return MainLayout(child: child);
+        },
+        routes: [
+          GoRoute(
+            path: '/home',
+            name: 'home',
+            pageBuilder: (context, state) => const NoTransitionPage(child: HomeScreen()),
+          ),
+          GoRoute(
+            path: '/rules',
+            name: 'rules',
+            pageBuilder: (context, state) => const NoTransitionPage(child: RulesScreen()),
+          ),
+          GoRoute(
+            path: '/leaderboard',
+            name: 'leaderboard',
+            pageBuilder: (context, state) => _fadeTransition(context, state, const LeaderboardScreen()),
+          ),
+          GoRoute(
+            path: '/settings',
+            name: 'settings',
+            pageBuilder: (context, state) => _fadeTransition(context, state, const SettingsScreen()),
+          ),
+        ],
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/auth',
         name: 'auth',
         pageBuilder: (context, state) => _slideRight(context, state, const AuthScreen()),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/level',
+        name: 'level',
+        pageBuilder: (context, state) => _slideRight(context, state, const LevelScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/lobby/local',
         name: 'localLobby',
         pageBuilder: (context, state) => _slideRight(context, state, const LocalLobbyScreen()),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/lobby/online',
         name: 'onlineLobby',
         pageBuilder: (context, state) => _slideRight(context, state, const OnlineLobbyScreen()),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/game/local',
         name: 'localGame',
         pageBuilder: (context, state) {
@@ -124,11 +194,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/game/online',
         name: 'onlineGame',
         pageBuilder: (context, state) => _zoomFade(context, state, const OnlineGameScreen()),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         path: '/scoreboard',
         name: 'scoreboard',
         pageBuilder: (context, state) {
@@ -137,20 +209,27 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: '/rules',
-        name: 'rules',
-        pageBuilder: (context, state) => _slideRight(context, state, const RulesScreen()),
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/store',
+        name: 'store',
+        pageBuilder: (context, state) => _fadeTransition(context, state, const StoreScreen()),
       ),
       GoRoute(
-        path: '/settings',
-        name: 'settings',
-        pageBuilder: (context, state) => _slideRight(context, state, const SettingsScreen()),
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/coming-soon',
+        name: 'comingSoon',
+        pageBuilder: (context, state) {
+          final title = state.extra as String? ?? 'Bientôt';
+          return _slideRight(context, state, ComingSoonScreen(title: title));
+        },
       ),
       GoRoute(
-        path: '/leaderboard',
-        name: 'leaderboard',
-        pageBuilder: (context, state) => _slideRight(context, state, const LeaderboardScreen()),
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/friends',
+        name: 'friends',
+        pageBuilder: (context, state) => _slideRight(context, state, const FriendsScreen()),
       ),
     ],
   );
 });
+

@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'core/audio/audio_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'app/router.dart';
 import 'app/app.dart';
 
 void main() async {
@@ -29,9 +32,20 @@ void main() async {
 
   await AudioManager().init();
 
+  final prefs = await SharedPreferences.getInstance();
+  final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+  final currentUser = FirebaseAuth.instance.currentUser;
+  
+  final initialRoute = !hasSeenOnboarding 
+      ? '/onboarding' 
+      : (currentUser == null ? '/auth' : '/home');
+
   runApp(
-    const ProviderScope(
-      child: PyraApp(),
+    ProviderScope(
+      overrides: [
+        initialRouteProvider.overrideWithValue(initialRoute),
+      ],
+      child: const PyraApp(),
     ),
   );
 }

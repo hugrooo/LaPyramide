@@ -235,7 +235,7 @@ class _FlippableCardWidgetState extends State<FlippableCardWidget>
   void initState() {
     super.initState();
     _flipController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
     _flipAnimation = Tween<double>(begin: 0, end: 1).animate(
@@ -265,33 +265,38 @@ class _FlippableCardWidgetState extends State<FlippableCardWidget>
       builder: (context, child) {
         final angle = _flipAnimation.value * 3.14159;
         final isFrontVisible = angle > 1.5708;
+        // Pop up effect: scale increases in the middle of the flip
+        final scale = 1.0 + (0.5 - (_flipAnimation.value - 0.5).abs()) * 0.4;
 
-        return Transform(
-          transform: Matrix4.identity()
-            ..setEntry(3, 2, 0.001)
-            ..rotateY(angle),
-          alignment: Alignment.center,
-          child: isFrontVisible
-              ? Transform(
-                  transform: Matrix4.identity()..rotateY(3.14159),
-                  alignment: Alignment.center,
-                  child: PlayingCardWidget(
+        return Transform.scale(
+          scale: scale,
+          child: Transform(
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.0015) // Stronger perspective
+              ..rotateY(angle),
+            alignment: Alignment.center,
+            child: isFrontVisible
+                ? Transform(
+                    transform: Matrix4.identity()..rotateY(3.14159),
+                    alignment: Alignment.center,
+                    child: PlayingCardWidget(
+                      card: widget.card,
+                      faceUp: true,
+                      isHighlighted: widget.isActive,
+                      width: widget.width,
+                      height: widget.height,
+                      onTap: widget.onTap,
+                    ),
+                  )
+                : PlayingCardWidget(
                     card: widget.card,
-                    faceUp: true,
+                    faceUp: false,
                     isHighlighted: widget.isActive,
                     width: widget.width,
                     height: widget.height,
-                    onTap: widget.onTap,
+                    onTap: widget.isActive ? widget.onTap : null,
                   ),
-                )
-              : PlayingCardWidget(
-                  card: widget.card,
-                  faceUp: false,
-                  isHighlighted: widget.isActive,
-                  width: widget.width,
-                  height: widget.height,
-                  onTap: widget.isActive ? widget.onTap : null,
-                ),
+          ),
         );
       },
     );
