@@ -11,7 +11,7 @@ final storeServiceProvider = Provider<StoreService>((ref) {
 class StoreService {
   final Ref _ref;
   final InAppPurchase _iap = InAppPurchase.instance;
-  late StreamSubscription<List<PurchaseDetails>> _subscription;
+  StreamSubscription<List<PurchaseDetails>>? _subscription;
   
   // Example Product IDs (You need to create these exactly in App Store Connect)
   static const String pack100Id = 'com.lapyramide.pack100';
@@ -21,18 +21,22 @@ class StoreService {
   StoreService(this._ref);
 
   void init() {
-    final purchaseUpdated = _iap.purchaseStream;
-    _subscription = purchaseUpdated.listen((purchaseDetailsList) {
-      _listenToPurchaseUpdated(purchaseDetailsList);
-    }, onDone: () {
-      _subscription.cancel();
-    }, onError: (error) {
-      print("Erreur d'achat: $error");
-    });
+    try {
+      final purchaseUpdated = _iap.purchaseStream;
+      _subscription = purchaseUpdated.listen((purchaseDetailsList) {
+        _listenToPurchaseUpdated(purchaseDetailsList);
+      }, onDone: () {
+        _subscription?.cancel();
+      }, onError: (error) {
+        print("Erreur d'achat: $error");
+      });
+    } catch (e) {
+      print("Erreur d'initialisation du store (simulateur ou autre): $e");
+    }
   }
 
   void dispose() {
-    _subscription.cancel();
+    _subscription?.cancel();
   }
 
   Future<List<ProductDetails>> fetchProducts() async {

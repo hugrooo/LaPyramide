@@ -28,11 +28,22 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
   }
 
   Future<void> _loadProducts() async {
-    final products = await ref.read(storeServiceProvider).fetchProducts();
-    setState(() {
-      _products = products;
-      _isLoading = false;
-    });
+    try {
+      final products = await ref.read(storeServiceProvider).fetchProducts();
+      if (mounted) {
+        setState(() {
+          _products = products;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _products = [];
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
