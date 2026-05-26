@@ -185,87 +185,93 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
 
   Widget _buildLobbyMenu(String? name, String? photoUrl) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 28.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-          ClipOval(
-            child: photoUrl != null
-                ? Image.network(
-                    photoUrl,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 28.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+            ClipOval(
+              child: photoUrl != null
+                  ? Image.network(
+                      photoUrl,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 80,
+                        height: 80,
+                        color: PyraTheme.primaryPurple,
+                        child: const Center(child: Text('👤', style: TextStyle(fontSize: 40))),
+                      ),
+                    )
+                  : Container(
                       width: 80,
                       height: 80,
                       color: PyraTheme.primaryPurple,
                       child: const Center(child: Text('👤', style: TextStyle(fontSize: 40))),
                     ),
-                  )
-                : Container(
-                    width: 80,
-                    height: 80,
-                    color: PyraTheme.primaryPurple,
-                    child: const Center(child: Text('👤', style: TextStyle(fontSize: 40))),
-                  ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Connecté en tant que\n${name ?? "Invité"}',
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white, fontSize: 18),
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: () => ref.read(authServiceProvider).signOut(),
-            child: const Text('Déconnexion', style: TextStyle(color: Colors.redAccent)),
-          ),
-          const SizedBox(height: 48),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Connecté en tant que\n${name ?? "Invité"}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () => ref.read(authServiceProvider).signOut(),
+              child: const Text('Déconnexion', style: TextStyle(color: Colors.redAccent)),
+            ),
+            const SizedBox(height: 48),
 
-          if (_isLoading)
-            const CircularProgressIndicator(color: PyraTheme.primaryPink)
-          else ...[
-            GameModeCarousel(
-              selectedMode: _settings.mode,
-              replaceCardsWithPowers: _settings.replaceCardsWithPowers,
-              onModeChanged: (mode) => setState(() => _settings = _settings.copyWith(mode: mode)),
-              onReplaceCardsChanged: (v) => setState(() => _settings = _settings.copyWith(replaceCardsWithPowers: v)),
-            ),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28.0),
-              child: PulsarButton(
-                text: 'Créer un salon',
-                gradient: PyraTheme.purplePinkGradient,
-                onPressed: _createRoom,
+            if (_isLoading)
+              const CircularProgressIndicator(color: PyraTheme.primaryPink)
+            else ...[
+              GameModeCarousel(
+                selectedMode: _settings.mode,
+                replaceCardsWithPowers: _settings.replaceCardsWithPowers,
+                onModeChanged: (mode) => setState(() => _settings = _settings.copyWith(mode: mode)),
+                onReplaceCardsChanged: (v) => setState(() => _settings = _settings.copyWith(replaceCardsWithPowers: v)),
               ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28.0),
-              child: PulsarButton(
-                text: 'Rejoindre un salon',
-                gradient: const LinearGradient(colors: [PyraTheme.bgCard, PyraTheme.bgCard]),
-                onPressed: _showJoinDialog,
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                child: PulsarButton(
+                  text: 'Créer un salon',
+                  gradient: PyraTheme.purplePinkGradient,
+                  onPressed: _createRoom,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28.0),
-              child: PulsarButton(
-                text: '📷 Scanner un QR Code',
-                gradient: const LinearGradient(colors: [PyraTheme.primaryPurple, Colors.indigo]),
-                onPressed: _showScannerDialog,
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                child: PulsarButton(
+                  text: 'Rejoindre un salon',
+                  gradient: const LinearGradient(colors: [PyraTheme.bgCard, PyraTheme.bgCard]),
+                  onPressed: _showJoinDialog,
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                child: PulsarButton(
+                  text: '📷 Scanner un QR Code',
+                  gradient: const LinearGradient(colors: [PyraTheme.primaryPurple, Colors.indigo]),
+                  onPressed: _showScannerDialog,
+                ),
+              ),
+            ],
           ],
-        ],
-      ),
+        ),
+        ),
       ),
     );
   }
+
 
   Widget _buildWaitingRoom(String roomCode, String currentUserId) {
     final gameStateAsync = ref.watch(onlineGameStateProvider);

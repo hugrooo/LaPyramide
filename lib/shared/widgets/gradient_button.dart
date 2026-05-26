@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Bouton avec dégradé, ombre colorée et animation hover
 class GradientButton extends StatefulWidget {
@@ -49,9 +50,13 @@ class _GradientButtonState extends State<GradientButton>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) => _controller.forward(),
+      onTapDown: (_) {
+        _controller.forward();
+        HapticFeedback.lightImpact();
+      },
       onTapUp: (_) {
         _controller.reverse();
+        HapticFeedback.mediumImpact();
         widget.onPressed();
       },
       onTapCancel: () => _controller.reverse(),
