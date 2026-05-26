@@ -68,6 +68,8 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Cette application nécessite l'accès à la caméra pour scanner les QR codes afin de rejoindre des salons de jeu.</string>
 </dict>
 </plist>
 
