@@ -24,7 +24,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
   @override
   void initState() {
     super.initState();
-    _service.getLeaderboard().listen((event) {
+    _service.getGlobalLeaderboard().listen((event) {
       if (!mounted) return;
       if (event.snapshot.value != null) {
         final data = event.snapshot.value as Map<dynamic, dynamic>;
@@ -32,14 +32,15 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           final val = e.value as Map<dynamic, dynamic>;
           return {
             'id': e.key.toString(),
-            'name': val['name']?.toString() ?? 'Inconnu',
-            'totalSips': (val['totalSips'] as int?) ?? 0,
-            'totalBluffs': (val['totalBluffs'] as int?) ?? 0,
+            'name': val['name']?.toString() ?? val['pseudo']?.toString() ?? 'Inconnu',
+            'emoji': val['emoji']?.toString() ?? '😎',
+            'xp': (val['xp'] as int?) ?? 0,
+            'level': (val['level'] as int?) ?? 1,
           };
         }).toList();
 
-        // Firebase limitToLast(50) retourne dans un ordre non garanti en Map, on trie localement
-        list.sort((a, b) => (b['totalSips'] as int).compareTo(a['totalSips'] as int));
+        // Firebase limitToLast(100) retourne dans un ordre non garanti en Map, on trie localement
+        list.sort((a, b) => (b['xp'] as int).compareTo(a['xp'] as int));
 
         setState(() {
           _topDrinkers = list;
@@ -216,85 +217,138 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               ),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+    final String name = player['name'] ?? 'Inconnu';
+    final String emoji = player['emoji'] ?? '😎';
+    final int xp = player['xp'] ?? 0;
+    final int level = player['level'] ?? 1;
+
+    final isFirst = rank == 1;
+
+    return Expanded(
+      child: Container(
+        height: height,
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (isFirst)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Icon(Icons.star_rounded, color: PyraTheme.primaryYellow, size: 32),
               ),
-              border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+            Text(
+              emoji,
+              style: const TextStyle(fontSize: 32),
             ),
-            child: Center(
-              child: Text(
-                '$rank',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 48,
-                  fontWeight: FontWeight.w900,
-                  shadows: [Shadow(color: Colors.black54, blurRadius: 10, offset: Offset(0, 4))],
-                ),
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.2),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                border: Border.all(color: color.withOpacity(0.5), width: 2),
+                boxShadow: [
+                  BoxShadow(color: color.withOpacity(0.3), blurRadius: 20, spreadRadius: 2),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '$rank',
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    name,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    '$xp XP',
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+                  Text(
+                    'Niv. $level',
+                    style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildRankCard(Map<String, dynamic> player, int rank) {
-    return GlassContainer(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      color: PyraTheme.bgCard,
-      opacity: 0.6,
-      border: Border.all(color: Colors.white.withOpacity(0.1)),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 40,
-            child: Text(
-              '#$rank',
-              style: const TextStyle(
-                  fontSize: 20,
+    final String name = player['name'] ?? 'Inconnu';
+    final String emoji = player['emoji'] ?? '😎';
+    final int xp = player['xp'] ?? 0;
+    final int level = player['level'] ?? 1;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: GlassContainer(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 30,
+              child: Text(
+                '#$rank',
+                style: const TextStyle(
+                  color: Colors.white54,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white54),
-              textAlign: TextAlign.center,
+                ),
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(width: 12),
+            Text(
+              emoji,
+              style: const TextStyle(fontSize: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Niv. $level',
+                    style: const TextStyle(color: PyraTheme.primaryCyan, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  player['name'],
+                  '$xp XP',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
                   ),
-                ),
-                Text(
-                  '${player['totalBluffs']} bluffs réussis 😈',
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${player['totalSips']}',
-                style: const TextStyle(
-                  color: PyraTheme.primaryOrange,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const Text(
-                'gorgées',
-                style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

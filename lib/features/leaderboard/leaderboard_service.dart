@@ -28,8 +28,7 @@ class LeaderboardService {
     });
   }
 
-  Stream<DatabaseEvent> getLeaderboard() {
-    // Note: Firebase realtime db orderByChild('totalSips') triera par ordre croissant.
-    return _db.ref('leaderboard').orderByChild('totalSips').limitToLast(50).onValue;
+  Stream<DatabaseEvent> getGlobalLeaderboard() {
+    return _db.ref('users').orderByChild('xp').limitToLast(100).onValue;
   }
 }
