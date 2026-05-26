@@ -19,6 +19,10 @@ flutter precache --ios
 # Install dependencies.
 flutter pub get
 
+# Install/Update CocoaPods via Homebrew to prevent outdated version bugs on Xcode Cloud.
+echo "Installing/Updating CocoaPods..."
+HOMEBREW_NO_AUTO_UPDATE=1 brew install cocoapods
+
 # Install CocoaPods dependencies.
 cd ios
 pod install
