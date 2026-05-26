@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_database/firebase_database.dart';
+import '../../auth/auth_service.dart';
 import '../../../app/theme.dart';
 import '../../../shared/widgets/animated_background.dart';
 import '../models/game_state.dart';
@@ -12,6 +14,8 @@ import '../game_logic.dart';
 import '../widgets/pyramid_widget.dart';
 import '../widgets/player_hand_widget.dart';
 import '../widgets/drink_and_bluff_widgets.dart';
+import '../../profile/user_profile_provider.dart';
+import '../../../shared/widgets/pulsar_button.dart';
 
 /// Provider de l'état du jeu local
 final localGameProvider =
@@ -58,6 +62,11 @@ class LocalGameNotifier extends StateNotifier<GameState?> {
   void usePower(String playerId, String cardId) {
     if (state == null) return;
     state = GameLogic.usePower(state: state!, playerId: playerId, cardId: cardId);
+  }
+
+  void useJoker(String jokerId, String playerId) {
+    if (state == null) return;
+    state = GameLogic.useJoker(state: state!, playerId: playerId, jokerId: jokerId);
   }
 
   void nextCard() {
@@ -224,6 +233,40 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
 
           if (isAssigning && _assignToPlayerId != null) ...[
             const SizedBox(height: 16),
+            Consumer(
+              builder: (context, ref, child) {
+                final profileAsync = ref.watch(userProfileProvider);
+                final profile = profileAsync.value;
+                if (profile == null) return const SizedBox();
+
+                final int doubleDoseCount = profile.jokers['double_dose'] ?? 0;
+                if (doubleDoseCount == 0) return const SizedBox();
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: PulsarButton(
+                    text: '🧪 Activer Joker Double Dose (x$doubleDoseCount)',
+                    fontSize: 12,
+                    gradient: PyraTheme.purplePinkGradient,
+                    onPressed: () async {
+                      HapticFeedback.mediumImpact();
+                      
+                      final user = ref.read(authStateChangesProvider).value;
+                      if (user != null) {
+                        await FirebaseDatabase.instance.ref('users/${user.uid}/jokers/double_dose').set(doubleDoseCount - 1);
+                      }
+                      
+                      if (mounted) {
+                        ref.read(localGameProvider.notifier).useJoker('double_dose', currentPlayer.id);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Double Dose activé ! Vos gorgées sont doublées pour ce tour !'), backgroundColor: Colors.purpleAccent),
+                        );
+                      }
+                    },
+                  ),
+                );
+              },
+            ),
             _buildAssignButton(gameState),
           ],
         ],
@@ -309,6 +352,9 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
         onChallenge: () => ref.read(localGameProvider.notifier).callBluff(),
         onAccept: () => ref.read(localGameProvider.notifier).acceptDrink(),
         onUsePower: (cardId) => ref.read(localGameProvider.notifier).usePower(accused.id, cardId),
+        onUseJoker: (jokerId) {
+          ref.read(localGameProvider.notifier).useJoker(jokerId, accused.id);
+        },
       ),
     );
   }

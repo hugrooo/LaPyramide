@@ -116,4 +116,62 @@ class StoreService {
     await dbRef.set(currentCoins + amount);
     print("Achat fictif: Ajout de $amount pièces au compte ${user.uid}");
   }
+
+  Future<bool> buyJoker(String jokerId, int cost) async {
+    final user = _ref.read(authStateChangesProvider).value;
+    if (user == null) return false;
+
+    final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
+    final snapshot = await dbRef.get();
+    if (!snapshot.exists || snapshot.value is! Map) return false;
+
+    final data = snapshot.value as Map;
+    final currentCoins = (data['coins'] as num?)?.toInt() ?? 0;
+
+    if (currentCoins < cost) return false;
+
+    final rawJokers = data['jokers'];
+    int currentJokerCount = 0;
+    if (rawJokers is Map) {
+      currentJokerCount = (rawJokers[jokerId] as num?)?.toInt() ?? 0;
+    }
+
+    // Déduire pièces et ajouter le joker
+    await dbRef.update({
+      'coins': currentCoins - cost,
+      'jokers/$jokerId': currentJokerCount + 1,
+    });
+    return true;
+  }
+
+  Future<bool> buyCosmetic(String type, String itemId, int cost, String currency) async {
+    final user = _ref.read(authStateChangesProvider).value;
+    if (user == null) return false;
+
+    final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
+    final snapshot = await dbRef.get();
+    if (!snapshot.exists || snapshot.value is! Map) return false;
+
+    final data = snapshot.value as Map;
+    
+    // Vérifier monnaie
+    if (currency == 'coins') {
+      final currentCoins = (data['coins'] as num?)?.toInt() ?? 0;
+      if (currentCoins < cost) return false;
+      await dbRef.child('coins').set(currentCoins - cost);
+    } else {
+      final currentDiamonds = (data['diamonds'] as num?)?.toInt() ?? 0;
+      if (currentDiamonds < cost) return false;
+      await dbRef.child('diamonds').set(currentDiamonds - cost);
+    }
+
+    // Ajouter le cosmétique à l'inventaire
+    final String listPath = type == 'cardBack' ? 'cardBacks' : 'titles';
+    final List<dynamic> currentList = List<dynamic>.from(data[listPath] ?? [type == 'cardBack' ? 'classic' : 'Novice 🐣']);
+    if (!currentList.contains(itemId)) {
+      currentList.add(itemId);
+      await dbRef.child(listPath).set(currentList);
+    }
+    return true;
+  }
 }

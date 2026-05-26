@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:uuid/uuid.dart';
 import 'models/card_model.dart';
 import 'models/player_model.dart';
@@ -74,10 +75,19 @@ class GameLogic {
     final revealedCard = state.currentCard!.copyWith(isFaceUp: true, isRevealed: true);
     newPyramid[state.currentRow][state.currentCardIndex] = revealedCard;
 
+    String? eventMessage;
+    int? eventTime;
+    if (state.settings.mode == GameMode.truthOrSip && (revealedCard.value == 1 || revealedCard.value >= 11)) {
+      eventMessage = "🎭 Vérité ou Gorgée ! " + _getRandomTruthOrSip();
+      eventTime = DateTime.now().millisecondsSinceEpoch;
+    }
+
     return state.copyWith(
       pyramid: newPyramid,
       phase: revealedCard.isMiniGame ? GamePhase.miniGame : GamePhase.assigning,
       lastRevealedCard: revealedCard,
+      lastEventMessage: eventMessage ?? state.lastEventMessage,
+      lastEventTime: eventTime ?? state.lastEventTime,
     );
   }
 
@@ -417,5 +427,88 @@ class GameLogic {
       'Appelle l\'hôte par un surnom inventé sans qu\'il s\'en rende compte.',
       'Dénonce un bluff (à tort ou à raison) au moins une fois.',
     ];
+  }
+
+  static String _getRandomTruthOrSip() {
+    final questions = [
+      "Vérité: Raconte ton pire rencard amoureux.",
+      "Action: Danse la carioca pendant 30 secondes ou prends 4 gorgées.",
+      "Vérité: Quel est le joueur le plus menteur selon toi ?",
+      "Action: Fais rire quelqu'un d'autre ou prends 3 gorgées.",
+      "Vérité: Quel est le secret inavouable que tu gardes ?",
+      "Action: Fais un câlin à un joueur ou prends 4 gorgées.",
+      "Vérité: Qui a le meilleur bluff à cette table ?",
+      "Action: Laisse ton voisin de droite lire tes SMS ou prends 5 gorgées.",
+    ];
+    return questions[Random().nextInt(questions.length)];
+  }
+
+  static GameState useJoker({
+    required GameState state,
+    required String playerId,
+    required String jokerId,
+  }) {
+    if (state.pendingDrinks.isEmpty) return state;
+
+    final assignment = state.pendingDrinks.last;
+    
+    if (jokerId == 'miroir' && assignment.toPlayerId == playerId) {
+      final reflection = DrinkAssignment(
+        fromPlayerId: assignment.toPlayerId,
+        toPlayerId: assignment.fromPlayerId,
+        sips: assignment.sips,
+      );
+      final attacker = state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
+      final defender = state.players.firstWhere((p) => p.id == playerId);
+      
+      GameState newState = state.copyWith(pendingDrinks: []);
+      newState = _applyDrink(newState, reflection);
+      
+      return newState.copyWith(
+        phase: GamePhase.transition,
+        lastEventMessage: "🪞 Joker Miroir ! Les ${reflection.sips} gorgées de ${attacker.name} se retournent contre lui !",
+        lastEventTime: DateTime.now().millisecondsSinceEpoch,
+      );
+    } else if (jokerId == 'bouclier' && assignment.toPlayerId == playerId) {
+      final defender = state.players.firstWhere((p) => p.id == playerId);
+      final reducedSips = (assignment.sips / 2).ceil();
+      
+      final shielded = DrinkAssignment(
+        fromPlayerId: assignment.fromPlayerId,
+        toPlayerId: assignment.toPlayerId,
+        sips: reducedSips,
+      );
+      
+      GameState newState = state.copyWith(pendingDrinks: []);
+      newState = _applyDrink(newState, shielded);
+      
+      return newState.copyWith(
+        phase: GamePhase.transition,
+        lastEventMessage: "🛡️ Joker Bouclier ! ${defender.name} réduit ses gorgées à $reducedSips (au lieu de ${assignment.sips}) !",
+        lastEventTime: DateTime.now().millisecondsSinceEpoch,
+      );
+    } else if (jokerId == 'double_dose' && assignment.fromPlayerId == playerId) {
+      final newSips = assignment.sips * 2;
+      final doubledAssignment = DrinkAssignment(
+        fromPlayerId: assignment.fromPlayerId,
+        toPlayerId: assignment.toPlayerId,
+        sips: newSips,
+        isBluff: assignment.isBluff,
+        isBluffCalled: assignment.isBluffCalled,
+      );
+      
+      final newPending = List<DrinkAssignment>.from(state.pendingDrinks);
+      newPending[newPending.length - 1] = doubledAssignment;
+      
+      final fromPlayer = state.players.firstWhere((p) => p.id == playerId);
+      
+      return state.copyWith(
+        pendingDrinks: newPending,
+        lastEventMessage: "🧪 Joker Double Dose ! ${fromPlayer.name} double la punition : $newSips gorgées !",
+        lastEventTime: DateTime.now().millisecondsSinceEpoch,
+      );
+    }
+    
+    return state;
   }
 }

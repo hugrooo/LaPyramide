@@ -17,6 +17,8 @@ enum GameMode {
   powers,
   secretMissions,
   miniGames,
+  truthOrSip,
+  speedRun,
 }
 
 enum BluffResult { none, caught, success }

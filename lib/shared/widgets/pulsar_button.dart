@@ -10,6 +10,8 @@ class PulsarButton extends StatefulWidget {
   final Gradient? gradient;
   final double paddingVertical;
   final double paddingHorizontal;
+  final double? fontSize;
+  final double? iconSize;
 
   const PulsarButton({
     super.key,
@@ -19,6 +21,8 @@ class PulsarButton extends StatefulWidget {
     this.gradient,
     this.paddingVertical = 18.0,
     this.paddingHorizontal = 32.0,
+    this.fontSize,
+    this.iconSize,
   });
 
   @override
@@ -124,14 +128,14 @@ class _PulsarButtonState extends State<PulsarButton>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (widget.icon != null) ...[
-                      Icon(widget.icon, color: Colors.white, size: 24),
+                      Icon(widget.icon, color: Colors.white, size: widget.iconSize ?? 24),
                       const SizedBox(width: 8),
                     ],
                     Text(
                       widget.text,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: widget.fontSize ?? 20,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0.5,
                       ),

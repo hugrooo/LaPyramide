@@ -1,19 +1,179 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_database/firebase_database.dart';
 import '../../app/theme.dart';
 import '../../shared/widgets/animated_background.dart';
+import '../../shared/widgets/glass_container.dart';
 import '../auth/auth_service.dart';
+import '../profile/user_profile_provider.dart';
 import 'settings_provider.dart';
 import '../../shared/widgets/pulsar_button.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
+  Future<void> _updateProfileField(String field, dynamic value, String uid) async {
+    final dbRef = FirebaseDatabase.instance.ref('users/$uid');
+    await dbRef.update({field: value});
+  }
+
+  void _showEmojiPicker(BuildContext context, String uid, String currentEmoji) {
+    final List<String> emojis = ['😎', '👤', '🐱', '🐶', '🦊', '🦁', '🐼', '🐸', '🦄', '🍹', '🃏', '👑'];
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: PyraTheme.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text('Sélectionner un Avatar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: SizedBox(
+          width: 300,
+          child: GridView.builder(
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemCount: emojis.length,
+            itemBuilder: (context, index) {
+              final emoji = emojis[index];
+              final isSelected = emoji == currentEmoji;
+              return GestureDetector(
+                onTap: () {
+                  _updateProfileField('emoji', emoji, uid);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isSelected ? PyraTheme.primaryCyan.withOpacity(0.15) : Colors.white.withOpacity(0.04),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: isSelected ? PyraTheme.primaryCyan : Colors.white12, width: 2),
+                  ),
+                  child: Center(
+                    child: Text(emoji, style: const TextStyle(fontSize: 28)),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showTitlePicker(BuildContext context, String uid, String currentTitle, List<String> ownedTitles) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: PyraTheme.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text('Choisir un Titre de Profil', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: SizedBox(
+          width: 300,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: ownedTitles.length,
+            itemBuilder: (context, index) {
+              final title = ownedTitles[index];
+              final isSelected = title == currentTitle;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: InkWell(
+                  onTap: () {
+                    _updateProfileField('activeTitle', title, uid);
+                    Navigator.pop(context);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isSelected ? PyraTheme.primaryPink.withOpacity(0.15) : Colors.white.withOpacity(0.04),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: isSelected ? PyraTheme.primaryPink : Colors.transparent),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        if (isSelected)
+                          const Icon(Icons.check_circle_rounded, color: PyraTheme.primaryPink, size: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showCardBackPicker(BuildContext context, String uid, String currentBack, List<String> ownedBacks) {
+    final Map<String, String> backNames = {
+      'classic': 'Classique Rouge 🟥',
+      'neon': 'Néon Cyberpunk ⚡',
+      'pirate': 'Pirate Doré ☠️',
+      'retro': 'Rétro Pixel 👾',
+    };
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: PyraTheme.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text('Sélectionner un Dos de Cartes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: SizedBox(
+          width: 300,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: ownedBacks.length,
+            itemBuilder: (context, index) {
+              final backId = ownedBacks[index];
+              final backName = backNames[backId] ?? backId;
+              final isSelected = backId == currentBack;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: InkWell(
+                  onTap: () {
+                    _updateProfileField('activeCardBack', backId, uid);
+                    Navigator.pop(context);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isSelected ? PyraTheme.primaryCyan.withOpacity(0.15) : Colors.white.withOpacity(0.04),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: isSelected ? PyraTheme.primaryCyan : Colors.transparent),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(backName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        if (isSelected)
+                          const Icon(Icons.check_circle_rounded, color: PyraTheme.primaryCyan, size: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final settingsNotifier = ref.read(settingsProvider.notifier);
+    
+    final userProfileAsync = ref.watch(userProfileProvider);
+    final profile = userProfileAsync.value;
+    final user = ref.watch(authStateChangesProvider).value;
 
     return Scaffold(
       body: Stack(
@@ -36,6 +196,56 @@ class SettingsScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(20),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
+                      // Profil Customization Group
+                      if (profile != null && user != null) ...[
+                        _SettingsGroup(
+                          title: 'Mon Apparence & Profil',
+                          children: [
+                            // Emoji Avatar Picker
+                            ListTile(
+                              leading: Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.06),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white24),
+                                ),
+                                child: Center(child: Text(profile.emoji, style: const TextStyle(fontSize: 24))),
+                              ),
+                              title: const Text('Avatar de Profil', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              subtitle: const Text('Modifier votre émoticône de jeu', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                              trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 16),
+                              onTap: () => _showEmojiPicker(context, user.uid, profile.emoji),
+                            ),
+                            const Divider(color: Colors.white10, height: 1),
+                            // Profile Title Picker
+                            ListTile(
+                              leading: const Icon(Icons.military_tech_rounded, color: PyraTheme.primaryPink),
+                              title: const Text('Titre Affiché', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              subtitle: Text(profile.activeTitle, style: const TextStyle(color: PyraTheme.primaryPink, fontSize: 13, fontWeight: FontWeight.bold)),
+                              trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 16),
+                              onTap: () => _showTitlePicker(context, user.uid, profile.activeTitle, profile.titles),
+                            ),
+                            const Divider(color: Colors.white10, height: 1),
+                            // Card Back Picker
+                            ListTile(
+                              leading: const Icon(Icons.style_rounded, color: PyraTheme.primaryCyan),
+                              title: const Text('Dos de Cartes actif', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              subtitle: Text(
+                                profile.activeCardBack == 'classic' ? 'Classique Rouge' : 
+                                profile.activeCardBack == 'neon' ? 'Néon Cyberpunk' : 
+                                profile.activeCardBack == 'pirate' ? 'Pirate Doré' : 'Rétro Pixel',
+                                style: const TextStyle(color: PyraTheme.primaryCyan, fontSize: 13, fontWeight: FontWeight.bold),
+                              ),
+                              trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 16),
+                              onTap: () => _showCardBackPicker(context, user.uid, profile.activeCardBack, profile.cardBacks),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
                       _SettingsGroup(
                         title: 'Audio & Haptique',
                         children: [

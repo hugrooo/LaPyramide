@@ -268,6 +268,7 @@ class BluffDialog extends StatefulWidget {
   final VoidCallback onChallenge;
   final VoidCallback onAccept;
   final void Function(String cardId)? onUsePower;
+  final void Function(String jokerId)? onUseJoker;
 
   const BluffDialog({
     super.key,
@@ -278,6 +279,7 @@ class BluffDialog extends StatefulWidget {
     required this.onChallenge,
     required this.onAccept,
     this.onUsePower,
+    this.onUseJoker,
   });
 
   @override
@@ -439,6 +441,97 @@ class _BluffDialogState extends State<BluffDialog> {
                 }).toList(),
               ).animate().fadeIn(delay: 600.ms),
             ],
+
+            Consumer(
+              builder: (context, ref, child) {
+                final profileAsync = ref.watch(userProfileProvider);
+                final profile = profileAsync.value;
+                if (profile == null) return const SizedBox();
+
+                final miroirCount = profile.jokers['miroir'] ?? 0;
+                final bouclierCount = profile.jokers['bouclier'] ?? 0;
+
+                if (miroirCount == 0 && bouclierCount == 0) return const SizedBox();
+
+                return Column(
+                  children: [
+                    const SizedBox(height: 24),
+                    const Divider(color: Colors.white24),
+                    const SizedBox(height: 12),
+                    const Text(
+                      '🛡️ Utiliser un Joker défensif :',
+                      style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (miroirCount > 0)
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              child: PulsarButton(
+                                paddingHorizontal: 8,
+                                paddingVertical: 12,
+                                text: '🪞 Miroir (x$miroirCount)',
+                                fontSize: 11,
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
+                                ),
+                                onPressed: () async {
+                                  HapticFeedback.heavyImpact();
+                                  _timer.cancel();
+                                  
+                                  final user = ref.read(authStateChangesProvider).value;
+                                  if (user != null) {
+                                    await FirebaseDatabase.instance
+                                        .ref('users/${user.uid}/jokers/miroir')
+                                        .set(miroirCount - 1);
+                                  }
+                                  
+                                  if (widget.onUseJoker != null) {
+                                    widget.onUseJoker!('miroir');
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        if (bouclierCount > 0)
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              child: PulsarButton(
+                                paddingHorizontal: 8,
+                                paddingVertical: 12,
+                                text: '🛡️ Bouclier (x$bouclierCount)',
+                                fontSize: 11,
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF06B6D4), Color(0xFF3B82F6)],
+                                ),
+                                onPressed: () async {
+                                  HapticFeedback.heavyImpact();
+                                  _timer.cancel();
+                                  
+                                  final user = ref.read(authStateChangesProvider).value;
+                                  if (user != null) {
+                                    await FirebaseDatabase.instance
+                                        .ref('users/${user.uid}/jokers/bouclier')
+                                        .set(bouclierCount - 1);
+                                  }
+                                  
+                                  if (widget.onUseJoker != null) {
+                                    widget.onUseJoker!('bouclier');
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ).animate().fadeIn(delay: 700.ms);
+              },
+            ),
           ],
         ),
       ),

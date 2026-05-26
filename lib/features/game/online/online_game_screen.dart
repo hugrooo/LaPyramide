@@ -529,6 +529,9 @@ class OnlineGameScreen extends ConsumerWidget {
             onUsePower: (cardId) {
               service.usePower(state.gameId, cardId);
             },
+            onUseJoker: (jokerId) {
+              service.useJoker(state.gameId, jokerId);
+            },
           );
         } else {
           // Je regarde l'action des autres

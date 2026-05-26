@@ -161,30 +161,7 @@ class HomeScreen extends ConsumerWidget {
                       GestureDetector(
                         onTap: () {
                           HapticFeedback.lightImpact();
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              backgroundColor: PyraTheme.bgCard,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              title: const Row(
-                                children: [
-                                  Icon(Icons.hourglass_empty, color: PyraTheme.primaryPurple),
-                                  SizedBox(width: 8),
-                                  Text('Bientôt disponible', style: TextStyle(color: Colors.white)),
-                                ],
-                              ),
-                              content: Text(
-                                "Le système de quêtes quotidiennes sera ajouté dans une prochaine mise à jour ! Reviens plus tard pour gagner plus de diamants.",
-                                style: TextStyle(color: Colors.white.withOpacity(0.8)),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => context.pop(),
-                                  child: const Text('Fermer', style: TextStyle(color: PyraTheme.primaryCyan)),
-                                ),
-                              ],
-                            ),
-                          );
+                          context.pushNamed('quests');
                         },
                         child: GlassContainer(
                           innerGlow: true,

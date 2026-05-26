@@ -313,6 +313,19 @@ class OnlineGameService {
     await updateGameState(newState);
   }
 
+  /// Utiliser un joker
+  Future<void> useJoker(String roomCode, String jokerId) async {
+    final state = await _fetchCurrentState(roomCode);
+    if (state == null) return;
+    
+    final newState = GameLogic.useJoker(
+      state: state,
+      playerId: _auth.currentUser!.uid,
+      jokerId: jokerId,
+    );
+    await updateGameState(newState);
+  }
+
   /// La cible crie au bluff
   Future<void> callBluff(String roomCode) async {
     final state = await _fetchCurrentState(roomCode);

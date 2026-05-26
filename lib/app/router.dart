@@ -18,6 +18,7 @@ import '../features/store/store_screen.dart';
 import '../features/friends/friends_screen.dart';
 import '../features/shared/screens/coming_soon_screen.dart';
 import '../features/profile/level_screen.dart';
+import '../features/shared/screens/quests_screen.dart';
 
 // ─── Transitions ────────────────────────────────────────────────────────────
 
@@ -228,6 +229,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/friends',
         name: 'friends',
         pageBuilder: (context, state) => _slideRight(context, state, const FriendsScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/quests',
+        name: 'quests',
+        pageBuilder: (context, state) => _slideRight(context, state, const QuestsScreen()),
       ),
     ],
   );
