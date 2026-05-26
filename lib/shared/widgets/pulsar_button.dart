@@ -12,6 +12,7 @@ class PulsarButton extends StatefulWidget {
   final double paddingHorizontal;
   final double? fontSize;
   final double? iconSize;
+  final double? width;
 
   const PulsarButton({
     super.key,
@@ -23,6 +24,7 @@ class PulsarButton extends StatefulWidget {
     this.paddingHorizontal = 32.0,
     this.fontSize,
     this.iconSize,
+    this.width = double.infinity,
   });
 
   @override
@@ -93,7 +95,7 @@ class _PulsarButtonState extends State<PulsarButton>
           opacity: isDisabled ? 0.5 : 1.0,
           duration: const Duration(milliseconds: 200),
           child: Container(
-            width: double.infinity,
+            width: widget.width,
             padding: EdgeInsets.symmetric(
               vertical: widget.paddingVertical,
               horizontal: widget.paddingHorizontal,

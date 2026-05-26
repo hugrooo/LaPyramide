@@ -165,6 +165,7 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
             PulsarButton(
               text: 'Génial !',
               paddingHorizontal: 24,
+              width: null,
               gradient: PyraTheme.festiveGradient,
               onPressed: () => Navigator.pop(context),
             ),
