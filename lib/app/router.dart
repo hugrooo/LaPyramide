@@ -158,6 +158,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'settings',
             pageBuilder: (context, state) => _fadeTransition(context, state, const SettingsScreen()),
           ),
+          GoRoute(
+            path: '/store',
+            name: 'store',
+            pageBuilder: (context, state) => _fadeTransition(context, state, const StoreScreen()),
+          ),
         ],
       ),
       GoRoute(
@@ -208,12 +213,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return _zoomFade(context, state, ScoreboardScreen(players: extra['players']));
         },
       ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/store',
-        name: 'store',
-        pageBuilder: (context, state) => _fadeTransition(context, state, const StoreScreen()),
-      ),
+
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/coming-soon',
