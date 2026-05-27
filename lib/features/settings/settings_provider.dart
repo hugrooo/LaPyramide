@@ -10,22 +10,34 @@ class SettingsState {
   final bool soundEnabled;
   final bool vibrationEnabled;
   final bool colorBlindMode;
+  final double musicVolume;
+  final double sfxVolume;
+  final String language;
 
   SettingsState({
     this.soundEnabled = true,
     this.vibrationEnabled = true,
     this.colorBlindMode = false,
+    this.musicVolume = 1.0,
+    this.sfxVolume = 1.0,
+    this.language = 'fr',
   });
 
   SettingsState copyWith({
     bool? soundEnabled,
     bool? vibrationEnabled,
     bool? colorBlindMode,
+    double? musicVolume,
+    double? sfxVolume,
+    String? language,
   }) {
     return SettingsState(
       soundEnabled: soundEnabled ?? this.soundEnabled,
       vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
       colorBlindMode: colorBlindMode ?? this.colorBlindMode,
+      musicVolume: musicVolume ?? this.musicVolume,
+      sfxVolume: sfxVolume ?? this.sfxVolume,
+      language: language ?? this.language,
     );
   }
 }
@@ -41,6 +53,9 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       soundEnabled: prefs.getBool('soundEnabled') ?? true,
       vibrationEnabled: prefs.getBool('vibrationEnabled') ?? true,
       colorBlindMode: prefs.getBool('colorBlindMode') ?? false,
+      musicVolume: prefs.getDouble('musicVolume') ?? 1.0,
+      sfxVolume: prefs.getDouble('sfxVolume') ?? 1.0,
+      language: prefs.getString('language') ?? 'fr',
     );
   }
 
@@ -60,6 +75,30 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('colorBlindMode', value);
     state = state.copyWith(colorBlindMode: value);
+  }
+
+  Future<void> updateMusicVolume(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('musicVolume', value);
+    state = state.copyWith(musicVolume: value);
+  }
+
+  Future<void> updateSfxVolume(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('sfxVolume', value);
+    state = state.copyWith(sfxVolume: value);
+  }
+
+  Future<void> setLanguage(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language', value);
+    state = state.copyWith(language: value);
+  }
+
+  Future<void> resetTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasSeenOnboarding', false);
+    await prefs.setBool('hasSeenRules', false);
   }
 }
 
