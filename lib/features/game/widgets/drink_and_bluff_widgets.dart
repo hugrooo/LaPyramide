@@ -306,235 +306,236 @@ class _BluffDialogState extends State<BluffDialog> {
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      child: GlassContainer(
-        innerGlow: true,
-        padding: const EdgeInsets.all(28),
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: PyraTheme.primaryOrange.withOpacity(0.5), width: 2),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Titre
-            Text(
-              '😈 Bluff ?',
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    color: PyraTheme.primaryPink,
-                  ),
-            ).animate().fadeIn().scale(),
-
-            const SizedBox(height: 16),
-
-            // Description
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                style: const TextStyle(fontSize: 16, color: Colors.white70, height: 1.5),
-                children: [
-                  TextSpan(
-                    text: '${widget.accuser.emoji} ${widget.accuser.name} ',
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  const TextSpan(text: 'envoie '),
-                  TextSpan(
-                    text: '${widget.sips} gorgée${widget.sips > 1 ? 's' : ''} ',
-                    style: TextStyle(
-                        color: PyraTheme.primaryOrange,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const TextSpan(text: 'à '),
-                  TextSpan(
-                    text: '${widget.accused.emoji} ${widget.accused.name}',
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  const TextSpan(text: '\n\nEst-ce un bluff ?'),
-                ],
-              ),
-            ).animate().fadeIn(delay: 200.ms),
-
-            const SizedBox(height: 24),
-
-            // Compte à rebours
-            Text(
-              '$_countdown',
-              style: TextStyle(
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
-                color: _countdown <= 3
-                    ? PyraTheme.primaryPink
-                    : PyraTheme.textMuted,
-              ),
-            ).animate(target: _countdown <= 3 ? 1 : 0).scale(
-                  begin: const Offset(1.0, 1.0),
-                  end: const Offset(1.2, 1.2),
-                  duration: 300.ms,
-                ),
-
-            const SizedBox(height: 24),
-
-            // Boutons
-            Row(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
+        ),
+        child: GlassContainer(
+          innerGlow: true,
+          padding: const EdgeInsets.all(20),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: PyraTheme.primaryOrange.withOpacity(0.5), width: 2),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: PulsarButton(
-                    paddingHorizontal: 8,
-                    paddingVertical: 14,
-                    text: '⚡ Challenge !',
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFEF4444), Color(0xFFEC4899)],
-                    ),
-                    onPressed: () {
-                      HapticFeedback.heavyImpact();
-                      _timer.cancel();
-                      widget.onChallenge();
-                    },
+                // Titre
+                Text(
+                  '😈 Bluff ?',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: PyraTheme.primaryPink,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ).animate().fadeIn().scale(),
+
+                const SizedBox(height: 12),
+
+                // Description
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: const TextStyle(fontSize: 15, color: Colors.white70, height: 1.4),
+                    children: [
+                      TextSpan(
+                        text: '${widget.accuser.emoji} ${widget.accuser.name} ',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      const TextSpan(text: 'envoie '),
+                      TextSpan(
+                        text: '${widget.sips} gorgée${widget.sips > 1 ? 's' : ''} ',
+                        style: const TextStyle(color: PyraTheme.primaryOrange, fontWeight: FontWeight.bold),
+                      ),
+                      const TextSpan(text: 'à '),
+                      TextSpan(
+                        text: '${widget.accused.emoji} ${widget.accused.name}',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      const TextSpan(text: '\n\nEst-ce un bluff ?'),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: PulsarButton(
-                    paddingHorizontal: 8,
-                    paddingVertical: 14,
-                    text: '✅ J\'accepte',
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF10B981), Color(0xFF3B82F6)],
-                    ),
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
-                      _timer.cancel();
-                      widget.onAccept();
-                    },
+                ).animate().fadeIn(delay: 200.ms),
+
+                const SizedBox(height: 16),
+
+                // Compte à rebours
+                Text(
+                  '$_countdown',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: _countdown <= 3 ? PyraTheme.primaryPink : PyraTheme.textMuted,
                   ),
-                ),
-              ],
-            ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.3),
-
-            if (widget.availablePowers.isNotEmpty && widget.onUsePower != null) ...[
-              const SizedBox(height: 24),
-              const Divider(color: Colors.white24),
-              const SizedBox(height: 12),
-              const Text(
-                'Ou utiliser un pouvoir :',
-                style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                alignment: WrapAlignment.center,
-                children: widget.availablePowers.map((power) {
-                  return PulsarButton(
-                    paddingHorizontal: 16,
-                    paddingVertical: 12,
-                    text: '${power.powerType.emoji} ${power.powerType.name}',
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF8B5CF6), Color(0xFFD946EF)],
+                ).animate(target: _countdown <= 3 ? 1 : 0).scale(
+                      begin: const Offset(1.0, 1.0),
+                      end: const Offset(1.15, 1.15),
+                      duration: 300.ms,
                     ),
-                    onPressed: () {
-                      HapticFeedback.heavyImpact();
-                      _timer.cancel();
-                      widget.onUsePower!(power.id);
-                    },
-                  );
-                }).toList(),
-              ).animate().fadeIn(delay: 600.ms),
-            ],
 
-            Consumer(
-              builder: (context, ref, child) {
-                final profileAsync = ref.watch(userProfileProvider);
-                final profile = profileAsync.value;
-                if (profile == null) return const SizedBox();
+                const SizedBox(height: 16),
 
-                final miroirCount = profile.jokers['miroir'] ?? 0;
-                final bouclierCount = profile.jokers['bouclier'] ?? 0;
-
-                if (miroirCount == 0 && bouclierCount == 0) return const SizedBox();
-
-                return Column(
+                // Boutons
+                Row(
                   children: [
-                    const SizedBox(height: 24),
-                    const Divider(color: Colors.white24),
-                    const SizedBox(height: 12),
-                    const Text(
-                      '🛡️ Utiliser un Joker défensif :',
-                      style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
+                    Expanded(
+                      child: PulsarButton(
+                        paddingHorizontal: 4,
+                        paddingVertical: 12,
+                        text: '⚡ Challenge !',
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFEF4444), Color(0xFFEC4899)],
+                        ),
+                        onPressed: () {
+                          HapticFeedback.heavyImpact();
+                          _timer.cancel();
+                          widget.onChallenge();
+                        },
+                      ),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (miroirCount > 0)
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
-                              child: PulsarButton(
-                                paddingHorizontal: 8,
-                                paddingVertical: 12,
-                                text: '🪞 Miroir (x$miroirCount)',
-                                fontSize: 11,
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
-                                ),
-                                onPressed: () async {
-                                  HapticFeedback.heavyImpact();
-                                  _timer.cancel();
-                                  
-                                  final user = ref.read(authStateChangesProvider).value;
-                                  if (user != null) {
-                                    await FirebaseDatabase.instance
-                                        .ref('users/${user.uid}/jokers/miroir')
-                                        .set(miroirCount - 1);
-                                  }
-                                  
-                                  if (widget.onUseJoker != null) {
-                                    widget.onUseJoker!('miroir');
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                        if (bouclierCount > 0)
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
-                              child: PulsarButton(
-                                paddingHorizontal: 8,
-                                paddingVertical: 12,
-                                text: '🛡️ Bouclier (x$bouclierCount)',
-                                fontSize: 11,
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF06B6D4), Color(0xFF3B82F6)],
-                                ),
-                                onPressed: () async {
-                                  HapticFeedback.heavyImpact();
-                                  _timer.cancel();
-                                  
-                                  final user = ref.read(authStateChangesProvider).value;
-                                  if (user != null) {
-                                    await FirebaseDatabase.instance
-                                        .ref('users/${user.uid}/jokers/bouclier')
-                                        .set(bouclierCount - 1);
-                                  }
-                                  
-                                  if (widget.onUseJoker != null) {
-                                    widget.onUseJoker!('bouclier');
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                      ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: PulsarButton(
+                        paddingHorizontal: 4,
+                        paddingVertical: 12,
+                        text: '✅ J\'accepte',
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF10B981), Color(0xFF3B82F6)],
+                        ),
+                        onPressed: () {
+                          HapticFeedback.mediumImpact();
+                          _timer.cancel();
+                          widget.onAccept();
+                        },
+                      ),
                     ),
                   ],
-                ).animate().fadeIn(delay: 700.ms);
-              },
+                ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.3),
+
+                if (widget.availablePowers.isNotEmpty && widget.onUsePower != null) ...[
+                  const SizedBox(height: 16),
+                  const Divider(color: Colors.white24),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Ou utiliser un pouvoir :',
+                    style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.center,
+                    children: widget.availablePowers.map((power) {
+                      return PulsarButton(
+                        paddingHorizontal: 12,
+                        paddingVertical: 10,
+                        text: '${power.powerType.emoji} ${power.powerType.name}',
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF8B5CF6), Color(0xFFD946EF)],
+                        ),
+                        onPressed: () {
+                          HapticFeedback.heavyImpact();
+                          _timer.cancel();
+                          widget.onUsePower!(power.id);
+                        },
+                      );
+                    }).toList(),
+                  ).animate().fadeIn(delay: 600.ms),
+                ],
+
+                Consumer(
+                  builder: (context, ref, child) {
+                    final profileAsync = ref.watch(userProfileProvider);
+                    final profile = profileAsync.value;
+                    if (profile == null) return const SizedBox();
+
+                    final miroirCount = profile.jokers['miroir'] ?? 0;
+                    final bouclierCount = profile.jokers['bouclier'] ?? 0;
+
+                    if (miroirCount == 0 && bouclierCount == 0) return const SizedBox();
+
+                    return Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        const Divider(color: Colors.white24),
+                        const SizedBox(height: 8),
+                        const Text(
+                          '🛡️ Utiliser un Joker défensif :',
+                          style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (miroirCount > 0)
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  child: PulsarButton(
+                                    paddingHorizontal: 4,
+                                    paddingVertical: 10,
+                                    text: '🪞 Miroir (x$miroirCount)',
+                                    fontSize: 11,
+                                    gradient: const LinearGradient(
+                                      colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
+                                    ),
+                                    onPressed: () async {
+                                      HapticFeedback.heavyImpact();
+                                      _timer.cancel();
+                                      
+                                      final user = ref.read(authStateChangesProvider).value;
+                                      if (user != null) {
+                                        await FirebaseDatabase.instance
+                                            .ref('users/${user.uid}/jokers/miroir')
+                                            .set(miroirCount - 1);
+                                      }
+                                      
+                                      if (widget.onUseJoker != null) {
+                                        widget.onUseJoker!('miroir');
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            if (bouclierCount > 0)
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  child: PulsarButton(
+                                    paddingHorizontal: 4,
+                                    paddingVertical: 10,
+                                    text: '🛡️ Bouclier (x$bouclierCount)',
+                                    fontSize: 11,
+                                    gradient: const LinearGradient(
+                                      colors: [Color(0xFF06B6D4), Color(0xFF3B82F6)],
+                                    ),
+                                    onPressed: () async {
+                                      HapticFeedback.heavyImpact();
+                                      _timer.cancel();
+                                      
+                                      final user = ref.read(authStateChangesProvider).value;
+                                      if (user != null) {
+                                        await FirebaseDatabase.instance
+                                            .ref('users/${user.uid}/jokers/bouclier')
+                                            .set(bouclierCount - 1);
+                                      }
+                                      
+                                      if (widget.onUseJoker != null) {
+                                        widget.onUseJoker!('bouclier');
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ).animate().fadeIn(delay: 700.ms);
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
       ),
     );
   }

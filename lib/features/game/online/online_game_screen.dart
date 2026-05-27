@@ -368,38 +368,42 @@ class OnlineGameScreen extends ConsumerWidget {
 
         const SizedBox(height: 16),
         
-        // La pyramide (centrée en haut)
+        // La pyramide — FittedBox garantit qu'elle tient toujours dans l'espace alloué
+        // et que toutes les cartes sont cliquables (Flutter transforme les hit tests)
         Expanded(
           flex: 3,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: PyramidWidget(
-              pyramid: state.pyramid,
-              currentRow: state.currentRow,
-              currentCardIndex: state.currentCardIndex,
-              phase: state.phase,
-              onRevealCard: isHost && state.phase == GamePhase.revealing
-                  ? () {
-                      HapticFeedback.lightImpact();
-                      ref.read(randomEventProvider.notifier).tryTriggerEvent(probability: 0.2);
-                      final event = ref.read(randomEventProvider);
-                      ref.read(randomEventProvider.notifier).clearEvent();
-                      
-                      final newState = GameLogic.revealCurrentCard(state);
-                      if (event != null) {
-                         service.updateGameState(newState.copyWith(
-                           currentRandomEvent: {
-                             'title': event.title,
-                             'description': event.description,
-                             'emoji': event.emoji,
-                             'type': event.type,
-                           }
-                         ));
-                      } else {
-                         service.updateGameState(newState);
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: FittedBox(
+              fit: BoxFit.contain,
+              alignment: Alignment.center,
+              child: PyramidWidget(
+                pyramid: state.pyramid,
+                currentRow: state.currentRow,
+                currentCardIndex: state.currentCardIndex,
+                phase: state.phase,
+                onRevealCard: isHost && state.phase == GamePhase.revealing
+                    ? () {
+                        HapticFeedback.lightImpact();
+                        ref.read(randomEventProvider.notifier).tryTriggerEvent(probability: 0.2);
+                        final event = ref.read(randomEventProvider);
+                        ref.read(randomEventProvider.notifier).clearEvent();
+                        final newState = GameLogic.revealCurrentCard(state);
+                        if (event != null) {
+                           service.updateGameState(newState.copyWith(
+                             currentRandomEvent: {
+                               'title': event.title,
+                               'description': event.description,
+                               'emoji': event.emoji,
+                               'type': event.type,
+                             }
+                           ));
+                        } else {
+                           service.updateGameState(newState);
+                        }
                       }
-                    }
-                  : null,
+                    : null,
+              ),
             ),
           ),
         ),
@@ -589,50 +593,50 @@ class OnlineGameScreen extends ConsumerWidget {
 
     if (state.phase == GamePhase.assigning && state.pendingDrinks.isEmpty) {
       return SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Indicateur de gorgées en jeu
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: BoxDecoration(
-                gradient: PyraTheme.orangeYellowGradient,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: PyraTheme.glowOrange,
-              ),
-              child: Text(
-                '🍺 ${state.currentSips} gorgée${state.currentSips > 1 ? 's' : ''} en jeu',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+            // Indicateur compact
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                  decoration: BoxDecoration(
+                    gradient: PyraTheme.orangeYellowGradient,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '🍺 ${state.currentSips} gorgée${state.currentSips > 1 ? 's' : ''}',
+                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-            ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack),
+              ],
+            ).animate().fadeIn(duration: 300.ms),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
             // Bouton principal — Je l'ai !
             SizedBox(
               width: double.infinity,
               child: PulsarButton(
-                paddingVertical: 12,
+                paddingVertical: 11,
                 text: '🃏 Je l\'ai ! → Donner ${state.currentSips} gorgée${state.currentSips > 1 ? 's' : ''}',
                 gradient: PyraTheme.festiveGradient,
                 onPressed: () {
                   _showPlayerSelectionDialog(context, state, currentUserId, service);
                 },
               ),
-            ).animate(key: ValueKey('btn_${state.currentRow}_${state.currentCardIndex}')).slideY(begin: 0.4, end: 0, duration: 350.ms).fadeIn(),
+            ).animate(key: ValueKey('btn_${state.currentRow}_${state.currentCardIndex}')).slideY(begin: 0.4, end: 0, duration: 300.ms).fadeIn(),
 
             // Bouton Tir au Pigeon
             if (!me.hasUsedPigeon) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
                 child: PulsarButton(
-                  paddingVertical: 11,
+                  paddingVertical: 10,
                   text: '🐦 Tir au Pigeon → ${state.currentSips * 2} gorgées',
                   gradient: const LinearGradient(
                     colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
@@ -641,22 +645,22 @@ class OnlineGameScreen extends ConsumerWidget {
                     _showPlayerSelectionDialog(context, state, currentUserId, service, isPigeon: true);
                   },
                 ),
-              ).animate(key: ValueKey('pigeon_${state.currentRow}_${state.currentCardIndex}')).slideY(begin: 0.4, end: 0, duration: 350.ms).fadeIn(delay: 100.ms),
+              ).animate(key: ValueKey('pigeon_${state.currentRow}_${state.currentCardIndex}')).slideY(begin: 0.4, end: 0, duration: 300.ms).fadeIn(delay: 80.ms),
             ],
 
             // Tour suivant (hôte seulement)
             if (isHost) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 2),
               TextButton.icon(
                 onPressed: () {
                   HapticFeedback.mediumImpact();
                   final newState = GameLogic.nextCard(state);
                   service.updateGameState(newState);
                 },
-                icon: const Icon(Icons.skip_next, color: PyraTheme.textMuted, size: 18),
+                icon: const Icon(Icons.skip_next, color: PyraTheme.textMuted, size: 15),
                 label: const Text(
                   'Personne — Tour suivant',
-                  style: TextStyle(color: PyraTheme.textMuted, fontSize: 13),
+                  style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
                 ),
               ).animate(key: ValueKey('next_${state.currentRow}_${state.currentCardIndex}')).fadeIn(delay: 300.ms),
             ],
