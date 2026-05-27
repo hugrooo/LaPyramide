@@ -200,7 +200,6 @@ class OnlineGameScreen extends ConsumerWidget {
             }
           }
         }
-      }
     });
 
     final gameStateAsync = ref.watch(onlineGameStateProvider);
