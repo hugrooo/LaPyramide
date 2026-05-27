@@ -588,53 +588,80 @@ class OnlineGameScreen extends ConsumerWidget {
     }
 
     if (state.phase == GamePhase.assigning && state.pendingDrinks.isEmpty) {
-      final currentCard = state.currentCard;
+      return SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Indicateur de gorgées en jeu
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: PyraTheme.orangeYellowGradient,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: PyraTheme.glowOrange,
+              ),
+              child: Text(
+                '🍺 ${state.currentSips} gorgée${state.currentSips > 1 ? 's' : ''} en jeu',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack),
 
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (currentCard != null) ...[
-            const Text(
-              'Carte en jeu',
-              style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
-            ).animate().fadeIn(delay: 200.ms),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 180,
-              width: 125,
-              child: PlayingCardWidget(card: currentCard),
-            ).animate(key: ValueKey('card_${currentCard.id}')).scale(duration: 400.ms, curve: Curves.easeOutBack),
-            const SizedBox(height: 32),
-          ],
-          PulsarButton(
-            text: "Je l'ai ! (Donner ${state.currentSips} gorgées)",
-            gradient: PyraTheme.festiveGradient,
-            onPressed: () {
-              _showPlayerSelectionDialog(context, state, currentUserId, service);
-            },
-          ).animate(key: ValueKey('btn_${currentCard?.id}')).slideY(begin: 0.5, end: 0, duration: 300.ms).fadeIn(),
-          if (!me.hasUsedPigeon) ...[
-            const SizedBox(height: 12),
-            PulsarButton(
-              text: "🐦 Tir au Pigeon (Donner ${state.currentSips * 2} gorgées)",
-              gradient: const LinearGradient(colors: [Colors.purple, Colors.red]),
-              onPressed: () {
-                _showPlayerSelectionDialog(context, state, currentUserId, service, isPigeon: true);
-              },
-            ).animate(key: ValueKey('pigeon_${currentCard?.id}')).slideY(begin: 0.5, end: 0, duration: 300.ms).fadeIn(delay: 200.ms),
-          ],
-          if (isHost) ...[
             const SizedBox(height: 16),
-            TextButton(
-              onPressed: () {
-                HapticFeedback.mediumImpact();
-                final newState = GameLogic.nextCard(state);
-                service.updateGameState(newState);
-              },
-              child: const Text('Personne ne donne (Tour Suivant)', style: TextStyle(color: PyraTheme.textMuted)),
-            ).animate(key: ValueKey('next_${currentCard?.id}')).fadeIn(delay: 600.ms)
-          ]
-        ],
+
+            // Bouton principal — Je l'ai !
+            SizedBox(
+              width: double.infinity,
+              child: PulsarButton(
+                paddingVertical: 16,
+                text: '🃏 Je l\'ai ! → Donner ${state.currentSips} gorgée${state.currentSips > 1 ? 's' : ''}',
+                gradient: PyraTheme.festiveGradient,
+                onPressed: () {
+                  _showPlayerSelectionDialog(context, state, currentUserId, service);
+                },
+              ),
+            ).animate(key: ValueKey('btn_${state.currentRow}_${state.currentCardIndex}')).slideY(begin: 0.4, end: 0, duration: 350.ms).fadeIn(),
+
+            // Bouton Tir au Pigeon
+            if (!me.hasUsedPigeon) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: PulsarButton(
+                  paddingVertical: 14,
+                  text: '🐦 Tir au Pigeon → ${state.currentSips * 2} gorgées',
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
+                  ),
+                  onPressed: () {
+                    _showPlayerSelectionDialog(context, state, currentUserId, service, isPigeon: true);
+                  },
+                ),
+              ).animate(key: ValueKey('pigeon_${state.currentRow}_${state.currentCardIndex}')).slideY(begin: 0.4, end: 0, duration: 350.ms).fadeIn(delay: 100.ms),
+            ],
+
+            // Tour suivant (hôte seulement)
+            if (isHost) ...[
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  final newState = GameLogic.nextCard(state);
+                  service.updateGameState(newState);
+                },
+                icon: const Icon(Icons.skip_next, color: PyraTheme.textMuted, size: 18),
+                label: const Text(
+                  'Personne — Tour suivant',
+                  style: TextStyle(color: PyraTheme.textMuted, fontSize: 13),
+                ),
+              ).animate(key: ValueKey('next_${state.currentRow}_${state.currentCardIndex}')).fadeIn(delay: 300.ms),
+            ],
+          ],
+        ),
       );
     }
 
