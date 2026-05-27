@@ -617,7 +617,7 @@ class OnlineGameScreen extends ConsumerWidget {
             SizedBox(
               width: double.infinity,
               child: PulsarButton(
-                paddingVertical: 16,
+                paddingVertical: 12,
                 text: '🃏 Je l\'ai ! → Donner ${state.currentSips} gorgée${state.currentSips > 1 ? 's' : ''}',
                 gradient: PyraTheme.festiveGradient,
                 onPressed: () {
@@ -632,7 +632,7 @@ class OnlineGameScreen extends ConsumerWidget {
               SizedBox(
                 width: double.infinity,
                 child: PulsarButton(
-                  paddingVertical: 14,
+                  paddingVertical: 11,
                   text: '🐦 Tir au Pigeon → ${state.currentSips * 2} gorgées',
                   gradient: const LinearGradient(
                     colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],

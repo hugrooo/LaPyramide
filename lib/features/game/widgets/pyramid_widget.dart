@@ -91,52 +91,48 @@ class PyramidWidget extends StatelessWidget {
         cardIdx == currentCardIndex &&
         phase == GamePhase.revealing;
 
-    // Animation pulsante de la carte active (scale + shimmer)
-    final animatedCard = FlippableCardWidget(
-      card: card,
-      isRevealed: card.isRevealed,
-      isActive: isActive,
-      width: 52,
-      height: 72,
-      glowColor: rowColor,
-      onTap: null,
-    )
-        .animate(target: isActive ? 1 : 0)
-        .scale(
-          begin: const Offset(1.0, 1.0),
-          end: const Offset(1.1, 1.1),
-          duration: 800.ms,
-          curve: Curves.easeInOut,
-        )
-        .shimmer(
-          duration: 1500.ms,
-          color: rowColor.withOpacity(0.6),
-          angle: 0.5,
-        )
-        .animate(onPlay: isActive ? (ctrl) => ctrl.repeat(reverse: true) : null);
-
-    // GestureDetector au niveau le plus haut, AVANT l'animation d'entrée fadeIn/slideY
-    final tappable = (isActive && onRevealCard != null)
-        ? GestureDetector(
-            onTap: onRevealCard,
-            behavior: HitTestBehavior.opaque,
-            child: animatedCard,
-          )
-        : animatedCard;
-
-    // Animation d'entrée (ne bloque pas les taps car GestureDetector est à l'intérieur)
+    // GestureDetector TOUJOURS présent dans l'arbre pour que Flutter
+    // puisse mettre à jour onTap sans reconstruire toute la sous-arborescence.
+    // Sans ça, quand isActive change, l'arbre de widgets change de type
+    // (GestureDetector ↔ Animate) et Flutter perd le callback.
     return Padding(
+      key: ValueKey('card_${rowIdx}_$cardIdx'),
       padding: const EdgeInsets.symmetric(horizontal: 3),
-      child: tappable
-          .animate()
-          .fadeIn(
-              delay: (rowIdx * 100 + cardIdx * 50).ms,
-              duration: 400.ms)
-          .slideY(
-              begin: 0.8,
-              delay: (rowIdx * 100 + cardIdx * 50).ms,
-              duration: 500.ms,
-              curve: Curves.easeOutBack),
+      child: GestureDetector(
+        onTap: (isActive && onRevealCard != null) ? onRevealCard : null,
+        behavior: HitTestBehavior.opaque,
+        child: FlippableCardWidget(
+          card: card,
+          isRevealed: card.isRevealed,
+          isActive: isActive,
+          width: 52,
+          height: 72,
+          glowColor: rowColor,
+          onTap: null,
+        )
+            .animate(target: isActive ? 1 : 0)
+            .scale(
+              begin: const Offset(1.0, 1.0),
+              end: const Offset(1.1, 1.1),
+              duration: 800.ms,
+              curve: Curves.easeInOut,
+            )
+            .shimmer(
+              duration: 1500.ms,
+              color: rowColor.withOpacity(0.6),
+              angle: 0.5,
+            )
+            .animate(onPlay: isActive ? (ctrl) => ctrl.repeat(reverse: true) : null)
+            .animate()
+            .fadeIn(
+                delay: (rowIdx * 100 + cardIdx * 50).ms,
+                duration: 400.ms)
+            .slideY(
+                begin: 0.8,
+                delay: (rowIdx * 100 + cardIdx * 50).ms,
+                duration: 500.ms,
+                curve: Curves.easeOutBack),
+      ),
     );
   }
 }
