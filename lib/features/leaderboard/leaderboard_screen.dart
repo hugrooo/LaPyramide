@@ -65,10 +65,6 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () => context.pop(),
-                      ),
                       const Expanded(
                         child: Text(
                           '🌍 Hall of Fame',

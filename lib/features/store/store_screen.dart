@@ -59,20 +59,24 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
   Widget _buildFallbackPacks() {
     return Column(
       children: [
-        _buildPackCard('Petit Pack', '100 Pièces', '0,99 €', 100),
+        _buildPackCard('Récompense Quotidienne', 'Reviens tous les jours !', 'Ouvrir 🎁', 100)
+            .animate().fadeIn(duration: 400.ms).slideY(begin: 0.2),
         const SizedBox(height: 16),
-        _buildPackCard('Moyen Pack', '500 Pièces', '3,99 €', 500, isPopular: true),
+        _buildPackCard('Visionner une Pub', 'Soutenez-nous', 'Regarder 📺', 500, isPopular: true)
+            .animate().fadeIn(duration: 400.ms, delay: 100.ms).slideY(begin: 0.2),
         const SizedBox(height: 16),
-        _buildPackCard('Grand Pack', '1200 Pièces', '8,99 €', 1200),
+        _buildPackCard('Défi de la Pyramide', 'Gagne 3 parties de suite', 'Réclamer 🏆', 1200)
+            .animate().fadeIn(duration: 400.ms, delay: 200.ms).slideY(begin: 0.2),
       ],
     );
   }
 
-  Widget _buildPackCard(String title, String desc, String price, int coins, {bool isPopular = false, ProductDetails? product}) {
+  Widget _buildPackCard(String title, String desc, String buttonText, int coins, {bool isPopular = false}) {
     return GlassContainer(
       innerGlow: isPopular,
       padding: const EdgeInsets.all(20),
       borderRadius: BorderRadius.circular(24),
+      border: isPopular ? Border.all(color: PyraTheme.primaryPink.withOpacity(0.5), width: 2) : null,
       child: Row(
         children: [
           Container(
@@ -87,7 +91,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             child: const Center(
               child: Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 36),
             ),
-          ),
+          ).animate(onPlay: (c) => isPopular ? c.repeat(reverse: true) : null).scale(begin: const Offset(1,1), end: const Offset(1.05, 1.05), duration: 2.seconds),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -100,31 +104,32 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     decoration: BoxDecoration(
                       color: PyraTheme.primaryCyan,
                       borderRadius: BorderRadius.circular(8),
+                      boxShadow: PyraTheme.glowCyan,
                     ),
-                    child: const Text('POPULAIRE', style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold)),
-                  ),
-                Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                Text(desc, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14)),
+                    child: const Text('BONUS', style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w900)),
+                  ).animate().shimmer(duration: 2.seconds, delay: 1.seconds),
+                Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                Text(desc, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13)),
               ],
             ),
           ),
           PulsarButton(
-            text: price,
-            paddingHorizontal: 16,
+            text: buttonText,
+            paddingHorizontal: 12,
+            paddingVertical: 12,
+            fontSize: 12,
             gradient: isPopular ? const LinearGradient(colors: [PyraTheme.primaryPink, Colors.pinkAccent]) : PyraTheme.festiveGradient,
             onPressed: () async {
-              if (product != null) {
-                ref.read(storeServiceProvider).buyProduct(product);
-              } else {
-                await ref.read(storeServiceProvider).addCoinsFictitiously(coins);
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Achat fictif de $coins pièces réussi (Simulateur / Dev mode) !'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                }
+              await ref.read(storeServiceProvider).addCoinsFictitiously(coins);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('🎉 Félicitations ! +$coins pièces ajoutées !'),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  ),
+                );
               }
             },
           ),
@@ -441,15 +446,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-                        onPressed: () => context.pop(),
-                      ),
                       const Expanded(
                         child: Text(
                           'Boutique',
-                          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
-                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 1.2),
                         ),
                       ),
                       Row(
@@ -511,28 +511,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
-                        if (_isLoading)
-                          const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPink))
-                        else if (_products.isNotEmpty)
-                          Column(
-                            children: _products.map((p) {
-                              int coins = 100;
-                              if (p.id == StoreService.pack500Id) coins = 500;
-                              if (p.id == StoreService.pack1200Id) coins = 1200;
-                              
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: _buildPackCard(
-                                  p.title,
-                                  '$coins Pièces',
-                                  p.price,
-                                  coins,
-                                  isPopular: coins == 500,
-                                  product: p,
-                                ),
-                              );
-                            }).toList(),
-                          )
                         else
                           _buildFallbackPacks(),
                       ] else if (_activeTab == StoreTab.jokers) ...[

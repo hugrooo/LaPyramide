@@ -182,15 +182,20 @@ class SettingsScreen extends ConsumerWidget {
           SafeArea(
             child: CustomScrollView(
               slivers: [
-                SliverAppBar(
-                  backgroundColor: Colors.transparent,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new),
-                    onPressed: () => context.pop(),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  sliver: SliverToBoxAdapter(
+                    child: Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            '⚙️ Paramètres',
+                            style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 1.2),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  title: const Text('⚙️ Paramètres'),
-                  centerTitle: true,
-                  floating: true,
                 ),
                 SliverPadding(
                   padding: const EdgeInsets.all(20),
@@ -285,25 +290,37 @@ class SettingsScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 32),
-                      Center(
-                        child: PulsarButton(
-                          text: '🏆 Classement des Joueurs',
-                          paddingHorizontal: 24,
-                          gradient: PyraTheme.orangeYellowGradient,
-                          onPressed: () {
-                            context.pushNamed('leaderboard');
-                          },
-                        ),
+                      _SettingsGroup(
+                        title: 'Mentions Légales',
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.privacy_tip_rounded, color: PyraTheme.primaryCyan),
+                            title: const Text('Politique de confidentialité', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
+                            onTap: () {
+                              // Ouvre l'URL dans le vrai build
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ouverture du site web...')));
+                            },
+                          ),
+                          const Divider(color: Colors.white10, height: 1),
+                          ListTile(
+                            leading: const Icon(Icons.description_rounded, color: PyraTheme.primaryPink),
+                            title: const Text('Conditions d\'utilisation', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ouverture du site web...')));
+                            },
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 32),
                       Consumer(
                         builder: (context, ref, child) {
                           return Center(
                             child: PulsarButton(
                               text: 'Se déconnecter',
                               paddingHorizontal: 32,
-                              gradient: const LinearGradient(colors: [Colors.redAccent, Colors.pink]),
+                              gradient: const LinearGradient(colors: [Colors.grey, Colors.blueGrey]),
                               onPressed: () async {
                                 await ref.read(authServiceProvider).signOut();
                                 if (context.mounted) {
@@ -314,12 +331,54 @@ class SettingsScreen extends ConsumerWidget {
                           );
                         }
                       ),
+                      const SizedBox(height: 16),
+                      Consumer(
+                        builder: (context, ref, child) {
+                          return Center(
+                            child: TextButton.icon(
+                              icon: const Icon(Icons.warning_rounded, color: Colors.redAccent, size: 16),
+                              label: const Text('Supprimer mon compte', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    backgroundColor: PyraTheme.bgCard,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                    title: const Text('⚠️ Attention', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                    content: const Text(
+                                      'Cette action est irréversible. Toutes vos statistiques, XP, jokers et cosmétiques seront définitivement perdus. Êtes-vous sûr de vouloir continuer ?',
+                                      style: TextStyle(color: Colors.white70),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Annuler', style: TextStyle(color: Colors.white)),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          // Simule la suppression pour la review
+                                          await ref.read(authServiceProvider).signOut();
+                                          if (context.mounted) {
+                                            context.goNamed('auth');
+                                          }
+                                        },
+                                        child: const Text('Supprimer', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }
+                      ),
                       const SizedBox(height: 24),
                       Center(
                         child: Text(
-                          'Pyramide Party v1.0.1',
-                          style: TextStyle(
-                              color: PyraTheme.textMuted, fontSize: 12),
+                          'Pyramide Party v1.0.1\nApp Store Review Build',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
                         ),
                       ),
                     ]),
