@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:math' as math;
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -346,39 +348,109 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
             const SizedBox(height: 24),
 
             Expanded(
-              child: ListView.builder(
-                itemCount: state.players.length,
-                itemBuilder: (context, index) {
-                  final player = state.players[index];
-                  return ListTile(
-                    leading: ClipOval(
-                      child: player.photoUrl != null
-                          ? Image.network(
-                              player.photoUrl!,
-                              width: 40,
-                              height: 40,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Container(
-                                width: 40,
-                                height: 40,
-                                color: PyraTheme.primaryPurple,
-                                child: Center(child: Text(player.emoji)),
+              child: Center(
+                child: SizedBox(
+                  width: 300,
+                  height: 300,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Centre de la table (Effet Holographique / Feu)
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(color: PyraTheme.primaryCyan.withOpacity(0.2), blurRadius: 40, spreadRadius: 10),
+                            BoxShadow(color: PyraTheme.primaryPink.withOpacity(0.1), blurRadius: 80, spreadRadius: 20),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(Icons.wifi_tethering_rounded, color: Colors.white54, size: 40),
+                        ),
+                      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1,1), end: const Offset(1.1,1.1), duration: 2.seconds),
+
+                      // Joueurs autour de la table
+                      ...List.generate(state.players.length, (index) {
+                        final player = state.players[index];
+                        final isMe = player.id == currentUserId;
+                        final isHostPlayer = index == 0;
+                        
+                        // Calcul de la position sur le cercle
+                        final double angle = (2 * math.pi / state.players.length) * index - math.pi / 2;
+                        const double radius = 110.0;
+                        final double x = radius * math.cos(angle);
+                        final double y = radius * math.sin(angle);
+
+                        return Transform.translate(
+                          offset: Offset(x, y),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Stack(
+                                alignment: Alignment.center,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  // Avatar avec effet "Pop" à l'entrée
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: isMe ? PyraTheme.primaryPink : (isHostPlayer ? PyraTheme.primaryYellow : Colors.white24),
+                                        width: 2.5,
+                                      ),
+                                      boxShadow: isMe || isHostPlayer ? [
+                                        BoxShadow(
+                                          color: (isMe ? PyraTheme.primaryPink : PyraTheme.primaryYellow).withOpacity(0.5),
+                                          blurRadius: 16,
+                                        )
+                                      ] : null,
+                                    ),
+                                    child: ClipOval(
+                                      child: player.photoUrl != null
+                                          ? Image.network(
+                                              player.photoUrl!,
+                                              width: 56,
+                                              height: 56,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) => _buildFallbackAvatar(player.emoji),
+                                            )
+                                          : _buildFallbackAvatar(player.emoji),
+                                    ),
+                                  ),
+                                  
+                                  // Couronne pour l'hôte
+                                  if (isHostPlayer)
+                                    Positioned(
+                                      top: -12,
+                                      child: const Text('👑', style: TextStyle(fontSize: 20))
+                                        .animate(onPlay: (c) => c.repeat(reverse: true))
+                                        .slideY(begin: 0, end: -0.2, duration: 1.seconds),
+                                    ),
+                                ],
                               ),
-                            )
-                          : Container(
-                              width: 40,
-                              height: 40,
-                              color: PyraTheme.primaryPurple,
-                              child: Center(child: Text(player.emoji)),
-                            ),
-                    ),
-                    title: Text(player.name, style: const TextStyle(color: Colors.white)),
-                    subtitle: index == 0 ? const Text('Hôte', style: TextStyle(color: PyraTheme.primaryPurple)) : null,
-                    trailing: player.id == currentUserId
-                        ? const Icon(Icons.person, color: PyraTheme.primaryPink)
-                        : null,
-                  );
-                },
+                              const SizedBox(height: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  player.name.split(' ').first, // Prénom uniquement pour prendre moins de place
+                                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ).animate().scale(duration: 500.ms, curve: Curves.elasticOut),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
               ),
             ),
 
@@ -403,6 +475,15 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
       },
       loading: () => const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPurple)),
       error: (err, _) => Center(child: Text('Erreur : $err', style: const TextStyle(color: Colors.red))),
+    );
+  }
+
+  Widget _buildFallbackAvatar(String emoji) {
+    return Container(
+      width: 56,
+      height: 56,
+      color: PyraTheme.bgSurface,
+      child: Center(child: Text(emoji, style: const TextStyle(fontSize: 24))),
     );
   }
 
