@@ -70,19 +70,7 @@ class PyramidWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               for (int cardIdx = 0; cardIdx < row.length; cardIdx++)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                  child: _buildCard(context, rowIdx, cardIdx, row[cardIdx], rowColor)
-                      .animate()
-                      .fadeIn(
-                          delay: (rowIdx * 100 + cardIdx * 50).ms,
-                          duration: 400.ms)
-                      .slideY(
-                          begin: 0.8,
-                          delay: (rowIdx * 100 + cardIdx * 50).ms,
-                          duration: 500.ms,
-                          curve: Curves.easeOutBack),
-                ),
+                _buildCardWithGesture(context, rowIdx, cardIdx, row[cardIdx], rowColor),
             ],
           ),
         ],
@@ -90,7 +78,9 @@ class PyramidWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCard(
+  /// Construit la carte avec son animation d'entrée ET le GestureDetector
+  /// TOUT EN DEHORS de toutes les couches d'animation.
+  Widget _buildCardWithGesture(
     BuildContext context,
     int rowIdx,
     int cardIdx,
@@ -101,14 +91,15 @@ class PyramidWidget extends StatelessWidget {
         cardIdx == currentCardIndex &&
         phase == GamePhase.revealing;
 
-    final cardWidget = FlippableCardWidget(
+    // Animation pulsante de la carte active (scale + shimmer)
+    final animatedCard = FlippableCardWidget(
       card: card,
       isRevealed: card.isRevealed,
       isActive: isActive,
       width: 52,
       height: 72,
       glowColor: rowColor,
-      onTap: null, // géré par le GestureDetector externe
+      onTap: null,
     )
         .animate(target: isActive ? 1 : 0)
         .scale(
@@ -124,14 +115,28 @@ class PyramidWidget extends StatelessWidget {
         )
         .animate(onPlay: isActive ? (ctrl) => ctrl.repeat(reverse: true) : null);
 
-    // GestureDetector EXTÉRIEUR aux animations pour capter les taps sans interférence
-    if (isActive && onRevealCard != null) {
-      return GestureDetector(
-        onTap: onRevealCard,
-        behavior: HitTestBehavior.opaque,
-        child: cardWidget,
-      );
-    }
-    return cardWidget;
+    // GestureDetector au niveau le plus haut, AVANT l'animation d'entrée fadeIn/slideY
+    final tappable = (isActive && onRevealCard != null)
+        ? GestureDetector(
+            onTap: onRevealCard,
+            behavior: HitTestBehavior.opaque,
+            child: animatedCard,
+          )
+        : animatedCard;
+
+    // Animation d'entrée (ne bloque pas les taps car GestureDetector est à l'intérieur)
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      child: tappable
+          .animate()
+          .fadeIn(
+              delay: (rowIdx * 100 + cardIdx * 50).ms,
+              duration: 400.ms)
+          .slideY(
+              begin: 0.8,
+              delay: (rowIdx * 100 + cardIdx * 50).ms,
+              duration: 500.ms,
+              curve: Curves.easeOutBack),
+    );
   }
 }
