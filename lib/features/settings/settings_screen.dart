@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../app/theme.dart';
 import '../../shared/widgets/animated_background.dart';
 import '../../shared/widgets/glass_container.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../auth/auth_service.dart';
 import '../profile/user_profile_provider.dart';
 import 'settings_provider.dart';
@@ -247,7 +248,7 @@ class SettingsScreen extends ConsumerWidget {
                               onTap: () => _showCardBackPicker(context, user.uid, profile.activeCardBack, profile.cardBacks),
                             ),
                           ],
-                        ),
+                        ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.1),
                         const SizedBox(height: 16),
                       ],
 
@@ -260,6 +261,7 @@ class SettingsScreen extends ConsumerWidget {
                             value: settings.soundEnabled,
                             onChanged: (v) => settingsNotifier.toggleSound(v),
                           ),
+                          const Divider(color: Colors.white10, height: 1),
                           _SettingTile(
                             emoji: '📳',
                             label: 'Vibrations',
@@ -267,7 +269,7 @@ class SettingsScreen extends ConsumerWidget {
                             onChanged: (v) => settingsNotifier.toggleVibration(v),
                           ),
                         ],
-                      ),
+                      ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
                       const SizedBox(height: 16),
                       _SettingsGroup(
                         title: 'Accessibilité',
@@ -279,7 +281,7 @@ class SettingsScreen extends ConsumerWidget {
                             onChanged: (v) => settingsNotifier.toggleColorBlindMode(v),
                           ),
                         ],
-                      ),
+                      ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
                       const SizedBox(height: 16),
                       _SettingsGroup(
                         title: 'Langue / Language',
@@ -289,7 +291,8 @@ class SettingsScreen extends ConsumerWidget {
                             onChanged: (lang) {}, // Pas encore géré globalement
                           ),
                         ],
-                      ),
+                      ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
+                      const SizedBox(height: 16),
                       _SettingsGroup(
                         title: 'Mentions Légales',
                         children: [
@@ -298,7 +301,6 @@ class SettingsScreen extends ConsumerWidget {
                             title: const Text('Politique de confidentialité', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                             trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
                             onTap: () {
-                              // Ouvre l'URL dans le vrai build
                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ouverture du site web...')));
                             },
                           ),
@@ -312,7 +314,7 @@ class SettingsScreen extends ConsumerWidget {
                             },
                           ),
                         ],
-                      ),
+                      ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
                       const SizedBox(height: 32),
                       Consumer(
                         builder: (context, ref, child) {
@@ -410,16 +412,13 @@ class _SettingsGroup extends StatelessWidget {
             title,
             style: const TextStyle(
                 color: PyraTheme.primaryPurple,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-                letterSpacing: 1),
+                fontWeight: FontWeight.w900,
+                fontSize: 14,
+                letterSpacing: 1.5),
           ),
         ),
-        Container(
-          decoration: BoxDecoration(
-            color: PyraTheme.bgCard.withOpacity(0.8),
-            borderRadius: BorderRadius.circular(16),
-          ),
+        GlassContainer(
+          borderRadius: BorderRadius.circular(20),
           child: Column(children: children),
         ),
       ],

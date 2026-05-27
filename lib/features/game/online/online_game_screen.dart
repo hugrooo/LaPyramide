@@ -53,13 +53,6 @@ class OnlineGameScreen extends ConsumerWidget {
                       color: isCaught ? Colors.redAccent : Colors.greenAccent,
                       width: 2,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: (isCaught ? Colors.redAccent : Colors.greenAccent).withOpacity(0.3),
-                        blurRadius: 40,
-                        spreadRadius: 10,
-                      )
-                    ],
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -601,7 +594,7 @@ class OnlineGameScreen extends ConsumerWidget {
                         Text(toPlayer.emoji, style: const TextStyle(fontSize: 40)),
                         Text(toPlayer.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       ],
-                    ).animate(onPlay: (c) => c.repeat(reverse: true)).shake(hz: 8, amount: 3),
+                    ).animate(onPlay: (c) => c.repeat(reverse: true)).shake(hz: 8),
                   ],
                 ),
                 const SizedBox(height: 16),
