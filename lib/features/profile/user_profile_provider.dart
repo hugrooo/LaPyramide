@@ -11,6 +11,8 @@ class UserProfile {
   final String activeCardBack;
   final String activeTitle;
   final int lastDailyChestClaimed;
+  final int drinksGiven;
+  final int bluffWins;
   final Map<String, int> jokers;
   final List<String> cardBacks;
   final List<String> titles;
@@ -24,6 +26,8 @@ class UserProfile {
     required this.activeCardBack,
     required this.activeTitle,
     required this.lastDailyChestClaimed,
+    required this.drinksGiven,
+    required this.bluffWins,
     required this.jokers,
     required this.cardBacks,
     required this.titles,
@@ -75,10 +79,41 @@ class UserProfile {
       activeCardBack: map['activeCardBack'] ?? 'classic',
       activeTitle: map['activeTitle'] ?? 'Novice 🐣',
       lastDailyChestClaimed: map['lastDailyChestClaimed'] ?? 0,
+      drinksGiven: map['drinksGiven'] ?? 0,
+      bluffWins: map['bluffWins'] ?? 0,
       jokers: jokersMap,
       cardBacks: cardBacksList,
       titles: titlesList,
     );
+  }
+
+  static Future<void> addGameRewards(String uid, int addedXp, int addedDrinks, int addedBluffs) async {
+    final dbRef = FirebaseDatabase.instance.ref('users/$uid');
+    final snapshot = await dbRef.get();
+    
+    if (snapshot.exists && snapshot.value is Map) {
+      final data = snapshot.value as Map<dynamic, dynamic>;
+      int currentXp = (data['xp'] ?? 0) as int;
+      int currentLevel = (data['level'] ?? 1) as int;
+      int currentDrinks = (data['drinksGiven'] ?? 0) as int;
+      int currentBluffs = (data['bluffWins'] ?? 0) as int;
+
+      currentXp += addedXp;
+      
+      // Level up logic
+      while (currentXp >= currentLevel * 100) {
+        currentXp -= currentLevel * 100;
+        currentLevel++;
+        // On pourrait distribuer des pièces/diamants ici pour le passage de niveau
+      }
+
+      await dbRef.update({
+        'xp': currentXp,
+        'level': currentLevel,
+        'drinksGiven': currentDrinks + addedDrinks,
+        'bluffWins': currentBluffs + addedBluffs,
+      });
+    }
   }
 }
 

@@ -14,6 +14,7 @@ class Player {
 
   // Statistiques de la partie
   int totalSips;
+  int drinksGiven;
   int bluffsWon;
   int bluffsLost;
   int challengesWon;
@@ -37,6 +38,7 @@ class Player {
     this.photoUrl,
     List<PyraCard>? hand,
     this.totalSips = 0,
+    this.drinksGiven = 0,
     this.bluffsWon = 0,
     this.bluffsLost = 0,
     this.challengesWon = 0,
@@ -59,6 +61,7 @@ class Player {
     'photoUrl': photoUrl,
     'hand': hand.map((c) => c.toJson()).toList(),
     'totalSips': totalSips,
+    'drinksGiven': drinksGiven,
     'bluffsWon': bluffsWon,
     'bluffsLost': bluffsLost,
     'challengesWon': challengesWon,
@@ -79,6 +82,7 @@ class Player {
         ? (json['hand'] as List).map((c) => PyraCard.fromJson(c)).toList()
         : [],
     totalSips: json['totalSips'],
+    drinksGiven: json['drinksGiven'] ?? 0,
     bluffsWon: json['bluffsWon'],
     bluffsLost: json['bluffsLost'],
     challengesWon: json['challengesWon'],
@@ -97,6 +101,7 @@ class Player {
     String? photoUrl,
     List<PyraCard>? hand,
     int? totalSips,
+    int? drinksGiven,
     int? bluffsWon,
     int? bluffsLost,
     int? challengesWon,
@@ -114,6 +119,7 @@ class Player {
       photoUrl: photoUrl ?? this.photoUrl,
       hand: hand ?? this.hand,
       totalSips: totalSips ?? this.totalSips,
+      drinksGiven: drinksGiven ?? this.drinksGiven,
       bluffsWon: bluffsWon ?? this.bluffsWon,
       bluffsLost: bluffsLost ?? this.bluffsLost,
       challengesWon: challengesWon ?? this.challengesWon,

@@ -367,6 +367,9 @@ class GameLogic {
       if (p.id == assignment.toPlayerId) {
         return p.copyWith(totalSips: p.totalSips + assignment.sips);
       }
+      if (p.id == assignment.fromPlayerId) {
+        return p.copyWith(drinksGiven: p.drinksGiven + assignment.sips);
+      }
       return p;
     }).toList();
 

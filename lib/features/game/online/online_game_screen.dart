@@ -21,6 +21,7 @@ import '../../../shared/widgets/glass_container.dart';
 import '../../../shared/widgets/pulsar_button.dart';
 import '../widgets/distribution_screen.dart';
 import '../widgets/end_game_screen.dart';
+import '../../profile/user_profile_provider.dart';
 
 class OnlineGameScreen extends ConsumerWidget {
   const OnlineGameScreen({super.key});
@@ -31,8 +32,72 @@ class OnlineGameScreen extends ConsumerWidget {
       final oldState = previous?.value;
       final newState = next.value;
 
-      if (newState != null && newState.lastEventTime != null) {
-        if (oldState == null || oldState.lastEventTime != newState.lastEventTime) {
+      if (newState != null) {
+        // --- GESTION FIN DE PARTIE & RECOMPENSES ---
+        if (newState.phase == GamePhase.finished && (oldState == null || oldState.phase != GamePhase.finished)) {
+          final user = ref.read(authServiceProvider).currentUser;
+          if (user != null) {
+            final me = newState.players.firstWhere((p) => p.id == user.uid, orElse: () => newState.players.first);
+            final int xpBase = 50;
+            final int xpDrinks = me.drinksGiven * 5;
+            final int xpBluffs = me.bluffsWon * 15;
+            final int totalXp = xpBase + xpDrinks + xpBluffs;
+            
+            // Appliquer dans Firebase
+            UserProfile.addGameRewards(user.uid, totalXp, me.drinksGiven, me.bluffsWon);
+
+            // Pop-up Résumé
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (ctx) => Dialog(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                child: GlassContainer(
+                  innerGlow: true,
+                  padding: const EdgeInsets.all(24),
+                  border: Border.all(color: PyraTheme.primaryYellow, width: 2),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('🏆 PARTIE TERMINÉE !', style: TextStyle(color: PyraTheme.primaryYellow, fontSize: 24, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 16),
+                      Text('+ $totalXp XP', style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              const Icon(Icons.water_drop, color: PyraTheme.primaryCyan),
+                              Text('${me.drinksGiven} Gorgées', style: const TextStyle(color: Colors.white)),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              const Icon(Icons.local_fire_department, color: PyraTheme.primaryOrange),
+                              Text('${me.bluffsWon} Bluffs', style: const TextStyle(color: Colors.white)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryPink),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                        },
+                        child: const Text('Génial !', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      )
+                    ],
+                  ),
+                ),
+              ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack),
+            );
+          }
+        }
+
+        if (newState.lastEventTime != null && (oldState == null || oldState.lastEventTime != newState.lastEventTime)) {
           if (newState.lastBluffResult != BluffResult.none && newState.lastRevealedCard != null) {
             // Afficher le résultat du bluff en grand
             showDialog(
@@ -131,6 +196,7 @@ class OnlineGameScreen extends ConsumerWidget {
                   duration: const Duration(seconds: 3),
                 ),
               );
+              }
             }
           }
         }
