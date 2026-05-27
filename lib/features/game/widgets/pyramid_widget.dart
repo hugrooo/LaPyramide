@@ -125,12 +125,18 @@ class PyramidWidget extends StatelessWidget {
             .animate(onPlay: isActive ? (ctrl) => ctrl.repeat(reverse: true) : null)
             .animate()
             .fadeIn(
-                delay: (rowIdx * 100 + cardIdx * 50).ms,
-                duration: 400.ms)
+                delay: (rowIdx * 200 + cardIdx * 100).ms,
+                duration: 500.ms)
             .slideY(
-                begin: 0.8,
-                delay: (rowIdx * 100 + cardIdx * 50).ms,
-                duration: 500.ms,
+                begin: 12.0, // Part de tout en bas
+                delay: (rowIdx * 200 + cardIdx * 100).ms,
+                duration: 700.ms,
+                curve: Curves.easeOutQuart)
+            .rotate(
+                begin: -0.2,
+                end: 0,
+                delay: (rowIdx * 200 + cardIdx * 100).ms,
+                duration: 700.ms,
                 curve: Curves.easeOutBack),
       ),
     );

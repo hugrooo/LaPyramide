@@ -8,6 +8,7 @@ import '../../app/theme.dart';
 import '../../shared/widgets/animated_background.dart';
 import '../../shared/widgets/glass_container.dart';
 import '../../shared/widgets/neo_badge.dart';
+import '../auth/auth_service.dart';
 import 'user_profile_provider.dart';
 
 class LevelScreen extends ConsumerWidget {
@@ -133,7 +134,7 @@ class LevelScreen extends ConsumerWidget {
                       Column(
                         children: [
                           Text(
-                            profile?.name ?? 'Joueur Inconnu',
+                            ref.watch(authStateChangesProvider).value?.displayName ?? 'Joueur Inconnu',
                             style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900),
                           ),
                           const SizedBox(height: 8),

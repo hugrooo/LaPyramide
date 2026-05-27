@@ -46,37 +46,53 @@ class OnlineGameScreen extends ConsumerWidget {
                 return Dialog(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        isCaught ? '💥 MENTEUR !' : '✅ VÉRITÉ !',
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: isCaught ? Colors.redAccent : Colors.greenAccent,
-                        ),
-                      ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        height: 200,
-                        width: 140,
-                        child: PlayingCardWidget(card: newState.lastRevealedCard!),
-                      ).animate().flip(duration: 600.ms, direction: Axis.horizontal),
-                      const SizedBox(height: 24),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.black87,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          newState.lastEventMessage ?? '',
-                          style: const TextStyle(color: Colors.white, fontSize: 18),
-                          textAlign: TextAlign.center,
-                        ),
-                      ).animate().fadeIn(delay: 600.ms),
+                  child: GlassContainer(
+                    innerGlow: true,
+                    padding: const EdgeInsets.all(32),
+                    border: Border.all(
+                      color: isCaught ? Colors.redAccent : Colors.greenAccent,
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (isCaught ? Colors.redAccent : Colors.greenAccent).withOpacity(0.3),
+                        blurRadius: 40,
+                        spreadRadius: 10,
+                      )
                     ],
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          isCaught ? '💥 MENTEUR !' : '✅ VÉRITÉ !',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w900,
+                            color: isCaught ? Colors.redAccent : Colors.greenAccent,
+                          ),
+                          textAlign: TextAlign.center,
+                        ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          height: 200,
+                          width: 140,
+                          child: PlayingCardWidget(card: newState.lastRevealedCard!),
+                        ).animate().flip(duration: 600.ms, direction: Axis.horizontal),
+                        const SizedBox(height: 24),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            newState.lastEventMessage ?? '',
+                            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ).animate().fadeIn(delay: 600.ms),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -549,19 +565,43 @@ class OnlineGameScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    // Donneur
                     Column(
                       children: [
                         Text(fromPlayer.emoji, style: const TextStyle(fontSize: 40)),
                         Text(fromPlayer.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       ],
+                    ).animate().slideX(begin: -0.5, end: 0, duration: 400.ms, curve: Curves.easeOutBack),
+                    
+                    // Projectiles
+                    Stack(
+                      alignment: Alignment.center,
+                      clipBehavior: Clip.none,
+                      children: [
+                        const SizedBox(width: 60, height: 40),
+                        // Tir principal
+                        const Icon(Icons.flash_on_rounded, color: PyraTheme.primaryPink, size: 40)
+                            .animate(onPlay: (c) => c.repeat())
+                            .slideX(begin: -1.5, end: 1.5, duration: 600.ms)
+                            .fadeIn(duration: 200.ms)
+                            .fadeOut(delay: 400.ms, duration: 200.ms),
+                        
+                        // Second tir décalé (pour l'effet de rafale)
+                        const Icon(Icons.flash_on_rounded, color: PyraTheme.primaryYellow, size: 30)
+                            .animate(onPlay: (c) => c.repeat())
+                            .slideX(begin: -1.5, end: 1.5, duration: 600.ms, curve: Curves.easeIn)
+                            .fadeIn(delay: 200.ms, duration: 200.ms)
+                            .fadeOut(delay: 400.ms, duration: 200.ms),
+                      ],
                     ),
-                    const Icon(Icons.double_arrow, color: PyraTheme.primaryPink, size: 32),
+
+                    // Victime (Secouée)
                     Column(
                       children: [
                         Text(toPlayer.emoji, style: const TextStyle(fontSize: 40)),
                         Text(toPlayer.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       ],
-                    ),
+                    ).animate(onPlay: (c) => c.repeat(reverse: true)).shake(hz: 8, amount: 3),
                   ],
                 ),
                 const SizedBox(height: 16),
