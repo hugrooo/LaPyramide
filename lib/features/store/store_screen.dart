@@ -7,6 +7,7 @@ import '../../shared/widgets/animated_background.dart';
 import '../../shared/widgets/glass_container.dart';
 import '../../shared/widgets/pulsar_button.dart';
 import '../../shared/widgets/neo_badge.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../profile/user_profile_provider.dart';
 import 'store_service.dart';
 
@@ -511,8 +512,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
-                        else
-                          _buildFallbackPacks(),
+                        _buildFallbackPacks(),
                       ] else if (_activeTab == StoreTab.jokers) ...[
                         const Text(
                           'Utilise tes pièces pour acheter des Jokers dévastateurs utilisables en pleine partie !',

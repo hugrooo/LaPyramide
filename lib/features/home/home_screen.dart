@@ -5,10 +5,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+
 import '../../app/theme.dart';
 import '../../shared/widgets/glass_container.dart';
 import '../../shared/widgets/neo_badge.dart';
 import '../profile/user_profile_provider.dart';
+import 'widgets/play_card_3d.dart';
+import 'widgets/particle_background.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -22,13 +25,17 @@ class HomeScreen extends ConsumerWidget {
     final xp = profile?.xp ?? 0;
     final coins = profile?.coins ?? 0;
     final diamonds = profile?.diamonds ?? 0;
+    
+    // Pour l'exemple, on simule une série (streak) de 3 jours
+    final streak = 3;
 
     final numberFormat = NumberFormat('#,###', 'fr_FR');
+    
     return Scaffold(
       backgroundColor: PyraTheme.bgDark,
       body: Stack(
         children: [
-          // ── Fond : gradient très profond ──────────────────────
+          // ── Fond : gradient profond ──────────────────────
           Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
@@ -37,7 +44,12 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // ── Bokeh et effets de lumière (Neon Glows) ───────────
+          // ── Particules Dynamiques ──────────────────────
+          const Positioned.fill(
+            child: ParticleBackground(),
+          ),
+
+          // ── Bokeh (Neon Glows avec Parallax léger simulé) ───────────
           Positioned(
             top: -50,
             left: -100,
@@ -54,218 +66,173 @@ class HomeScreen extends ConsumerWidget {
           SafeArea(
             child: Column(
               children: [
-                // ── Top Bar (HUD : Avatar, Level, Monnaies) ─────────────────────
+                // ── Nouveau HUD : Barre Fine Unifiée ─────────────────────
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Profil & Level (Style Image 2)
-                      GestureDetector(
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          context.pushNamed('level');
-                        },
-                        child: GlassContainer(
-                          innerGlow: true,
-                          padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.white.withOpacity(0.15)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Avatar + Level Ring
+                        GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            context.pushNamed('level');
+                          },
                           child: Row(
                             children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: PyraTheme.bgSurface,
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: Colors.white12),
-                                ),
-                                child: const Center(child: Text('😎', style: TextStyle(fontSize: 28))),
-                              ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              Stack(
+                                alignment: Alignment.center,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text('Niv. $level', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16)),
-                                      const SizedBox(width: 8),
-                                      NeoBadge(text: '$xp XP', gradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]), fontSize: 10, padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
-                                    ],
+                                  SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: CircularProgressIndicator(
+                                      value: (xp % 100) / 100, // Exemple de progression
+                                      strokeWidth: 3,
+                                      backgroundColor: Colors.white10,
+                                      valueColor: const AlwaysStoppedAnimation<Color>(PyraTheme.primaryCyan),
+                                    ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      _miniDot(active: xp >= 10),
-                                      _miniDot(active: xp >= 25),
-                                      _miniDot(active: xp >= 50),
-                                      _miniDot(active: xp >= 75),
-                                      _miniDot(active: xp >= 100),
-                                    ],
+                                  Text(profile?.emoji ?? '😎', style: const TextStyle(fontSize: 20)),
+                                  // Petit badge de niveau qui chevauche
+                                  Positioned(
+                                    bottom: 0,
+                                    right: -2,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                                      decoration: BoxDecoration(
+                                        color: PyraTheme.primaryCyan,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text('$level', style: const TextStyle(color: Colors.black, fontSize: 8, fontWeight: FontWeight.w900)),
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 12),
+                              // Streak (Flamme)
+                              Row(
+                                children: [
+                                  const Text('🔥', style: TextStyle(fontSize: 16)),
+                                  const SizedBox(width: 2),
+                                  Text('$streak', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                                ],
+                              ),
                             ],
                           ),
                         ),
-                      ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.2),
 
-                      // Currencies & Icons
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          GlassContainer(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            borderRadius: BorderRadius.circular(20),
-                            child: Row(
-                              children: [
-                                Text(numberFormat.format(diamonds), style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w900, fontSize: 16)),
-                                const SizedBox(width: 8),
-                                const Icon(Icons.diamond_rounded, color: PyraTheme.primaryPurple, size: 20),
-                              ],
-                            ),
-                          ).animate().fadeIn(duration: 500.ms, delay: 100.ms).slideX(begin: 0.2),
-                          const SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: () {
-                              HapticFeedback.lightImpact();
-                              context.pushNamed('store');
-                            },
-                            child: GlassContainer(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              borderRadius: BorderRadius.circular(20),
-                              child: Row(
-                                children: [
-                                  Text(numberFormat.format(coins), style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.w900, fontSize: 16)),
-                                  const SizedBox(width: 8),
-                                  const Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 20),
-                                ],
-                              ),
-                            ),
-                          ).animate().fadeIn(duration: 500.ms, delay: 200.ms).slideX(begin: 0.2),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-                const Spacer(),
-
-                // ── Bannières d'action & Play Button ──────────────────────
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      // Quests Banner
-                      GestureDetector(
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          context.pushNamed('quests');
-                        },
-                        child: GlassContainer(
-                          innerGlow: true,
-                          padding: const EdgeInsets.all(20),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 50,
-                                height: 50,
+                        // Currencies
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                context.pushNamed('store');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  gradient: PyraTheme.cyanGradient,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: PyraTheme.glowCyan,
+                                  color: Colors.white.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Icon(Icons.question_mark_rounded, color: Colors.white, size: 28),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Row(
                                   children: [
-                                    Row(
-                                      children: [
-                                        const Text('Quêtes', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                                        const SizedBox(width: 8),
-                                        const NeoBadge(text: 'NOUVEAU', fontSize: 9, padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text('Participe aux tirages !', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14)),
+                                    Text(numberFormat.format(coins), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                    const SizedBox(width: 4),
+                                    const Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 16),
                                   ],
                                 ),
                               ),
-                              Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withOpacity(0.3), size: 20),
-                            ],
-                          ),
-                        ),
-                      ).animate().fadeIn(duration: 500.ms, delay: 300.ms).slideY(begin: 0.2),
-
-                      const SizedBox(height: 24),
-
-                      // Bouton Jouer
-                      GestureDetector(
-                        onTap: () {
-                          HapticFeedback.heavyImpact();
-                          context.pushNamed('onlineLobby');
-                        },
-                        child: Container(
-                          height: 80,
-                          decoration: BoxDecoration(
-                            gradient: PyraTheme.festiveGradient,
-                            borderRadius: BorderRadius.circular(40),
-                            boxShadow: PyraTheme.glowPink,
-                            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
-                          ),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
                                 children: [
-                                  const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 36),
-                                  const SizedBox(width: 8),
-                                  const Text(
-                                    'JOUER EN LIGNE',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1.5,
-                                    ),
-                                  ),
+                                  Text(numberFormat.format(diamonds), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.diamond_rounded, color: PyraTheme.primaryPurple, size: 16),
                                 ],
                               ),
-                            ],
-                          ),
-                        )
-                        .animate(onPlay: (c) => c.repeat(reverse: true))
-                        .scale(begin: const Offset(1,1), end: const Offset(1.03, 1.03), duration: 1.5.seconds, curve: Curves.easeInOut)
-                        .shimmer(duration: 3.seconds, color: Colors.white.withOpacity(0.3), angle: 45),
-                      ).animate().fadeIn(duration: 500.ms, delay: 400.ms).slideY(begin: 0.2),
-                      
-                      const SizedBox(height: 120),
-                    ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ).animate().fadeIn(duration: 500.ms).slideY(begin: -0.2),
+
+                // ── Carrousel d'événements (News/Quests) ──────────────────────
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      context.pushNamed('quests');
+                    },
+                    child: GlassContainer(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: PyraTheme.primaryPink.withOpacity(0.3)),
+                      innerGlow: true,
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: PyraTheme.primaryPink.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.card_giftcard_rounded, color: PyraTheme.primaryPink, size: 20),
+                          ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1,1), end: const Offset(1.1,1.1), duration: 1.seconds),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text('Coffre Quotidien Disponible', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                    SizedBox(width: 8),
+                                    NeoBadge(text: 'RÉCUPÉRER', fontSize: 8, gradient: PyraTheme.festiveGradient, padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                                  ],
+                                ),
+                                SizedBox(height: 2),
+                                Text('Ouvre-le avant minuit !', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 14),
+                        ],
+                      ),
+                    ),
+                  ),
+                ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.2),
+
+                const Spacer(),
+
+                // ── Carte 3D Centrale (Bouton Jouer) ──────────────────────
+                PlayCard3D(
+                  onTap: () {
+                    context.pushNamed('onlineLobby');
+                  },
+                ).animate().fadeIn(duration: 800.ms, curve: Curves.easeOutBack).scale(begin: const Offset(0.8, 0.8)),
+
+                const Spacer(),
+                const SizedBox(height: 100), // Espace pour la barre de navigation
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _miniDot({required bool active}) {
-    return Container(
-      margin: const EdgeInsets.only(right: 4),
-      width: 14,
-      height: 4,
-      decoration: BoxDecoration(
-        gradient: active ? PyraTheme.purplePinkGradient : null,
-        color: active ? null : Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(2),
-        boxShadow: active ? PyraTheme.glowPurple.map((s) => BoxShadow(color: s.color, blurRadius: 4)).toList() : [],
       ),
     );
   }
