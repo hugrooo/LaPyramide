@@ -70,100 +70,122 @@ class HomeScreen extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: GlassContainer(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    borderRadius: BorderRadius.circular(30),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: Colors.white.withOpacity(0.15)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
                       children: [
-                        // Avatar + Level Ring
-                        GestureDetector(
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            context.pushNamed('level');
-                          },
-                          child: Row(
-                            children: [
-                              Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 40,
-                                    height: 40,
-                                    child: CircularProgressIndicator(
-                                      value: (xp % 100) / 100, // Exemple de progression
-                                      strokeWidth: 3,
-                                      backgroundColor: Colors.white10,
-                                      valueColor: const AlwaysStoppedAnimation<Color>(PyraTheme.primaryCyan),
-                                    ),
-                                  ),
-                                  Text(profile?.emoji ?? '😎', style: const TextStyle(fontSize: 20)),
-                                  // Petit badge de niveau qui chevauche
-                                  Positioned(
-                                    bottom: 0,
-                                    right: -2,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                                      decoration: BoxDecoration(
-                                        color: PyraTheme.primaryCyan,
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text('$level', style: const TextStyle(color: Colors.black, fontSize: 8, fontWeight: FontWeight.w900)),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(width: 12),
-                              // Streak (Flamme)
-                              Row(
-                                children: [
-                                  const Text('🔥', style: TextStyle(fontSize: 16)),
-                                  const SizedBox(width: 2),
-                                  Text('$streak', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Currencies
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            // Avatar + Streak
                             GestureDetector(
                               onTap: () {
                                 HapticFeedback.lightImpact();
-                                context.pushNamed('store');
+                                context.pushNamed('level');
                               },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.05),
-                                  borderRadius: BorderRadius.circular(12),
+                              child: Row(
+                                children: [
+                                  Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Center(child: Text(profile?.emoji ?? '😎', style: const TextStyle(fontSize: 20))),
+                                      ),
+                                      Positioned(
+                                        bottom: 0,
+                                        right: -2,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                                          decoration: BoxDecoration(
+                                            color: PyraTheme.primaryCyan,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: Text('Lvl $level', style: const TextStyle(color: Colors.black, fontSize: 8, fontWeight: FontWeight.w900)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 12),
+                                  // Streak (Flamme)
+                                  Row(
+                                    children: [
+                                      const Text('🔥', style: TextStyle(fontSize: 16)),
+                                      const SizedBox(width: 4),
+                                      Text('$streak', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Currencies
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    context.pushNamed('store');
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.08),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Text(numberFormat.format(coins), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
+                                        const SizedBox(width: 6),
+                                        const Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 18),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                child: Row(
-                                  children: [
-                                    Text(numberFormat.format(coins), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                                    const SizedBox(width: 4),
-                                    const Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 16),
-                                  ],
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.08),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(numberFormat.format(diamonds), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
+                                      const SizedBox(width: 6),
+                                      const Icon(Icons.diamond_rounded, color: PyraTheme.primaryPurple, size: 18),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        // Barre de progression XP Linéaire
+                        Row(
+                          children: [
+                            const Text('XP', style: TextStyle(color: PyraTheme.primaryCyan, fontSize: 10, fontWeight: FontWeight.w900)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: LinearProgressIndicator(
+                                  value: (xp % 100) / 100, // Exemple de progression
+                                  minHeight: 8,
+                                  backgroundColor: Colors.white.withOpacity(0.1),
+                                  valueColor: const AlwaysStoppedAnimation<Color>(PyraTheme.primaryCyan),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                children: [
-                                  Text(numberFormat.format(diamonds), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                                  const SizedBox(width: 4),
-                                  const Icon(Icons.diamond_rounded, color: PyraTheme.primaryPurple, size: 16),
-                                ],
-                              ),
-                            ),
+                            Text('${xp % 100} / 100', style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ],

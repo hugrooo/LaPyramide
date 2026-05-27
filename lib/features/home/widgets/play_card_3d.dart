@@ -189,7 +189,7 @@ class _PlayCard3DState extends State<PlayCard3D> with SingleTickerProviderStateM
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: PyraTheme.orangeYellowGradient,
-                          boxShadow: PyraTheme.glowYellow,
+                          boxShadow: PyraTheme.glowOrange,
                         ),
                         child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 48),
                       ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1, 1), end: const Offset(1.05, 1.05), duration: 1.seconds),
