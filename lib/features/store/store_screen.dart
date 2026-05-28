@@ -116,7 +116,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           ),
           PulsarButton(
             text: buttonText,
-            paddingHorizontal: 12,
+            width: null, // Let it size-to-fit
+            paddingHorizontal: 16,
             paddingVertical: 12,
             fontSize: 12,
             gradient: isPopular ? const LinearGradient(colors: [PyraTheme.primaryPink, Colors.pinkAccent]) : PyraTheme.festiveGradient,
@@ -348,17 +349,16 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               ),
             )
           else
-            SizedBox(
-              width: 80,
-              height: 40,
-              child: PulsarButton(
-                text: '$cost',
-                paddingHorizontal: 8,
-                fontSize: 12,
-                icon: currencyIcon,
-                iconSize: 12,
-                gradient: isCoins ? PyraTheme.cyanGradient : PyraTheme.purplePinkGradient,
-                onPressed: () async {
+            PulsarButton(
+              width: null, // Let it size to fit text and icon
+              text: '$cost',
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              fontSize: 14,
+              icon: currencyIcon,
+              iconSize: 14,
+              gradient: isCoins ? PyraTheme.cyanGradient : PyraTheme.purplePinkGradient,
+              onPressed: () async {
                   bool success = false;
                   if (type == 'joker') {
                     success = await ref.read(storeServiceProvider).buyJoker(id, cost);
@@ -385,7 +385,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   }
                 },
               ),
-            ),
         ],
       ),
     );
