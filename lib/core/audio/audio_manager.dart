@@ -33,8 +33,8 @@ class AudioManager {
     }
   }
 
-  void playTaunt() => playSound('sounds/taunt.mp3');
-  void playDrink() => playSound('sounds/drink.mp3');
-  void playBluff() => playSound('sounds/bluff.mp3');
-  void playWin() => playSound('sounds/win.mp3');
+  void playClick() => playSound('sounds/click.wav');
+  void playCardFlip() => playSound('sounds/card_flip.wav');
+  void playGlassClink() => playSound('sounds/glass_clink.wav');
+  void playVictory() => playSound('sounds/victory.wav');
 }

@@ -5,6 +5,8 @@ import '../../../app/theme.dart';
 import '../models/game_state.dart';
 import '../online/online_game_service.dart';
 import '../../../shared/widgets/playing_card_widget.dart';
+import 'package:confetti/confetti.dart';
+import '../../../core/audio/audio_manager.dart';
 
 class EndGameScreen extends ConsumerStatefulWidget {
   final GameState state;
@@ -22,12 +24,37 @@ class EndGameScreen extends ConsumerStatefulWidget {
 
 class _EndGameScreenState extends ConsumerState<EndGameScreen> {
   final Set<int> _revealedCards = {};
+  late ConfettiController _confettiController;
+
+  @override
+  void initState() {
+    super.initState();
+    _confettiController = ConfettiController(duration: const Duration(seconds: 5));
+    // Check if we immediately start in scoreboard
+    if (widget.state.endGamePlayerIndex >= widget.state.players.length) {
+      _confettiController.play();
+      AudioManager().playVictory();
+    }
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(covariant EndGameScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.state.endGamePlayerIndex != widget.state.endGamePlayerIndex) {
       _revealedCards.clear(); // Reset revealed cards when player changes
+    }
+    
+    // Check if we just transitioned to the scoreboard
+    if (oldWidget.state.endGamePlayerIndex < oldWidget.state.players.length &&
+        widget.state.endGamePlayerIndex >= widget.state.players.length) {
+      _confettiController.play();
+      AudioManager().playVictory();
     }
   }
 
@@ -132,9 +159,12 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
   Widget _buildScoreboard(BuildContext context) {
     final sortedPlayers = List.of(widget.state.players)..sort((a, b) => b.totalSips.compareTo(a.totalSips));
     
-    return Column(
+    return Stack(
+      alignment: Alignment.topCenter,
       children: [
-        const SizedBox(height: 32),
+        Column(
+          children: [
+            const SizedBox(height: 32),
         const Text('🏆 RÉSULTATS FINAUX 🏆', style: TextStyle(fontSize: 28, color: PyraTheme.primaryYellow)),
         const SizedBox(height: 32),
         Expanded(
@@ -153,19 +183,29 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
             },
           ),
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: PyraTheme.primaryOrange,
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: PyraTheme.primaryOrange,
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+            ),
+            onPressed: () {
+              ref.read(onlineGameServiceProvider).leaveRoom(widget.state.gameId);
+              context.goNamed('home');
+            },
+            child: const Text('Quitter le salon', style: TextStyle(color: Colors.white, fontSize: 20)),
           ),
-          onPressed: () {
-            ref.read(onlineGameServiceProvider).leaveRoom(widget.state.gameId);
-            context.goNamed('home');
-          },
-          child: const Text('Quitter le salon', style: TextStyle(color: Colors.white, fontSize: 20)),
-        ),
-        const SizedBox(height: 48),
-      ],
+          const SizedBox(height: 48),
+        ],
+      ),
+      ConfettiWidget(
+        confettiController: _confettiController,
+        blastDirectionality: BlastDirectionality.explosive,
+        shouldLoop: false,
+        colors: const [PyraTheme.primaryPink, PyraTheme.primaryCyan, PyraTheme.primaryYellow, Colors.white],
+        numberOfParticles: 50,
+        emissionFrequency: 0.05,
+      ),
+    ],
     );
   }
 }

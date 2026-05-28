@@ -340,8 +340,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _buildSocialButton('assets/images/google_logo.png', Icons.g_mobiledata, Colors.white, onPressed: _signInWithGoogle),
-                            const SizedBox(width: 16),
-                            _buildSocialButton('assets/images/apple_logo.png', Icons.apple, Colors.black, backgroundColor: Colors.white, onPressed: _signInWithApple),
+                            if (Theme.of(context).platform == TargetPlatform.iOS || Theme.of(context).platform == TargetPlatform.macOS) ...[
+                              const SizedBox(width: 16),
+                              _buildSocialButton('assets/images/apple_logo.png', Icons.apple, Colors.black, backgroundColor: Colors.white, onPressed: _signInWithApple),
+                            ],
                           ],
                         ),
                       ],

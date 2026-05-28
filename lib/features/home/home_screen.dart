@@ -26,8 +26,7 @@ class HomeScreen extends ConsumerWidget {
     final coins = profile?.coins ?? 0;
     final diamonds = profile?.diamonds ?? 0;
     
-    // Pour l'exemple, on simule une série (streak) de 3 jours
-    final streak = 3;
+    final streak = profile?.streak ?? 0;
 
     final numberFormat = NumberFormat('#,###', 'fr_FR');
     

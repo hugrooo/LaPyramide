@@ -826,7 +826,7 @@ class OnlineGameScreen extends ConsumerWidget {
                       avatar: Text(p.emoji),
                       onPressed: () {
                         HapticFeedback.lightImpact();
-                        AudioManager().playDrink();
+                        AudioManager().playGlassClink();
                         Navigator.pop(ctx);
                         service.assignDrink(state.gameId, p.id, isPigeon: isPigeon);
                       },

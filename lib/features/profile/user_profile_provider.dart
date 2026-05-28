@@ -13,6 +13,7 @@ class UserProfile {
   final int lastDailyChestClaimed;
   final int drinksGiven;
   final int bluffWins;
+  final int streak;
   final Map<String, int> jokers;
   final List<String> cardBacks;
   final List<String> titles;
@@ -28,6 +29,7 @@ class UserProfile {
     required this.lastDailyChestClaimed,
     required this.drinksGiven,
     required this.bluffWins,
+    required this.streak,
     required this.jokers,
     required this.cardBacks,
     required this.titles,
@@ -81,6 +83,7 @@ class UserProfile {
       lastDailyChestClaimed: map['lastDailyChestClaimed'] ?? 0,
       drinksGiven: map['drinksGiven'] ?? 0,
       bluffWins: map['bluffWins'] ?? 0,
+      streak: map['streak'] ?? 0,
       jokers: jokersMap,
       cardBacks: cardBacksList,
       titles: titlesList,

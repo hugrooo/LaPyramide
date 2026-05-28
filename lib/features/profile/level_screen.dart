@@ -14,23 +14,6 @@ import 'user_profile_provider.dart';
 class LevelScreen extends ConsumerWidget {
   const LevelScreen({super.key});
 
-  // Logique pour obtenir un titre selon le niveau
-  String _getTitleForLevel(int level) {
-    if (level < 5) return 'Novice du Bluff';
-    if (level < 10) return 'Initié de la Pyramide';
-    if (level < 20) return 'Maître Distributeur';
-    if (level < 50) return 'Seigneur des Cartes';
-    return 'Le Pharaon';
-  }
-
-  // Icône associée au titre
-  String _getIconForLevel(int level) {
-    if (level < 5) return '🥚';
-    if (level < 10) return '🎭';
-    if (level < 20) return '🎴';
-    if (level < 50) return '👑';
-    return '👁️';
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,9 +27,7 @@ class LevelScreen extends ConsumerWidget {
     final progress = (xp / xpNeededForNext).clamp(0.0, 1.0);
     final numberFormat = NumberFormat('#,###', 'fr_FR');
 
-    final title = _getTitleForLevel(level);
-    final rankIcon = _getIconForLevel(level);
-
+    final String displayTitle = profile?.activeTitle ?? 'Novice 🐣';
     return Scaffold(
       backgroundColor: PyraTheme.bgDark,
       body: Stack(
@@ -148,10 +129,8 @@ class LevelScreen extends ConsumerWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(rankIcon, style: const TextStyle(fontSize: 18)),
-                                const SizedBox(width: 8),
                                 Text(
-                                  title.toUpperCase(),
+                                  displayTitle.toUpperCase(),
                                   style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.5),
                                 ),
                               ],

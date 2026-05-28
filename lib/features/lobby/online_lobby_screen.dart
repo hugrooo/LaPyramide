@@ -17,6 +17,7 @@ import '../auth/auth_service.dart';
 import '../game/models/game_state.dart';
 import '../game/models/player_model.dart';
 import '../game/online/online_game_service.dart';
+import '../profile/user_profile_provider.dart';
 
 class OnlineLobbyScreen extends ConsumerStatefulWidget {
   const OnlineLobbyScreen({super.key});
@@ -143,6 +144,8 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
   Widget build(BuildContext context) {
     final roomCode = ref.watch(currentRoomCodeProvider);
     final authState = ref.watch(authStateChangesProvider);
+    final userProfileAsync = ref.watch(userProfileProvider);
+    final String userEmoji = userProfileAsync.value?.emoji ?? '😎';
 
     return Scaffold(
       body: Stack(
@@ -162,15 +165,16 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                   return _buildWaitingRoom(roomCode, user.uid);
                 }
 
-                return _buildLobbyMenu(user.displayName, user.photoURL);
+                return _buildLobbyMenu(user.displayName, userEmoji);
               },
               loading: () => const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPurple)),
               error: (err, _) => Center(child: Text('Erreur: $err', style: const TextStyle(color: Colors.red))),
             ),
           ),
 
-          // Bouton Retour Général
-          if (roomCode == null)
+          // We handle the back button directly in the Top Bar of _buildLobbyMenu
+          // But keep it here for _buildWaitingRoom which doesn't have a top bar
+          if (roomCode != null)
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -185,92 +189,135 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
     );
   }
 
-  Widget _buildLobbyMenu(String? name, String? photoUrl) {
-    return SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 28.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildLobbyMenu(String? name, String emoji) {
+    return Column(
+      children: [
+        // Top Bar
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Row(
             children: [
-            ClipOval(
-              child: photoUrl != null
-                  ? Image.network(
-                      photoUrl,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        width: 80,
-                        height: 80,
-                        color: PyraTheme.primaryPurple,
-                        child: const Center(child: Text('👤', style: TextStyle(fontSize: 40))),
-                      ),
-                    )
-                  : Container(
-                      width: 80,
-                      height: 80,
-                      color: PyraTheme.primaryPurple,
-                      child: const Center(child: Text('👤', style: TextStyle(fontSize: 40))),
-                    ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Connecté en tant que\n${name ?? "Invité"}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white, fontSize: 18),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => ref.read(authServiceProvider).signOut(),
-              child: const Text('Déconnexion', style: TextStyle(color: Colors.redAccent)),
-            ),
-            const SizedBox(height: 48),
-
-            if (_isLoading)
-              const CircularProgressIndicator(color: PyraTheme.primaryPink)
-            else ...[
-              GameModeCarousel(
-                selectedMode: _settings.mode,
-                replaceCardsWithPowers: _settings.replaceCardsWithPowers,
-                onModeChanged: (mode) => setState(() => _settings = _settings.copyWith(mode: mode)),
-                onReplaceCardsChanged: (v) => setState(() => _settings = _settings.copyWith(replaceCardsWithPowers: v)),
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                onPressed: () => context.pop(),
               ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                child: PulsarButton(
+              const Expanded(
+                child: Text(
+                  'Mode en Ligne',
+                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(width: 48), // Balance for title
+            ],
+          ),
+        ),
+
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            children: [
+              // User Card
+              GlassContainer(
+                padding: const EdgeInsets.all(20),
+                borderRadius: BorderRadius.circular(24),
+                child: Row(
+                  children: [
+                    // Avatar
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: PyraTheme.primaryPink.withOpacity(0.5), width: 2),
+                        boxShadow: [
+                          BoxShadow(color: PyraTheme.primaryPink.withOpacity(0.3), blurRadius: 15, spreadRadius: 2),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Container(
+                          color: PyraTheme.primaryPurple,
+                          child: Center(
+                            child: Text(
+                              emoji,
+                              style: const TextStyle(fontSize: 32),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Connecté en tant que', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                          Text(
+                            name ?? 'Invité',
+                            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2),
+
+              const SizedBox(height: 32),
+
+              const Text(
+                'Choix du Mode',
+                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              ).animate().fadeIn(delay: 100.ms),
+              const SizedBox(height: 16),
+
+              if (_isLoading)
+                const Padding(
+                  padding: EdgeInsets.all(40.0),
+                  child: Center(child: CircularProgressIndicator(color: PyraTheme.primaryPink)),
+                )
+              else ...[
+                GameModeCarousel(
+                  selectedMode: _settings.mode,
+                  replaceCardsWithPowers: _settings.replaceCardsWithPowers,
+                  onModeChanged: (mode) => setState(() => _settings = _settings.copyWith(mode: mode)),
+                  onReplaceCardsChanged: (v) => setState(() => _settings = _settings.copyWith(replaceCardsWithPowers: v)),
+                ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.2),
+
+                const SizedBox(height: 32),
+
+                PulsarButton(
                   text: 'Créer un salon',
+                  icon: Icons.add_circle_outline_rounded,
                   gradient: PyraTheme.purplePinkGradient,
                   onPressed: _createRoom,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                child: PulsarButton(
+                ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.2),
+
+                const SizedBox(height: 16),
+
+                PulsarButton(
                   text: 'Rejoindre un salon',
-                  gradient: const LinearGradient(colors: [PyraTheme.bgCard, PyraTheme.bgCard]),
+                  icon: Icons.login_rounded,
+                  gradient: PyraTheme.cyanGradient,
                   onPressed: _showJoinDialog,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                child: PulsarButton(
-                  text: '📷 Scanner un QR Code',
-                  gradient: const LinearGradient(colors: [PyraTheme.primaryPurple, Colors.indigo]),
+                ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
+
+                const SizedBox(height: 16),
+
+                PulsarButton(
+                  text: 'Scanner un QR Code',
+                  icon: Icons.qr_code_scanner_rounded,
+                  gradient: const LinearGradient(colors: [Colors.indigo, PyraTheme.primaryPurple]),
                   onPressed: _showScannerDialog,
-                ),
-              ),
+                ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.2),
+              ],
             ],
-          ],
+          ),
         ),
-        ),
-      ),
+      ],
     );
   }
 

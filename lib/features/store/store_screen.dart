@@ -298,10 +298,40 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     final IconData currencyIcon = isCoins ? Icons.monetization_on_rounded : Icons.diamond_rounded;
     final Color currencyColor = isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple;
 
-    return GlassContainer(
-      padding: const EdgeInsets.all(16),
-      borderRadius: BorderRadius.circular(20),
-      child: Row(
+    return GestureDetector(
+      onTap: () {
+        if (type == 'cardBack' || type == 'title') {
+          showDialog(
+            context: context,
+            builder: (ctx) => Dialog(
+              backgroundColor: Colors.transparent,
+              child: GlassContainer(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, color: iconColor, size: 80),
+                    const SizedBox(height: 16),
+                    Text(title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    Text(desc, style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16), textAlign: TextAlign.center),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryPurple),
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Fermer', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+      },
+      child: GlassContainer(
+        padding: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(20),
+        child: Row(
         children: [
           Container(
             width: 50,
@@ -387,7 +417,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildTabButton(String text, IconData icon, StoreTab tab) {
