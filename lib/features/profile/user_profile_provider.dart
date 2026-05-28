@@ -14,6 +14,8 @@ class UserProfile {
   final int drinksGiven;
   final int bluffWins;
   final int streak;
+  final int gamesPlayed;
+  final int lastClaimedLevel;
   final Map<String, int> jokers;
   final List<String> cardBacks;
   final List<String> titles;
@@ -30,6 +32,8 @@ class UserProfile {
     required this.drinksGiven,
     required this.bluffWins,
     required this.streak,
+    required this.gamesPlayed,
+    required this.lastClaimedLevel,
     required this.jokers,
     required this.cardBacks,
     required this.titles,
@@ -73,17 +77,19 @@ class UserProfile {
     }
 
     return UserProfile(
-      level: map['level'] ?? 1,
-      xp: map['xp'] ?? 0,
-      coins: map['coins'] ?? 0,
-      diamonds: map['diamonds'] ?? 0,
+      level: (map['level'] as num? ?? 1).toInt(),
+      xp: (map['xp'] as num? ?? 0).toInt(),
+      coins: (map['coins'] as num? ?? 0).toInt(),
+      diamonds: (map['diamonds'] as num? ?? 0).toInt(),
       emoji: map['emoji'] ?? '😎',
       activeCardBack: map['activeCardBack'] ?? 'classic',
       activeTitle: map['activeTitle'] ?? 'Novice 🐣',
-      lastDailyChestClaimed: map['lastDailyChestClaimed'] ?? 0,
-      drinksGiven: map['drinksGiven'] ?? 0,
-      bluffWins: map['bluffWins'] ?? 0,
-      streak: map['streak'] ?? 0,
+      lastDailyChestClaimed: (map['lastDailyChestClaimed'] as num? ?? 0).toInt(),
+      drinksGiven: (map['drinksGiven'] as num? ?? 0).toInt(),
+      bluffWins: (map['bluffWins'] as num? ?? 0).toInt(),
+      streak: (map['streak'] as num? ?? 0).toInt(),
+      gamesPlayed: (map['gamesPlayed'] as num? ?? 0).toInt(),
+      lastClaimedLevel: (map['lastClaimedLevel'] as num? ?? 1).toInt(),
       jokers: jokersMap,
       cardBacks: cardBacksList,
       titles: titlesList,
@@ -96,10 +102,11 @@ class UserProfile {
     
     if (snapshot.exists && snapshot.value is Map) {
       final data = snapshot.value as Map<dynamic, dynamic>;
-      int currentXp = (data['xp'] ?? 0) as int;
-      int currentLevel = (data['level'] ?? 1) as int;
-      int currentDrinks = (data['drinksGiven'] ?? 0) as int;
-      int currentBluffs = (data['bluffWins'] ?? 0) as int;
+      int currentXp = (data['xp'] as num? ?? 0).toInt();
+      int currentLevel = (data['level'] as num? ?? 1).toInt();
+      int currentDrinks = (data['drinksGiven'] as num? ?? 0).toInt();
+      int currentBluffs = (data['bluffWins'] as num? ?? 0).toInt();
+      int currentGamesPlayed = (data['gamesPlayed'] as num? ?? 0).toInt();
 
       currentXp += addedXp;
       
@@ -107,7 +114,6 @@ class UserProfile {
       while (currentXp >= currentLevel * 100) {
         currentXp -= currentLevel * 100;
         currentLevel++;
-        // On pourrait distribuer des pièces/diamants ici pour le passage de niveau
       }
 
       await dbRef.update({
@@ -115,7 +121,30 @@ class UserProfile {
         'level': currentLevel,
         'drinksGiven': currentDrinks + addedDrinks,
         'bluffWins': currentBluffs + addedBluffs,
+        'gamesPlayed': currentGamesPlayed + 1,
       });
+    }
+  }
+
+  static Future<void> claimLevelReward(String uid) async {
+    final dbRef = FirebaseDatabase.instance.ref('users/$uid');
+    final snapshot = await dbRef.get();
+    
+    if (snapshot.exists && snapshot.value is Map) {
+      final data = snapshot.value as Map<dynamic, dynamic>;
+      final int currentLevel = (data['level'] as num? ?? 1).toInt();
+      final int currentCoins = (data['coins'] as num? ?? 0).toInt();
+      final int currentDiamonds = (data['diamonds'] as num? ?? 0).toInt();
+      final int lastClaimed = (data['lastClaimedLevel'] as num? ?? 1).toInt();
+
+      if (currentLevel > lastClaimed) {
+        final nextClaimable = lastClaimed + 1;
+        await dbRef.update({
+          'coins': currentCoins + 200,
+          'diamonds': currentDiamonds + 10,
+          'lastClaimedLevel': nextClaimable,
+        });
+      }
     }
   }
 }

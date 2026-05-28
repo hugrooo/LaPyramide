@@ -140,14 +140,14 @@ class PyraTheme {
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryCyan,
             foregroundColor: textPrimary,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
             elevation: 12,
             shadowColor: primaryCyan.withOpacity(0.6),
             textStyle: GoogleFonts.nunito(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w800,
             ),
           ),

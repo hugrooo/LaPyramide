@@ -13,6 +13,7 @@ class PulsarButton extends StatefulWidget {
   final double? fontSize;
   final double? iconSize;
   final double? width;
+  final int maxLines;
 
   const PulsarButton({
     super.key,
@@ -25,6 +26,7 @@ class PulsarButton extends StatefulWidget {
     this.fontSize,
     this.iconSize,
     this.width = double.infinity,
+    this.maxLines = 2,
   });
 
   @override
@@ -84,6 +86,20 @@ class _PulsarButtonState extends State<PulsarButton>
     final activeGradient = widget.gradient ?? PyraTheme.cyanGradient;
     final isDisabled = widget.onPressed == null;
 
+    // Détermination de la taille de l'écran pour la réactivité
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.height < 750 || screenSize.width < 380;
+
+    // Ajustement dynamique des valeurs pour s'adapter à l'écran
+    final computedPaddingVertical = widget.paddingVertical == 18.0
+        ? (isSmallScreen ? 12.0 : 18.0)
+        : widget.paddingVertical;
+    final computedPaddingHorizontal = widget.paddingHorizontal == 32.0
+        ? (isSmallScreen ? 20.0 : 32.0)
+        : widget.paddingHorizontal;
+    final computedFontSize = widget.fontSize ?? (isSmallScreen ? 16.0 : 20.0);
+    final computedIconSize = widget.iconSize ?? (isSmallScreen ? 20.0 : 24.0);
+
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
@@ -96,15 +112,8 @@ class _PulsarButtonState extends State<PulsarButton>
           duration: const Duration(milliseconds: 200),
           child: Container(
             width: widget.width,
-            padding: EdgeInsets.symmetric(
-              vertical: widget.paddingVertical,
-              horizontal: widget.paddingHorizontal,
-            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(32),
-              gradient: isDisabled
-                  ? const LinearGradient(colors: [Color(0xFF2A2D43), Color(0xFF1E2138)])
-                  : activeGradient,
               boxShadow: isDisabled
                   ? []
                   : [
@@ -115,51 +124,63 @@ class _PulsarButtonState extends State<PulsarButton>
                         spreadRadius: _isPressed ? 4 : 2,
                         offset: const Offset(0, 8),
                       ),
-                      // Inner highlight simulated with border
                     ],
-              border: Border.all(
-                color: Colors.white.withOpacity(isDisabled ? 0.05 : 0.4),
-                width: 1.5,
-              ),
             ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Text and Icon
-                Row(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: computedPaddingVertical,
+                  horizontal: computedPaddingHorizontal,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(32),
+                  gradient: isDisabled
+                      ? const LinearGradient(colors: [Color(0xFF2A2D43), Color(0xFF1E2138)])
+                      : activeGradient,
+                  border: Border.all(
+                    color: Colors.white.withOpacity(isDisabled ? 0.05 : 0.4),
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     if (widget.icon != null) ...[
-                      Icon(widget.icon, color: Colors.white, size: widget.iconSize ?? 24),
+                      Icon(widget.icon, color: Colors.white, size: computedIconSize),
                       const SizedBox(width: 8),
                     ],
-                    Text(
-                      widget.text,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: widget.fontSize ?? 20,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.5,
+                    Flexible(
+                      child: Text(
+                        widget.text,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: computedFontSize,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                        ),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: widget.maxLines,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-              ],
+              ).animate(onPlay: (c) => c.repeat(reverse: true))
+               .shimmer(
+                 duration: 3.seconds,
+                 color: Colors.white.withOpacity(0.25),
+                 angle: 45,
+                 blendMode: BlendMode.srcATop,
+               ),
             ),
-          )
-              .animate(onPlay: (c) => c.repeat(reverse: true))
+          ).animate(onPlay: (c) => c.repeat(reverse: true))
               .scale(
                 begin: const Offset(1, 1),
                 end: const Offset(1.02, 1.02),
                 duration: 2.seconds,
                 curve: Curves.easeInOut,
-              )
-              .shimmer(
-                duration: 3.seconds,
-                color: Colors.white.withOpacity(0.25),
-                angle: 45,
-                blendMode: BlendMode.overlay,
               ),
         ),
       ),

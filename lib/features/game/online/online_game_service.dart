@@ -95,10 +95,14 @@ class OnlineGameService {
       pendingDrinks: [],
       settings: settings,
       presence: {user.uid: true},
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
     );
 
     await roomRef.set(initialState.toJson());
     await roomRef.child('presence/${user.uid}').onDisconnect().set(false);
+    
+    // Lancement asynchrone en arrière-plan du nettoyage des vieux salons
+    cleanupOldRooms();
     
     // Sauvegarder localement pour la reconnexion
     await prefs.setString('currentRoomCode', roomCode);
@@ -111,7 +115,7 @@ class OnlineGameService {
     final user = _auth.currentUser;
     if (user == null) throw Exception('Utilisateur non connecté');
 
-    final code = roomCode.toUpperCase();
+    final code = roomCode.trim().toUpperCase();
     final DatabaseReference roomRef = _db.ref('games/$code');
     final snapshot = await roomRef.get();
 
@@ -131,7 +135,11 @@ class OnlineGameService {
     if (state.players.any((p) => p.id == user.uid)) {
       final updatedPresence = Map<String, bool>.from(state.presence)..[user.uid] = true;
       await roomRef.child('presence').set(updatedPresence);
+      await roomRef.child('updatedAt').set(DateTime.now().millisecondsSinceEpoch);
       await roomRef.child('presence/${user.uid}').onDisconnect().set(false);
+      
+      // Lancement asynchrone en arrière-plan du nettoyage
+      cleanupOldRooms();
       return; 
     }
 
@@ -149,10 +157,17 @@ class OnlineGameService {
 
     final updatedPlayers = List<Player>.from(state.players)..add(newPlayer);
     final updatedPresence = Map<String, bool>.from(state.presence)..[user.uid] = true;
-    final updatedState = state.copyWith(players: updatedPlayers, presence: updatedPresence);
+    final updatedState = state.copyWith(
+      players: updatedPlayers, 
+      presence: updatedPresence,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
 
     await roomRef.set(updatedState.toJson());
     await roomRef.child('presence/${user.uid}').onDisconnect().set(false);
+
+    // Lancement asynchrone en arrière-plan du nettoyage
+    cleanupOldRooms();
 
     // Sauvegarder localement
     await prefs.setString('currentRoomCode', code);
@@ -175,8 +190,9 @@ class OnlineGameService {
       }
     }
 
-    final DatabaseReference roomRef = _db.ref('games/${newState.gameId}');
-    await roomRef.set(newState.toJson());
+    final stateWithTime = newState.copyWith(updatedAt: DateTime.now().millisecondsSinceEpoch);
+    final DatabaseReference roomRef = _db.ref('games/${stateWithTime.gameId}');
+    await roomRef.set(stateWithTime.toJson());
   }
 
   /// Quitter le salon
@@ -366,5 +382,36 @@ class OnlineGameService {
       final data = jsonDecode(jsonEncode(event.snapshot.value)) as Map<String, dynamic>;
       return GameState.fromJson(data);
     });
+  }
+
+  /// Nettoie les salons de jeu obsolètes (inactifs depuis plus de 2 heures)
+  Future<void> cleanupOldRooms() async {
+    try {
+      final DatabaseReference gamesRef = _db.ref('games');
+      final snapshot = await gamesRef.get();
+      if (!snapshot.exists || snapshot.value == null) return;
+
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final twoHoursAgo = now - (2 * 3600 * 1000); // 2 heures d'inactivité
+
+      final gamesData = snapshot.value as Map<dynamic, dynamic>;
+      
+      for (final entry in gamesData.entries) {
+        final roomCode = entry.key as String;
+        final roomData = entry.value;
+        
+        if (roomData is Map) {
+          final updatedAt = roomData['updatedAt'] as int?;
+          
+          if (updatedAt == null || updatedAt < twoHoursAgo) {
+            // Salon obsolète ou sans date, suppression de la base
+            await gamesRef.child(roomCode).remove();
+            print("Cleanup Firebase: suppression du salon $roomCode obsolète/inactif.");
+          }
+        }
+      }
+    } catch (e) {
+      print("Erreur lors du nettoyage passif des salons Firebase: $e");
+    }
   }
 }

@@ -72,7 +72,7 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
   }
 
   Future<void> _claimDailyChest(UserProfile profile) async {
-    final user = ref.read(authStateChangesProvider).value;
+    final user = ref.read(authServiceProvider).currentUser;
     if (user == null) return;
 
     setState(() {
@@ -176,7 +176,7 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
   }
 
   Future<void> _simulateQuestCompletion(String questPath, int currentProgress, int target, int coinsReward, int currentCoins) async {
-    final user = ref.read(authStateChangesProvider).value;
+    final user = ref.read(authServiceProvider).currentUser;
     if (user == null) return;
 
     final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
@@ -248,35 +248,39 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
               ],
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           if (claimed)
             const SizedBox(
-              width: 90,
-              height: 44,
+              width: 105,
+              height: 40,
               child: Center(
                 child: Icon(Icons.check_circle_outline_rounded, color: Colors.white30, size: 28),
               ),
             )
           else if (isCompleted)
             SizedBox(
-              width: 90,
-              height: 44,
+              width: 105,
+              height: 40,
               child: PulsarButton(
                 text: 'Récupérer',
-                fontSize: 11,
+                fontSize: 12,
                 paddingHorizontal: 8,
+                paddingVertical: 8,
+                maxLines: 1,
                 gradient: const LinearGradient(colors: [Colors.greenAccent, Colors.green]),
                 onPressed: () => _simulateQuestCompletion(path, progress, target, reward, userCoins),
               ),
             )
           else
             SizedBox(
-              width: 90,
-              height: 44,
+              width: 105,
+              height: 40,
               child: PulsarButton(
                 text: '+$reward 🪙',
-                fontSize: 11,
+                fontSize: 12,
                 paddingHorizontal: 8,
+                paddingVertical: 8,
+                maxLines: 1,
                 gradient: PyraTheme.festiveGradient,
                 onPressed: () => _simulateQuestCompletion(path, progress, target, reward, userCoins),
               ),

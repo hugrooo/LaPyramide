@@ -113,6 +113,16 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    // Écouter le changement d'état pour incrémenter le nombre de parties jouées à la fin de la partie locale
+    ref.listen<GameState?>(localGameProvider, (previous, next) {
+      if (next != null && next.phase == GamePhase.finished && (previous == null || previous.phase != GamePhase.finished)) {
+        final user = ref.read(authServiceProvider).currentUser;
+        if (user != null) {
+          UserProfile.addGameRewards(user.uid, 0, 0, 0);
+        }
+      }
+    });
+
     // Redirection vers le scoreboard si partie terminée
     if (gameState.phase == GamePhase.finished) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -354,6 +364,11 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
         onUsePower: (cardId) => ref.read(localGameProvider.notifier).usePower(accused.id, cardId),
         onUseJoker: (jokerId) {
           ref.read(localGameProvider.notifier).useJoker(jokerId, accused.id);
+        },
+        isBluffCalled: assignment.isBluffCalled,
+        cardsToProve: accuser.hand,
+        onResolveBluff: (cardId) {
+          ref.read(localGameProvider.notifier).resolveBluff(assignment.fromPlayerId, cardId);
         },
       ),
     );

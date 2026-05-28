@@ -30,6 +30,9 @@ class Player {
   
   // Mécanique Tir au Pigeon
   bool hasUsedPigeon;
+  
+  // Mécanique Passage de Tour
+  bool hasPassedThisTurn;
 
   Player({
     String? id,
@@ -48,6 +51,7 @@ class Player {
     this.secretMission,
     this.missionCompleted = false,
     this.hasUsedPigeon = false,
+    this.hasPassedThisTurn = false,
   })  : id = id ?? const Uuid().v4(),
         emoji = emoji ?? kDefaultEmojis[0],
         hand = hand ?? [];
@@ -71,6 +75,7 @@ class Player {
     'secretMission': secretMission,
     'missionCompleted': missionCompleted,
     'hasUsedPigeon': hasUsedPigeon,
+    'hasPassedThisTurn': hasPassedThisTurn,
   };
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
@@ -92,6 +97,7 @@ class Player {
     secretMission: json['secretMission'],
     missionCompleted: json['missionCompleted'] ?? false,
     hasUsedPigeon: json['hasUsedPigeon'] ?? false,
+    hasPassedThisTurn: json['hasPassedThisTurn'] ?? false,
   );
 
   Player copyWith({
@@ -111,6 +117,7 @@ class Player {
     String? secretMission,
     bool? missionCompleted,
     bool? hasUsedPigeon,
+    bool? hasPassedThisTurn,
   }) {
     return Player(
       id: id ?? this.id,
@@ -129,6 +136,7 @@ class Player {
       secretMission: secretMission ?? this.secretMission,
       missionCompleted: missionCompleted ?? this.missionCompleted,
       hasUsedPigeon: hasUsedPigeon ?? this.hasUsedPigeon,
+      hasPassedThisTurn: hasPassedThisTurn ?? this.hasPassedThisTurn,
     );
   }
 }

@@ -26,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
     final coins = profile?.coins ?? 0;
     final diamonds = profile?.diamonds ?? 0;
     
-    final streak = profile?.streak ?? 0;
+    final gamesPlayed = profile?.gamesPlayed ?? 0;
 
     final numberFormat = NumberFormat('#,###', 'fr_FR');
     
@@ -112,12 +112,12 @@ class HomeScreen extends ConsumerWidget {
                                     ],
                                   ),
                                   const SizedBox(width: 12),
-                                  // Streak (Flamme)
+                                  // Parties Jouées (Manette)
                                   Row(
                                     children: [
-                                      const Text('🔥', style: TextStyle(fontSize: 16)),
+                                      const Text('🎮', style: TextStyle(fontSize: 16)),
                                       const SizedBox(width: 4),
-                                      Text('$streak', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                                      Text('$gamesPlayed', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                                     ],
                                   ),
                                 ],

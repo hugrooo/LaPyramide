@@ -42,11 +42,13 @@ class GameLogic {
       return player.copyWith(hand: hand);
     }).toList();
 
-    // Construire la pyramide (sommet = 1 carte, base = N cartes)
+    // Construire la pyramide (sommet = 1 carte en haut, base = N cartes en bas)
     // Rangée 0 = sommet (plus de gorgées), dernière rangée = base (moins)
+    // Pour s'aligner avec la logique en ligne et éviter les crashs de ligne,
+    // on construit la pyramide avec la base en bas (ligne pyramidRows - 1)
     final pyramid = <List<PyraCard>>[];
     for (int row = 0; row < settings.pyramidRows; row++) {
-      final rowSize = settings.pyramidRows - row; // sommet=1, base=pyramidRows
+      final rowSize = row + 1; // Rangée 0 = 1 carte (sommet), dernière rangée = settings.pyramidRows (base)
       final rowCards = <PyraCard>[];
       for (int i = 0; i < rowSize; i++) {
         rowCards.add(deck[deckIndex++].copyWith(isFaceUp: false));
@@ -60,7 +62,7 @@ class GameLogic {
       players: updatedPlayers,
       deck: deck.sublist(deckIndex),
       phase: GamePhase.revealing,
-      currentRow: 0,
+      currentRow: settings.pyramidRows - 1, // Commencer par la base (en bas)
       currentCardIndex: 0,
       pendingDrinks: [],
       settings: settings,
@@ -171,7 +173,8 @@ class GameLogic {
       );
     }
 
-    final isActuallyBluff = revealedCard == null || revealedCard.value != state.currentCard?.value;
+    final targetCard = state.lastRevealedCard ?? state.currentCard;
+    final isActuallyBluff = revealedCard == null || targetCard == null || revealedCard.value != targetCard.value;
 
     if (isActuallyBluff) {
       // Le bluffeur a menti (ou s'est trompé) -> il boit le double
@@ -187,7 +190,7 @@ class GameLogic {
       return newState.copyWith(
         phase: GamePhase.assigning,
         lastBluffResult: BluffResult.caught,
-        lastRevealedCard: revealedCard,
+        lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
         lastEventMessage: "💥 Bluff démasqué ! ${fromPlayer.name} boit ${penalty.sips} gorgées !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
@@ -205,7 +208,7 @@ class GameLogic {
       return newState.copyWith(
         phase: GamePhase.assigning,
         lastBluffResult: BluffResult.success,
-        lastRevealedCard: revealedCard,
+        lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
         lastEventMessage: "✅ Pas de bluff ! ${toPlayer.name} boit ${penalty.sips} gorgées !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
@@ -303,13 +306,16 @@ class GameLogic {
   static GameState nextCard(GameState state) {
     final currentRow = state.pyramid[state.currentRow];
     final nextCardIndex = state.currentCardIndex + 1;
+    final newPlayers = state.players.map((p) => p.copyWith(hasPassedThisTurn: false)).toList();
 
     if (nextCardIndex < currentRow.length) {
       // Carte suivante dans la même rangée
       return state.copyWith(
+        players: newPlayers,
         currentCardIndex: nextCardIndex,
         phase: GamePhase.revealing,
         lastBluffResult: BluffResult.none,
+        clearLastPlayerRevealedCard: true,
       );
     }
 
@@ -317,14 +323,20 @@ class GameLogic {
     final nextRow = state.currentRow - 1;
     if (nextRow < 0) {
       // Partie terminée
-      return state.copyWith(phase: GamePhase.finished);
+      return state.copyWith(
+        players: newPlayers,
+        phase: GamePhase.finished,
+        clearLastPlayerRevealedCard: true,
+      );
     }
 
     return state.copyWith(
+      players: newPlayers,
       currentRow: nextRow,
       currentCardIndex: 0,
       phase: GamePhase.revealing,
       lastBluffResult: BluffResult.none,
+      clearLastPlayerRevealedCard: true,
     );
   }
 

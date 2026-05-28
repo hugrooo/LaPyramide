@@ -53,8 +53,41 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
     }
   }
 
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline_rounded, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.redAccent.shade700.withOpacity(0.9),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   Future<void> _joinRoom(String code) async {
-    if (code.isEmpty) return;
+    if (code.isEmpty) {
+      _showErrorSnackBar("Veuillez saisir un code de salon.");
+      return;
+    }
+    if (code.length < 4) {
+      _showErrorSnackBar("Le code doit comporter 4 caractères.");
+      return;
+    }
+
     setState(() => _isLoading = true);
     HapticFeedback.mediumImpact();
     try {
@@ -62,15 +95,18 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
       await service.joinRoom(code);
       ref.read(currentRoomCodeProvider.notifier).state = code;
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith("Exception: ")) {
+        errorMessage = errorMessage.substring("Exception: ".length);
       }
+      _showErrorSnackBar(errorMessage);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
   void _showJoinDialog() {
+    _codeController.clear();
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -111,12 +147,13 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                   ),
                   PulsarButton(
                     text: 'Rejoindre',
+                    width: null,
                     paddingHorizontal: 24,
                     paddingVertical: 12,
                     gradient: PyraTheme.purplePinkGradient,
                     onPressed: () {
                       Navigator.pop(context);
-                      _joinRoom(_codeController.text.toUpperCase());
+                      _joinRoom(_codeController.text.trim().toUpperCase());
                     },
                   ),
                 ],
@@ -324,6 +361,20 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
 
   Widget _buildWaitingRoom(String roomCode, String currentUserId) {
     final gameStateAsync = ref.watch(onlineGameStateProvider);
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.height < 750 || screenSize.width < 380;
+
+    // Dimensions adaptatives pour petits écrans (iPhone 13 mini / SE)
+    final double qrSize = isSmallScreen ? 110.0 : 160.0;
+    final double tableSize = isSmallScreen ? 200.0 : 300.0;
+    final double circleRadius = isSmallScreen ? 70.0 : 110.0;
+    final double avatarSize = isSmallScreen ? 44.0 : 56.0;
+    final double fontSizeRoom = isSmallScreen ? 48.0 : 64.0;
+    final double centerCircleSize = isSmallScreen ? 60.0 : 100.0;
+    final double centerIconSize = isSmallScreen ? 24.0 : 40.0;
+    final double spaceTop = isSmallScreen ? 10.0 : 24.0;
+    final double spaceMiddle = isSmallScreen ? 10.0 : 24.0;
+    final double spaceBottom = isSmallScreen ? 14.0 : 28.0;
 
     return gameStateAsync.when(
       data: (state) {
@@ -351,7 +402,7 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 children: [
                   IconButton(
@@ -366,21 +417,21 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
               ),
             ),
             
-            const SizedBox(height: 24),
+            SizedBox(height: spaceTop),
             Text(
               roomCode,
-              style: const TextStyle(
-                fontSize: 64,
+              style: TextStyle(
+                fontSize: fontSizeRoom,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 8,
                 color: PyraTheme.primaryOrange,
               ),
             ),
             const Text('Partage ce code à tes amis', style: TextStyle(color: PyraTheme.textSecondary)),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Center(
               child: Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -388,24 +439,24 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                 child: QrImageView(
                   data: roomCode,
                   version: QrVersions.auto,
-                  size: 160.0,
+                  size: qrSize,
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: spaceMiddle),
 
             Expanded(
               child: Center(
                 child: SizedBox(
-                  width: 300,
-                  height: 300,
+                  width: tableSize,
+                  height: tableSize,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       // Centre de la table (Effet Holographique / Feu)
                       Container(
-                        width: 100,
-                        height: 100,
+                        width: centerCircleSize,
+                        height: centerCircleSize,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           boxShadow: [
@@ -413,8 +464,8 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                             BoxShadow(color: PyraTheme.primaryPink.withOpacity(0.1), blurRadius: 80, spreadRadius: 20),
                           ],
                         ),
-                        child: const Center(
-                          child: Icon(Icons.wifi_tethering_rounded, color: Colors.white54, size: 40),
+                        child: Center(
+                          child: Icon(Icons.wifi_tethering_rounded, color: Colors.white54, size: centerIconSize),
                         ),
                       ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1,1), end: const Offset(1.1,1.1), duration: 2.seconds),
 
@@ -426,7 +477,7 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                         
                         // Calcul de la position sur le cercle
                         final double angle = (2 * math.pi / state.players.length) * index - math.pi / 2;
-                        const double radius = 110.0;
+                        final double radius = circleRadius;
                         final double x = radius * math.cos(angle);
                         final double y = radius * math.sin(angle);
 
@@ -445,12 +496,12 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                         color: isMe ? PyraTheme.primaryPink : (isHostPlayer ? PyraTheme.primaryYellow : Colors.white24),
-                                        width: 2.5,
+                                        width: 2.0,
                                       ),
                                       boxShadow: isMe || isHostPlayer ? [
                                         BoxShadow(
                                           color: (isMe ? PyraTheme.primaryPink : PyraTheme.primaryYellow).withOpacity(0.5),
-                                          blurRadius: 16,
+                                          blurRadius: 12,
                                         )
                                       ] : null,
                                     ),
@@ -458,35 +509,35 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                                       child: player.photoUrl != null
                                           ? Image.network(
                                               player.photoUrl!,
-                                              width: 56,
-                                              height: 56,
+                                              width: avatarSize,
+                                              height: avatarSize,
                                               fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) => _buildFallbackAvatar(player.emoji),
+                                              errorBuilder: (_, __, ___) => _buildFallbackAvatar(player.emoji, avatarSize),
                                             )
-                                          : _buildFallbackAvatar(player.emoji),
+                                          : _buildFallbackAvatar(player.emoji, avatarSize),
                                     ),
                                   ),
                                   
                                   // Couronne pour l'hôte
                                   if (isHostPlayer)
                                     Positioned(
-                                      top: -12,
-                                      child: const Text('👑', style: TextStyle(fontSize: 20))
+                                      top: isSmallScreen ? -10 : -12,
+                                      child: Text('👑', style: TextStyle(fontSize: isSmallScreen ? 16 : 20))
                                         .animate(onPlay: (c) => c.repeat(reverse: true))
                                         .slideY(begin: 0, end: -0.2, duration: 1.seconds),
                                     ),
                                 ],
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 4),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: Colors.black54,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   player.name.split(' ').first, // Prénom uniquement pour prendre moins de place
-                                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                  style: TextStyle(color: Colors.white, fontSize: isSmallScreen ? 8 : 10, fontWeight: FontWeight.bold),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -503,7 +554,7 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
 
             if (isHost)
               Padding(
-                padding: const EdgeInsets.all(28.0),
+                padding: EdgeInsets.all(spaceBottom),
                 child: PulsarButton(
                   text: 'Démarrer la partie',
                   gradient: PyraTheme.orangeYellowGradient,
@@ -513,9 +564,9 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                 ),
               )
             else
-              const Padding(
-                padding: EdgeInsets.all(28.0),
-                child: Text('En attente de l\'hôte...', style: TextStyle(color: PyraTheme.textMuted)),
+              Padding(
+                padding: EdgeInsets.all(spaceBottom),
+                child: const Text('En attente de l\'hôte...', style: TextStyle(color: PyraTheme.textMuted)),
               ),
           ],
         );
@@ -525,12 +576,12 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
     );
   }
 
-  Widget _buildFallbackAvatar(String emoji) {
+  Widget _buildFallbackAvatar(String emoji, double size) {
     return Container(
-      width: 56,
-      height: 56,
+      width: size,
+      height: size,
       color: PyraTheme.bgSurface,
-      child: Center(child: Text(emoji, style: const TextStyle(fontSize: 24))),
+      child: Center(child: Text(emoji, style: TextStyle(fontSize: size * 0.43))),
     );
   }
 

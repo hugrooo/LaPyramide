@@ -88,7 +88,7 @@ class StoreService {
   }
 
   Future<void> _deliverProduct(PurchaseDetails purchaseDetails) async {
-    final user = _ref.read(authStateChangesProvider).value;
+    final user = _ref.read(authServiceProvider).currentUser;
     if (user == null) return;
 
     int coinsToAdd = 0;
@@ -108,7 +108,7 @@ class StoreService {
   }
 
   Future<void> addCoinsFictitiously(int amount) async {
-    final user = _ref.read(authStateChangesProvider).value;
+    final user = _ref.read(authServiceProvider).currentUser;
     if (user == null) return;
     final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}/coins');
     final snapshot = await dbRef.get();
@@ -118,7 +118,7 @@ class StoreService {
   }
 
   Future<bool> buyJoker(String jokerId, int cost) async {
-    final user = _ref.read(authStateChangesProvider).value;
+    final user = _ref.read(authServiceProvider).currentUser;
     if (user == null) return false;
 
     final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
@@ -145,7 +145,7 @@ class StoreService {
   }
 
   Future<bool> buyCosmetic(String type, String itemId, int cost, String currency) async {
-    final user = _ref.read(authStateChangesProvider).value;
+    final user = _ref.read(authServiceProvider).currentUser;
     if (user == null) return false;
 
     final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
