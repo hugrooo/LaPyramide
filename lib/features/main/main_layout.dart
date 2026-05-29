@@ -150,8 +150,8 @@ class _GlassBottomNavBar extends StatelessWidget {
                 onTap: () => onTap(3),
               ),
               _NavBarItem(
-                icon: Icons.person_rounded,
-                label: 'Profil',
+                icon: Icons.settings_rounded,
+                label: 'Paramètres',
                 isActive: currentIndex == 4,
                 onTap: () => onTap(4),
               ),

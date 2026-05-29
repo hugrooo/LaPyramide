@@ -104,6 +104,7 @@ class _PlayerHandWidgetState extends State<PlayerHandWidget> {
               card: card,
               faceUp: _peekedCardIndex == index,
               isSelected: isSelected,
+              overrideSkin: widget.player.activeCardBack,
               width: 62,
               height: 86,
             ),

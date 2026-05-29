@@ -191,6 +191,7 @@ class GameLogic {
         phase: GamePhase.assigning,
         lastBluffResult: BluffResult.caught,
         lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
+        lastBlufferId: assignment.fromPlayerId,
         lastEventMessage: "💥 Bluff démasqué ! ${fromPlayer.name} boit ${penalty.sips} gorgées !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
@@ -209,6 +210,7 @@ class GameLogic {
         phase: GamePhase.assigning,
         lastBluffResult: BluffResult.success,
         lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
+        lastBlufferId: assignment.fromPlayerId,
         lastEventMessage: "✅ Pas de bluff ! ${toPlayer.name} boit ${penalty.sips} gorgées !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );

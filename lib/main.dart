@@ -9,6 +9,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'app/router.dart';
 import 'app/app.dart';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+// Gestion des notifications en arrière-plan
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  // On ne fait rien de spécial ici car flutter_local_notifications gèrera l'affichage
+  // mais la fonction doit exister pour que Firebase ne plante pas en arrière-plan.
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -29,6 +39,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await AudioManager().init();
 

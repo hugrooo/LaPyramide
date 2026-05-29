@@ -136,6 +136,7 @@ class GameState {
   final BluffResult lastBluffResult;
   final PyraCard? lastRevealedCard;
   final PyraCard? lastPlayerRevealedCard; // Carte réelle révélée par le joueur lors du bluff (pour animation Totem)
+  final String? lastBlufferId; // ID du joueur qui a posé la carte lors du bluff
   final Map<String, bool> presence;   // Map playerId -> isOnline
   final Map<String, dynamic>? lastTaunt;
   final Map<String, dynamic>? currentRandomEvent;
@@ -159,6 +160,7 @@ class GameState {
     this.lastBluffResult = BluffResult.none,
     this.lastRevealedCard,
     this.lastPlayerRevealedCard,
+    this.lastBlufferId,
     this.presence = const {},
     this.lastTaunt,
     this.currentRandomEvent,
@@ -192,6 +194,7 @@ class GameState {
     BluffResult? lastBluffResult,
     PyraCard? lastRevealedCard,
     PyraCard? lastPlayerRevealedCard,
+    String? lastBlufferId,
     bool clearLastPlayerRevealedCard = false,
     Map<String, bool>? presence,
     Map<String, dynamic>? lastTaunt,
@@ -216,6 +219,7 @@ class GameState {
       lastBluffResult: lastBluffResult ?? this.lastBluffResult,
       lastRevealedCard: lastRevealedCard ?? this.lastRevealedCard,
       lastPlayerRevealedCard: clearLastPlayerRevealedCard ? null : (lastPlayerRevealedCard ?? this.lastPlayerRevealedCard),
+      lastBlufferId: lastBlufferId ?? this.lastBlufferId,
       presence: presence ?? this.presence,
       lastTaunt: lastTaunt ?? this.lastTaunt,
       currentRandomEvent: currentRandomEvent ?? this.currentRandomEvent,
@@ -241,6 +245,7 @@ class GameState {
     'lastBluffResult': lastBluffResult.index,
     'lastRevealedCard': lastRevealedCard?.toJson(),
     'lastPlayerRevealedCard': lastPlayerRevealedCard?.toJson(),
+    'lastBlufferId': lastBlufferId,
     'presence': presence,
     'lastTaunt': lastTaunt,
     'currentRandomEvent': currentRandomEvent,
@@ -279,6 +284,7 @@ class GameState {
     lastPlayerRevealedCard: json['lastPlayerRevealedCard'] != null 
         ? PyraCard.fromJson(json['lastPlayerRevealedCard'])
         : null,
+    lastBlufferId: json['lastBlufferId'],
     presence: json['presence'] != null ? Map<String, bool>.from(json['presence']) : {},
     lastTaunt: json['lastTaunt'] != null ? Map<String, dynamic>.from(json['lastTaunt']) : null,
     currentRandomEvent: json['currentRandomEvent'] != null ? Map<String, dynamic>.from(json['currentRandomEvent']) : null,

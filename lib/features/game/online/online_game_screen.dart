@@ -104,7 +104,17 @@ class OnlineGameScreen extends ConsumerWidget {
             // Afficher le résultat du bluff en grand avec l'animation Totem
             // (on utilise lastPlayerRevealedCard = la carte réelle choisie par le joueur, pas la carte de la pyramide)
             final isTruth = newState.lastBluffResult == BluffResult.success;
-            showTotemAnimation(context, newState.lastPlayerRevealedCard!, isTruth);
+            
+            // Récupérer le skin du joueur qui a posé la carte (celui qui a initié le bluff)
+            String? revealerSkin;
+            if (newState.lastBlufferId != null) {
+              try {
+                final revealer = newState.players.firstWhere((p) => p.id == newState.lastBlufferId);
+                revealerSkin = revealer.activeCardBack;
+              } catch (_) {}
+            }
+            
+            showTotemAnimation(context, newState.lastPlayerRevealedCard!, isTruth, overrideSkin: revealerSkin);
           } else if (newState.lastEventMessage != null) {
             if (newState.lastEventMessage!.startsWith('📢') || newState.lastEventMessage!.startsWith('💥')) {
               showDialog(

@@ -10,6 +10,7 @@ import '../../shared/widgets/neo_badge.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../profile/user_profile_provider.dart';
 import 'store_service.dart';
+import '../../shared/widgets/card_3d_showcase.dart';
 
 enum StoreTab { coins, jokers, cosmetics }
 
@@ -310,7 +311,13 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(icon, color: iconColor, size: 80),
+                    if (type == 'cardBack')
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Card3DShowcase(skinId: id, width: 140, height: 196),
+                      )
+                    else
+                      Icon(icon, color: iconColor, size: 80),
                     const SizedBox(height: 16),
                     Text(title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                     const SizedBox(height: 16),
@@ -341,7 +348,15 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: iconColor.withOpacity(0.3)),
             ),
-            child: Icon(icon, color: iconColor, size: 28),
+            child: type == 'cardBack'
+                ? Center(
+                    child: Card3DShowcase(
+                      skinId: id,
+                      width: 32,
+                      height: 44,
+                    ),
+                  )
+                : Icon(icon, color: iconColor, size: 28),
           ),
           const SizedBox(width: 14),
           Expanded(

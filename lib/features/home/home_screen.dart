@@ -10,14 +10,29 @@ import '../../app/theme.dart';
 import '../../shared/widgets/glass_container.dart';
 import '../../shared/widgets/neo_badge.dart';
 import '../profile/user_profile_provider.dart';
+import '../notifications/push_notification_service.dart';
 import 'widgets/play_card_3d.dart';
 import 'widgets/particle_background.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Demande la permission pour les notifications (au premier lancement) et initialise l'écoute
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(pushNotificationServiceProvider).initialize();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final userProfileAsync = ref.watch(userProfileProvider);
     final profile = userProfileAsync.value;
     

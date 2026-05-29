@@ -9,12 +9,14 @@ class TotemCardAnimation extends StatefulWidget {
   final PyraCard card;
   final bool isTruth;
   final VoidCallback onAnimationComplete;
+  final String? overrideSkin;
 
   const TotemCardAnimation({
     super.key,
     required this.card,
     required this.isTruth,
     required this.onAnimationComplete,
+    this.overrideSkin,
   });
 
   @override
@@ -40,40 +42,30 @@ class _TotemCardAnimationState extends State<TotemCardAnimation> {
     // 600ms : Révélation du recto sur la tranche
     Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted) {
-        HapticFeedback.selectionClick();
-        setState(() {
-          _showFront = true;
-        });
+        setState(() => _showFront = true);
+        HapticFeedback.heavyImpact();
       }
     });
 
-    // 900ms : Pop final de l'impact & scintillement
+    // 900ms : Pop de satisfaction (comme le totem qui s'active)
     Future.delayed(const Duration(milliseconds: 900), () {
-      if (mounted) HapticFeedback.heavyImpact();
+      if (mounted) {
+        if (widget.isTruth) {
+          HapticFeedback.lightImpact(); // Double tap léger
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (mounted) HapticFeedback.lightImpact();
+          });
+        } else {
+          HapticFeedback.vibrate(); // Vibreur long et lourd
+        }
+      }
     });
 
-    // 1200ms - 1500ms : Tremblements saccadés (séquence séisme)
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      if (mounted) HapticFeedback.mediumImpact();
-    });
-    Future.delayed(const Duration(milliseconds: 1300), () {
-      if (mounted) HapticFeedback.lightImpact();
-    });
-    Future.delayed(const Duration(milliseconds: 1400), () {
-      if (mounted) HapticFeedback.mediumImpact();
-    });
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (mounted) HapticFeedback.lightImpact();
-    });
-
-    // 4500ms : Disparition de la carte
-    Future.delayed(const Duration(milliseconds: 4500), () {
-      if (mounted) HapticFeedback.lightImpact();
-    });
-
-    // 5500ms : Fermeture de l'overlay
-    Future.delayed(const Duration(milliseconds: 5500), () {
-      if (mounted) widget.onAnimationComplete();
+    // 4000ms : Fin de l'animation, on la retire
+    Future.delayed(const Duration(milliseconds: 4000), () {
+      if (mounted) {
+        widget.onAnimationComplete();
+      }
     });
   }
 
@@ -81,38 +73,34 @@ class _TotemCardAnimationState extends State<TotemCardAnimation> {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: IgnorePointer(
-        child: Container(
-          color: Colors.black.withOpacity(0.55),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Texte de résultat (placé élégamment au-dessus de la carte)
-                Text(
-                  widget.isTruth ? 'VÉRITÉ !' : 'MENTEUR !',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.w900,
-                    color: widget.isTruth ? Colors.greenAccent : Colors.redAccent,
-                    shadows: [
-                      Shadow(color: Colors.black.withOpacity(0.8), blurRadius: 10, offset: const Offset(0, 4))
-                    ]
-                  ),
-                )
-                    .animate()
-                    .fadeIn(delay: 900.ms, duration: 300.ms)
-                    .scale(begin: const Offset(0.5, 0.5), end: const Offset(1.0, 1.0), delay: 900.ms, duration: 300.ms, curve: Curves.elasticOut)
-                    .fadeOut(delay: 4500.ms, duration: 300.ms),
+        child: Material(
+          color: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Voile noir de fond qui clignote et s'estompe
+              Container(
+                color: Colors.black.withOpacity(0.7),
+              )
+                  .animate()
+                  .fadeIn(duration: 300.ms)
+                  .fadeOut(delay: 3500.ms, duration: 500.ms),
 
-                const SizedBox(height: 32),
-
-                // Stack contenant les rayons lumineux et la carte du joueur
-                Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    // Rayons lumineux en fond
-                    const Icon(
+              // Rayons dorés/rouges en arrière-plan (tournent)
+              if (_showFront)
+                Positioned(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: widget.isTruth ? Colors.greenAccent.withOpacity(0.4) : Colors.redAccent.withOpacity(0.4),
+                          blurRadius: 100,
+                          spreadRadius: 20,
+                        )
+                      ],
+                    ),
+                    child: const Icon(
                       Icons.sunny,
                       size: 320,
                       color: Colors.white10,
@@ -121,38 +109,39 @@ class _TotemCardAnimationState extends State<TotemCardAnimation> {
                         .rotate(duration: 6.seconds)
                         .fadeIn(duration: 400.ms, delay: 600.ms)
                         .fadeOut(delay: 4500.ms, duration: 400.ms),
-
-                    // La carte animée
-                    SizedBox(
-                      width: 180,
-                      height: 250,
-                      child: PlayingCardWidget(
-                        card: widget.card,
-                        faceUp: _showFront,
-                        width: 180,
-                        height: 250,
-                      ),
-                    )
-                        .animate()
-                        // 1. Arrive par le bas, de très loin, en tourbillonnant
-                        .slideY(begin: 3.5, end: 0, duration: 500.ms, curve: Curves.easeOutCubic)
-                        .scale(begin: const Offset(0.01, 0.01), end: const Offset(1.0, 1.0), duration: 500.ms, curve: Curves.easeOutCubic)
-                        .rotate(begin: -0.5, end: 0.0, duration: 600.ms, curve: Curves.easeOutBack)
-                        // 2. Se retourne 3D (le recto s'active exactement à 600ms au milieu de la rotation)
-                        .flipH(begin: -1, end: 0, duration: 600.ms, delay: 300.ms, curve: Curves.easeInOut)
-                        // 3. Grossit (le pop élastique du totem)
-                        .scale(begin: const Offset(1.0, 1.0), end: const Offset(1.3, 1.3), delay: 900.ms, duration: 300.ms, curve: Curves.elasticOut)
-                        // 4. Scintillement de type Shimmer
-                        .shimmer(delay: 900.ms, duration: 500.ms, color: widget.isTruth ? Colors.greenAccent : Colors.redAccent)
-                        // 5. Tremblement physique d'impact
-                        .shake(delay: 1200.ms, duration: 300.ms, hz: 4)
-                        // 6. Redescend et disparaît après une longue phase stationnaire
-                        .scale(end: const Offset(0.0, 0.0), delay: 4500.ms, duration: 400.ms, curve: Curves.easeInBack)
-                        .fadeOut(delay: 4500.ms, duration: 400.ms),
-                  ],
+                  ),
                 ),
-              ],
-            ),
+
+              // La carte animée
+              SizedBox(
+                width: 180,
+                height: 250,
+                child: PlayingCardWidget(
+                  card: widget.card,
+                  faceUp: _showFront,
+                  width: 180,
+                  height: 250,
+                  overrideSkin: widget.overrideSkin,
+                ),
+              )
+                  .animate()
+                  // 1. Arrive par le bas, de très loin, en tourbillonnant
+                  .slideY(begin: 3.5, end: 0, duration: 500.ms, curve: Curves.easeOutCubic)
+                  .scale(begin: const Offset(0.01, 0.01), end: const Offset(1.0, 1.0), duration: 500.ms, curve: Curves.easeOutCubic)
+                  .rotate(begin: -0.5, end: 0.0, duration: 600.ms, curve: Curves.easeOutBack)
+                  // 2. Se retourne 3D (le recto s'active exactement à 600ms au milieu de la rotation)
+                  .flipH(begin: -1, end: 0, duration: 600.ms, delay: 300.ms, curve: Curves.easeInOut)
+                  // 3. Grossit (le pop élastique du totem)
+                  .scale(begin: const Offset(1.0, 1.0), end: const Offset(1.3, 1.3), delay: 900.ms, duration: 300.ms, curve: Curves.elasticOut)
+                  // 4. Scintillement de type Shimmer
+                  .shimmer(delay: 1200.ms, duration: 1500.ms, color: Colors.white30)
+                  // 5. Tremblement si ce n'est pas la vérité (carte rouge/choc)
+                  .shake(delay: 1000.ms, duration: 500.ms, hz: widget.isTruth ? 0 : 8, curve: Curves.easeInOutCubic)
+                  // 6. S'envole vers le haut et disparaît
+                  .slideY(begin: 0, end: -2.0, delay: 3500.ms, duration: 500.ms, curve: Curves.easeInBack)
+                  .scale(begin: const Offset(1.3, 1.3), end: const Offset(0.5, 0.5), delay: 3500.ms, duration: 500.ms)
+                  .fadeOut(delay: 3700.ms, duration: 300.ms),
+            ],
           ),
         ),
       ),
@@ -161,13 +150,14 @@ class _TotemCardAnimationState extends State<TotemCardAnimation> {
 }
 
 /// Helper pour afficher l'animation facilement depuis un State
-void showTotemAnimation(BuildContext context, PyraCard card, bool isTruth) {
+void showTotemAnimation(BuildContext context, PyraCard card, bool isTruth, {String? overrideSkin}) {
   late OverlayEntry overlayEntry;
   
   overlayEntry = OverlayEntry(
     builder: (context) => TotemCardAnimation(
       card: card,
       isTruth: isTruth,
+      overrideSkin: overrideSkin,
       onAnimationComplete: () {
         overlayEntry.remove();
       },

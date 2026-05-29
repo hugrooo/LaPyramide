@@ -10,10 +10,11 @@ import '../game_logic.dart';
 import '../distribution_logic.dart';
 import '../../auth/auth_service.dart';
 import '../../leaderboard/leaderboard_service.dart';
+import '../../profile/user_profile_provider.dart';
 
 final onlineGameServiceProvider = Provider<OnlineGameService>((ref) {
   final auth = ref.watch(authServiceProvider);
-  return OnlineGameService(FirebaseDatabase.instance, auth);
+  return OnlineGameService(FirebaseDatabase.instance, auth, ref);
 });
 
 // État local du code de salon actuel
@@ -32,8 +33,9 @@ final onlineGameStateProvider = StreamProvider.autoDispose<GameState?>((ref) {
 class OnlineGameService {
   final FirebaseDatabase _db;
   final AuthService _auth;
+  final Ref _ref;
 
-  OnlineGameService(this._db, this._auth);
+  OnlineGameService(this._db, this._auth, this._ref);
 
   /// Génère un code à 4 lettres majuscules / chiffres
   String _generateRoomCode() {
@@ -60,12 +62,21 @@ class OnlineGameService {
     // Créer le joueur hôte
     final prefs = await SharedPreferences.getInstance();
     final avatar = prefs.getString('userAvatar') ?? '😎';
+    final userProfile = _ref.read(userProfileProvider).value;
+    final activeCardBack = userProfile?.activeCardBack ?? 'classic';
+    final activeTitle = userProfile?.activeTitle ?? '';
+    final level = userProfile?.level ?? 1;
+    final xp = userProfile?.xp ?? 0;
 
     final host = Player(
       id: user.uid,
       name: user.displayName ?? 'Joueur 1',
       emoji: avatar,
       photoUrl: user.photoURL,
+      activeCardBack: activeCardBack,
+      activeTitle: activeTitle,
+      level: level,
+      xp: xp,
       isReady: true, // L'hôte est prêt par défaut
     );
 
@@ -146,12 +157,21 @@ class OnlineGameService {
     // Ajouter le joueur
     final prefs = await SharedPreferences.getInstance();
     final avatar = prefs.getString('userAvatar') ?? '😎';
+    final userProfile = _ref.read(userProfileProvider).value;
+    final activeCardBack = userProfile?.activeCardBack ?? 'classic';
+    final activeTitle = userProfile?.activeTitle ?? '';
+    final level = userProfile?.level ?? 1;
+    final xp = userProfile?.xp ?? 0;
 
     final newPlayer = Player(
       id: user.uid,
       name: user.displayName ?? 'Nouveau Joueur',
       emoji: avatar,
       photoUrl: user.photoURL,
+      activeCardBack: activeCardBack,
+      activeTitle: activeTitle,
+      level: level,
+      xp: xp,
       isReady: false,
     );
 
@@ -411,6 +431,10 @@ class OnlineGameService {
       name: p.name,
       emoji: p.emoji,
       photoUrl: p.photoUrl,
+      activeCardBack: p.activeCardBack,
+      activeTitle: p.activeTitle,
+      level: p.level,
+      xp: p.xp,
       isReady: p.id == state.players.first.id, // L'hôte est prêt par défaut
     )).toList();
 

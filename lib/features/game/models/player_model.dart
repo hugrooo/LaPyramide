@@ -10,6 +10,10 @@ class Player {
   String name;
   String emoji;
   String? photoUrl; // Nouveau champ pour la photo de profil
+  String activeCardBack;
+  String activeTitle;
+  int level;
+  int xp;
   List<PyraCard> hand;
 
   // Statistiques de la partie
@@ -39,6 +43,10 @@ class Player {
     required this.name,
     String? emoji,
     this.photoUrl,
+    this.activeCardBack = 'classic',
+    this.activeTitle = '',
+    this.level = 1,
+    this.xp = 0,
     List<PyraCard>? hand,
     this.totalSips = 0,
     this.drinksGiven = 0,
@@ -63,6 +71,10 @@ class Player {
     'name': name,
     'emoji': emoji,
     'photoUrl': photoUrl,
+    'activeCardBack': activeCardBack,
+    'activeTitle': activeTitle,
+    'level': level,
+    'xp': xp,
     'hand': hand.map((c) => c.toJson()).toList(),
     'totalSips': totalSips,
     'drinksGiven': drinksGiven,
@@ -83,6 +95,10 @@ class Player {
     name: json['name'],
     emoji: json['emoji'],
     photoUrl: json['photoUrl'],
+    activeCardBack: json['activeCardBack'] ?? 'classic',
+    activeTitle: json['activeTitle'] ?? '',
+    level: json['level'] ?? 1,
+    xp: json['xp'] ?? 0,
     hand: json['hand'] != null 
         ? (json['hand'] as List).map((c) => PyraCard.fromJson(c)).toList()
         : [],
@@ -105,6 +121,7 @@ class Player {
     String? name,
     String? emoji,
     String? photoUrl,
+    String? activeCardBack,
     List<PyraCard>? hand,
     int? totalSips,
     int? drinksGiven,
@@ -124,6 +141,7 @@ class Player {
       name: name ?? this.name,
       emoji: emoji ?? this.emoji,
       photoUrl: photoUrl ?? this.photoUrl,
+      activeCardBack: activeCardBack ?? this.activeCardBack,
       hand: hand ?? this.hand,
       totalSips: totalSips ?? this.totalSips,
       drinksGiven: drinksGiven ?? this.drinksGiven,

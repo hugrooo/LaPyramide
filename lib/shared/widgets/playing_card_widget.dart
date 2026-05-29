@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme.dart';
 import '../../features/game/models/card_model.dart';
+import '../../features/profile/user_profile_provider.dart';
 
 /// Widget d'affichage d'une carte individuelle (face recto ou verso)
-class PlayingCardWidget extends StatelessWidget {
+class PlayingCardWidget extends ConsumerWidget {
   final PyraCard? card;
   final bool faceUp;
   final bool isHighlighted;
@@ -12,6 +14,7 @@ class PlayingCardWidget extends StatelessWidget {
   final double width;
   final double height;
   final VoidCallback? onTap;
+  final String? overrideSkin;
 
   const PlayingCardWidget({
     super.key,
@@ -22,10 +25,13 @@ class PlayingCardWidget extends StatelessWidget {
     this.width = 60,
     this.height = 84,
     this.onTap,
+    this.overrideSkin,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activeCardBack = overrideSkin ?? ref.watch(userProfileProvider).value?.activeCardBack ?? 'classic';
+
     return GestureDetector(
       onTap: onTap != null
           ? () {
@@ -65,7 +71,7 @@ class PlayingCardWidget extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(9),
-          child: faceUp && card != null ? _buildFront(card!) : _buildBack(),
+          child: faceUp && card != null ? _buildFront(card!) : _buildBack(activeCardBack),
         ),
       ),
     );
@@ -150,15 +156,64 @@ class PlayingCardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBack() {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
+  Widget _buildBack(String style) {
+    // Différents styles de cartes
+    Gradient bgGradient;
+    Color borderColor;
+    Color centerGlowColor;
+    String centerSymbol;
+    String bgPattern;
+
+    switch (style) {
+      case 'neon':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0F172A), Color(0xFF020617)],
+        );
+        borderColor = PyraTheme.primaryCyan;
+        centerGlowColor = PyraTheme.primaryCyan;
+        centerSymbol = '⚡';
+        bgPattern = '///';
+        break;
+      case 'pirate':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF3E2723), Color(0xFF1B0000)],
+        );
+        borderColor = PyraTheme.primaryYellow;
+        centerGlowColor = PyraTheme.primaryYellow;
+        centerSymbol = '☠️';
+        bgPattern = 'X X\nX X';
+        break;
+      case 'retro':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1A237E), Color(0xFF000051)],
+        );
+        borderColor = const Color(0xFF00E676); // Retro green
+        centerGlowColor = const Color(0xFF00E676);
+        centerSymbol = '👾';
+        bgPattern = '0 1\n1 0';
+        break;
+      case 'classic':
+      default:
+        bgGradient = const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [Color(0xFF2E1B4B), Color(0xFF1E103B)],
-        ),
-      ),
+        );
+        borderColor = PyraTheme.primaryPink;
+        centerGlowColor = PyraTheme.primaryPink;
+        centerSymbol = '🔺';
+        bgPattern = '🔺\n🔻';
+        break;
+    }
+
+    return Container(
+      decoration: BoxDecoration(gradient: bgGradient),
       child: Stack(
         children: [
           // Motif en fond
@@ -166,8 +221,14 @@ class PlayingCardWidget extends StatelessWidget {
             child: Opacity(
               opacity: 0.05,
               child: Text(
-                '🔺\n🔻',
-                style: TextStyle(fontSize: width * 0.6, height: 0.8),
+                bgPattern,
+                style: TextStyle(
+                  fontSize: style == 'retro' ? width * 0.4 : width * 0.6,
+                  height: 0.8,
+                  fontFamily: style == 'retro' ? 'Courier' : null,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -177,21 +238,21 @@ class PlayingCardWidget extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(style == 'retro' ? 0 : 6),
                 border: Border.all(
-                  color: PyraTheme.primaryPink.withOpacity(0.5),
+                  color: borderColor.withOpacity(0.5),
                   width: 1.5,
                 ),
                 gradient: RadialGradient(
                   colors: [
-                    PyraTheme.primaryPink.withOpacity(0.2),
+                    centerGlowColor.withOpacity(0.2),
                     Colors.transparent,
                   ],
                   radius: 0.8,
                 ),
               ),
-              child: const Center(
-                child: Text('🔺', style: TextStyle(fontSize: 22)),
+              child: Center(
+                child: Text(centerSymbol, style: const TextStyle(fontSize: 22)),
               ),
             ),
           ),

@@ -487,62 +487,101 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Stack(
-                                alignment: Alignment.center,
-                                clipBehavior: Clip.none,
-                                children: [
-                                  // Avatar avec effet "Pop" à l'entrée
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: isMe ? PyraTheme.primaryPink : (isHostPlayer ? PyraTheme.primaryYellow : Colors.white24),
-                                        width: 2.0,
+                                    alignment: Alignment.center,
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      // Anneau XP
+                                      SizedBox(
+                                        width: avatarSize + 8, height: avatarSize + 8,
+                                        child: CircularProgressIndicator(
+                                          value: (player.xp / (player.level * 100)).clamp(0.0, 1.0),
+                                          strokeWidth: isSmallScreen ? 3 : 4,
+                                          backgroundColor: Colors.white.withOpacity(0.05),
+                                          valueColor: const AlwaysStoppedAnimation<Color>(PyraTheme.primaryCyan),
+                                          strokeCap: StrokeCap.round,
+                                        ),
                                       ),
-                                      boxShadow: isMe || isHostPlayer ? [
-                                        BoxShadow(
-                                          color: (isMe ? PyraTheme.primaryPink : PyraTheme.primaryYellow).withOpacity(0.5),
-                                          blurRadius: 12,
-                                        )
-                                      ] : null,
-                                    ),
-                                    child: ClipOval(
-                                      child: player.photoUrl != null
-                                          ? Image.network(
-                                              player.photoUrl!,
-                                              width: avatarSize,
-                                              height: avatarSize,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) => _buildFallbackAvatar(player.emoji, avatarSize),
+                                      // Avatar avec effet "Pop" à l'entrée
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: isMe ? PyraTheme.primaryPink : (isHostPlayer ? PyraTheme.primaryYellow : Colors.transparent),
+                                            width: 1.5,
+                                          ),
+                                          boxShadow: isMe || isHostPlayer ? [
+                                            BoxShadow(
+                                              color: (isMe ? PyraTheme.primaryPink : PyraTheme.primaryYellow).withOpacity(0.5),
+                                              blurRadius: 8,
                                             )
-                                          : _buildFallbackAvatar(player.emoji, avatarSize),
+                                          ] : null,
+                                        ),
+                                        child: ClipOval(
+                                          child: player.photoUrl != null
+                                              ? Image.network(
+                                                  player.photoUrl!,
+                                                  width: avatarSize,
+                                                  height: avatarSize,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (_, __, ___) => _buildFallbackAvatar(player.emoji, avatarSize),
+                                                )
+                                              : _buildFallbackAvatar(player.emoji, avatarSize),
+                                        ),
+                                      ),
+                                      
+                                      // Couronne pour l'hôte
+                                      if (isHostPlayer)
+                                        Positioned(
+                                          top: isSmallScreen ? -10 : -12,
+                                          child: Text('👑', style: TextStyle(fontSize: isSmallScreen ? 16 : 20))
+                                            .animate(onPlay: (c) => c.repeat(reverse: true))
+                                            .slideY(begin: 0, end: -0.2, duration: 1.seconds),
+                                        ),
+
+                                      // Badge de niveau
+                                      Positioned(
+                                        bottom: -2, right: -8,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            gradient: PyraTheme.cyanGradient,
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(color: PyraTheme.bgDark, width: 1.5),
+                                          ),
+                                          child: Text('${player.level}',
+                                            style: const TextStyle(color: Colors.black,
+                                                fontSize: 8, fontWeight: FontWeight.w900),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  // Titre + Nom
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black54,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        if (player.activeTitle.isNotEmpty)
+                                          Text(
+                                            player.activeTitle.toUpperCase(),
+                                            style: TextStyle(color: PyraTheme.primaryCyan, fontSize: isSmallScreen ? 6 : 7, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        Text(
+                                          player.name.split(' ').first, // Prénom uniquement
+                                          style: TextStyle(color: Colors.white, fontSize: isSmallScreen ? 8 : 10, fontWeight: FontWeight.bold),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  
-                                  // Couronne pour l'hôte
-                                  if (isHostPlayer)
-                                    Positioned(
-                                      top: isSmallScreen ? -10 : -12,
-                                      child: Text('👑', style: TextStyle(fontSize: isSmallScreen ? 16 : 20))
-                                        .animate(onPlay: (c) => c.repeat(reverse: true))
-                                        .slideY(begin: 0, end: -0.2, duration: 1.seconds),
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: Colors.black54,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  player.name.split(' ').first, // Prénom uniquement pour prendre moins de place
-                                  style: TextStyle(color: Colors.white, fontSize: isSmallScreen ? 8 : 10, fontWeight: FontWeight.bold),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
                           ).animate().scale(duration: 500.ms, curve: Curves.elasticOut),
                         );
                       }),
