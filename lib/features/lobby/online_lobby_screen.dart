@@ -13,7 +13,10 @@ import '../../shared/widgets/gradient_button.dart';
 import '../../shared/widgets/pulsar_button.dart';
 import '../../shared/widgets/glass_container.dart';
 import '../../shared/widgets/game_mode_carousel.dart';
+import '../../shared/widgets/avatar_with_border.dart';
 import '../auth/auth_service.dart';
+import '../friends/friend_service.dart';
+import '../friends/friends_screen.dart'; // Pour importer friendsProvider
 import '../game/models/game_state.dart';
 import '../game/models/player_model.dart';
 import '../game/online/online_game_service.dart';
@@ -183,7 +186,7 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
     final roomCode = ref.watch(currentRoomCodeProvider);
     final authState = ref.watch(authStateChangesProvider);
     final userProfileAsync = ref.watch(userProfileProvider);
-    final String userEmoji = userProfileAsync.value?.emoji ?? '😎';
+    final profile = userProfileAsync.value;
 
     return Scaffold(
       body: Stack(
@@ -203,7 +206,7 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                   return _buildWaitingRoom(roomCode, user.uid);
                 }
 
-                return _buildLobbyMenu(user.displayName, userEmoji);
+                return _buildLobbyMenu(user.displayName, profile);
               },
               loading: () => const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPurple)),
               error: (err, _) => Center(child: Text('Erreur: $err', style: const TextStyle(color: Colors.red))),
@@ -215,7 +218,7 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
     );
   }
 
-  Widget _buildLobbyMenu(String? name, String emoji) {
+  Widget _buildLobbyMenu(String? name, UserProfile? profile) {
     return Column(
       children: [
         // Top Bar
@@ -250,27 +253,12 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                 child: Row(
                   children: [
                     // Avatar
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: PyraTheme.primaryPink.withOpacity(0.5), width: 2),
-                        boxShadow: [
-                          BoxShadow(color: PyraTheme.primaryPink.withOpacity(0.3), blurRadius: 15, spreadRadius: 2),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Container(
-                          color: PyraTheme.primaryPurple,
-                          child: Center(
-                            child: Text(
-                              emoji,
-                              style: const TextStyle(fontSize: 32),
-                            ),
-                          ),
-                        ),
-                      ),
+                    AvatarWithBorder(
+                      emoji: profile?.emoji ?? '😎',
+                      size: 64,
+                      borderType: profile?.selectedBorder ?? 'classic',
+                      showLevel: true,
+                      level: profile?.level,
                     ),
                     const SizedBox(width: 16),
                     // Info
@@ -505,16 +493,11 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                                             )
                                           ] : null,
                                         ),
-                                        child: ClipOval(
-                                          child: player.photoUrl != null
-                                              ? Image.network(
-                                                  player.photoUrl!,
-                                                  width: avatarSize,
-                                                  height: avatarSize,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (_, __, ___) => _buildFallbackAvatar(player.emoji, avatarSize),
-                                                )
-                                              : _buildFallbackAvatar(player.emoji, avatarSize),
+                                        child: AvatarWithBorder(
+                                          emoji: player.emoji,
+                                          photoUrl: player.photoUrl,
+                                          size: avatarSize,
+                                          borderType: player.selectedBorder,
                                         ),
                                       ),
                                       
@@ -594,12 +577,27 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
             if (isHost)
               Padding(
                 padding: EdgeInsets.all(spaceBottom),
-                child: PulsarButton(
-                  text: 'Démarrer la partie',
-                  gradient: PyraTheme.orangeYellowGradient,
-                  onPressed: state.players.length >= 2 
-                      ? () => _startGame(state) 
-                      : null,
+                child: Column(
+                  children: [
+                    PulsarButton(
+                      text: 'Inviter des amis',
+                      icon: Icons.person_add_alt_1_rounded,
+                      gradient: PyraTheme.cyanGradient,
+                      paddingVertical: 12,
+                      fontSize: 16,
+                      onPressed: () {
+                        _showInviteFriendsSheet(context, roomCode, currentUserId);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    PulsarButton(
+                      text: 'Démarrer la partie',
+                      gradient: PyraTheme.orangeYellowGradient,
+                      onPressed: state.players.length >= 2 
+                          ? () => _startGame(state) 
+                          : null,
+                    ),
+                  ],
                 ),
               )
             else
@@ -621,6 +619,79 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
       height: size,
       color: PyraTheme.bgSurface,
       child: Center(child: Text(emoji, style: TextStyle(fontSize: size * 0.43))),
+    );
+  }
+
+  void _showInviteFriendsSheet(BuildContext context, String roomCode, String hostId) {
+    // On va récupérer le nom de l'hôte
+    String hostName = 'Un ami';
+    final user = ref.read(authStateChangesProvider).value;
+    if (user != null) {
+      hostName = user.displayName ?? 'Un ami';
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          height: MediaQuery.of(ctx).size.height * 0.6,
+          decoration: const BoxDecoration(
+            color: PyraTheme.bgDark,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('Inviter des amis', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+              ),
+              Expanded(
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final friendsAsync = ref.watch(friendsProvider);
+                    return friendsAsync.when(
+                      data: (friends) {
+                        if (friends.isEmpty) {
+                          return const Center(child: Text('Aucun ami pour le moment.', style: TextStyle(color: Colors.white70)));
+                        }
+                        return ListView.builder(
+                          itemCount: friends.length,
+                          itemBuilder: (context, index) {
+                            final friend = friends[index];
+                            return ListTile(
+                              leading: AvatarWithBorder(
+                                emoji: friend.emoji ?? '👤',
+                                photoUrl: friend.photoUrl,
+                                borderType: friend.selectedBorder,
+                                size: 40,
+                                showLevel: false,
+                              ),
+                              title: Text(friend.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              trailing: ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryCyan),
+                                onPressed: () async {
+                                  await ref.read(friendServiceProvider).inviteToGame(friend.id, roomCode, hostName);
+                                  if (ctx.mounted) {
+                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('Invitation envoyée à ${friend.name} !')));
+                                  }
+                                },
+                                child: const Text('Inviter', style: TextStyle(color: Colors.white)),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      loading: () => const Center(child: CircularProgressIndicator(color: PyraTheme.primaryCyan)),
+                      error: (err, _) => Center(child: Text('Erreur: $err', style: const TextStyle(color: Colors.red))),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

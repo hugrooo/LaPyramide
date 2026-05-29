@@ -19,6 +19,10 @@ class UserProfile {
   final Map<String, int> jokers;
   final List<String> cardBacks;
   final List<String> titles;
+  final List<String> bordersOwned;
+  final String selectedBorder;
+  final List<String> themesOwned;
+  final String selectedTheme;
   // Quêtes : clé = path de la quête, valeur = {progress, claimed}
   final Map<String, Map<String, dynamic>> quests;
 
@@ -39,6 +43,10 @@ class UserProfile {
     required this.jokers,
     required this.cardBacks,
     required this.titles,
+    required this.bordersOwned,
+    required this.selectedBorder,
+    required this.themesOwned,
+    required this.selectedTheme,
     this.quests = const {},
   });
 
@@ -79,6 +87,28 @@ class UserProfile {
       titlesList.add('Novice 🐣');
     }
 
+    // Parse list of borders safely
+    final List<String> bordersList = [];
+    if (map['bordersOwned'] is List) {
+      bordersList.addAll((map['bordersOwned'] as List).map((e) => e.toString()));
+    } else if (map['bordersOwned'] is Map) {
+      bordersList.addAll((map['bordersOwned'] as Map).values.map((e) => e.toString()));
+    }
+    if (bordersList.isEmpty) {
+      bordersList.add('classic'); // classic border (none)
+    }
+
+    // Parse list of themes safely
+    final List<String> themesList = [];
+    if (map['themesOwned'] is List) {
+      themesList.addAll((map['themesOwned'] as List).map((e) => e.toString()));
+    } else if (map['themesOwned'] is Map) {
+      themesList.addAll((map['themesOwned'] as Map).values.map((e) => e.toString()));
+    }
+    if (themesList.isEmpty) {
+      themesList.add('classic'); // classic theme
+    }
+
     // Parser les quêtes depuis Firebase
     final Map<String, Map<String, dynamic>> questsMap = {};
     final rawQuests = map['quests'];
@@ -110,6 +140,10 @@ class UserProfile {
       jokers: jokersMap,
       cardBacks: cardBacksList,
       titles: titlesList,
+      bordersOwned: bordersList,
+      selectedBorder: map['selectedBorder'] ?? 'classic',
+      themesOwned: themesList,
+      selectedTheme: map['selectedTheme'] ?? 'classic',
       quests: questsMap,
     );
   }

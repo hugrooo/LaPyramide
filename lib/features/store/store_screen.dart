@@ -7,6 +7,7 @@ import '../../shared/widgets/animated_background.dart';
 import '../../shared/widgets/glass_container.dart';
 import '../../shared/widgets/pulsar_button.dart';
 import '../../shared/widgets/neo_badge.dart';
+import '../../shared/widgets/avatar_with_border.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../profile/user_profile_provider.dart';
 import 'store_service.dart';
@@ -247,6 +248,110 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           type: 'cardBack',
           isOwned: cardBacksOwned.contains('retro'),
         ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'girl',
+          title: 'Dos Girly Rose 🎀',
+          desc: 'Un design rose éclatant pour briller avec classe.',
+          cost: 50,
+          currency: 'diamonds',
+          icon: Icons.favorite_rounded,
+          iconColor: Colors.pinkAccent,
+          ownedCount: cardBacksOwned.contains('girl') ? 1 : 0,
+          type: 'cardBack',
+          isOwned: cardBacksOwned.contains('girl'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'beta',
+          title: 'Dos Testeur Bêta 🥂',
+          desc: 'Édition spéciale réservée aux pionniers de Pyramide Party.',
+          cost: 0,
+          currency: 'diamonds',
+          icon: Icons.star_rounded,
+          iconColor: const Color(0xFFE040FB),
+          ownedCount: cardBacksOwned.contains('beta') ? 1 : 0,
+          type: 'cardBack',
+          isOwned: cardBacksOwned.contains('beta'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'pharaoh',
+          title: 'Dos Pharaon 👁️',
+          desc: 'Le dos des rois du désert. Régnez sur la partie.',
+          cost: 150,
+          currency: 'diamonds',
+          icon: Icons.visibility_rounded,
+          iconColor: const Color(0xFFD4AF37),
+          ownedCount: cardBacksOwned.contains('pharaoh') ? 1 : 0,
+          type: 'cardBack',
+          isOwned: cardBacksOwned.contains('pharaoh'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'casino',
+          title: 'Dos Casino Royal 🎲',
+          desc: 'Faites tapis avec ce dos vert digne des plus grands casinos.',
+          cost: 200,
+          currency: 'diamonds',
+          icon: Icons.casino_rounded,
+          iconColor: const Color(0xFF006400),
+          ownedCount: cardBacksOwned.contains('casino') ? 1 : 0,
+          type: 'cardBack',
+          isOwned: cardBacksOwned.contains('casino'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'toxic',
+          title: 'Dos Toxique 🧪',
+          desc: 'Distribuez les gorgées empoisonnées à vos amis.',
+          cost: 250,
+          currency: 'diamonds',
+          icon: Icons.science_rounded,
+          iconColor: const Color(0xFF39FF14),
+          ownedCount: cardBacksOwned.contains('toxic') ? 1 : 0,
+          type: 'cardBack',
+          isOwned: cardBacksOwned.contains('toxic'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'clubbing',
+          title: 'Dos Clubbing 🪩',
+          desc: 'Ambiance néon, musique et cocktails.',
+          cost: 300,
+          currency: 'diamonds',
+          icon: Icons.nightlife_rounded,
+          iconColor: const Color(0xFFFF00FF),
+          ownedCount: cardBacksOwned.contains('clubbing') ? 1 : 0,
+          type: 'cardBack',
+          isOwned: cardBacksOwned.contains('clubbing'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'demon',
+          title: 'Dos Démoniaque 😈',
+          desc: 'Pour les menteurs impitoyables qui brûlent le jeu.',
+          cost: 400,
+          currency: 'diamonds',
+          icon: Icons.local_fire_department_rounded,
+          iconColor: const Color(0xFFFF4500),
+          ownedCount: cardBacksOwned.contains('demon') ? 1 : 0,
+          type: 'cardBack',
+          isOwned: cardBacksOwned.contains('demon'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'vip',
+          title: 'Dos VIP Diamant 💎',
+          desc: 'L\'ultime dos de carte. Brillez de mille feux.',
+          cost: 1000,
+          currency: 'diamonds',
+          icon: Icons.diamond_rounded,
+          iconColor: const Color(0xFF80DEEA),
+          ownedCount: cardBacksOwned.contains('vip') ? 1 : 0,
+          type: 'cardBack',
+          isOwned: cardBacksOwned.contains('vip'),
+        ),
         const SizedBox(height: 24),
         const Text(
           'Titres de Profil délirants',
@@ -267,6 +372,19 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         ),
         const SizedBox(height: 16),
         _buildItemPurchaseCard(
+          id: 'Pionnier de la Bêta 🥂',
+          title: 'Pionnier de la Bêta 🥂',
+          desc: 'Titre exclusif gratuit réservé aux tout premiers joueurs de la Bêta !',
+          cost: 0,
+          currency: 'coins',
+          icon: Icons.star_rounded,
+          iconColor: const Color(0xFFE040FB), // Purple
+          ownedCount: titlesOwned.contains('Pionnier de la Bêta 🥂') ? 1 : 0,
+          type: 'title',
+          isOwned: titlesOwned.contains('Pionnier de la Bêta 🥂'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
           id: 'Pilier de Bar 🍻',
           title: 'Pilier de Bar 🍻',
           desc: 'Un titre idéal pour ceux qui ne reculent devant aucune gorgée.',
@@ -277,6 +395,169 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           ownedCount: titlesOwned.contains('Pilier de Bar 🍻') ? 1 : 0,
           type: 'title',
           isOwned: titlesOwned.contains('Pilier de Bar 🍻'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'Roi de la Soirée 👑',
+          title: 'Roi de la Soirée 👑',
+          desc: 'Pour celui ou celle qui met toujours l\'ambiance.',
+          cost: 200,
+          currency: 'coins',
+          icon: Icons.celebration_rounded,
+          iconColor: const Color(0xFFFFD700), // Gold
+          ownedCount: titlesOwned.contains('Roi de la Soirée 👑') ? 1 : 0,
+          type: 'title',
+          isOwned: titlesOwned.contains('Roi de la Soirée 👑'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'Escroc Professionnel 🦊',
+          title: 'Escroc Professionnel 🦊',
+          desc: 'Vous mentez tellement bien que c\'en est devenu un art.',
+          cost: 400,
+          currency: 'coins',
+          icon: Icons.masks_rounded, // Better fit for a scammer/thief
+          iconColor: const Color(0xFFFF8C00), // Dark Orange
+          ownedCount: titlesOwned.contains('Escroc Professionnel 🦊') ? 1 : 0,
+          type: 'title',
+          isOwned: titlesOwned.contains('Escroc Professionnel 🦊'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'Menteur Pathologique 🤥',
+          title: 'Menteur Pathologique 🤥',
+          desc: 'Plus personne ne croit un traître mot de ce que vous dites.',
+          cost: 500,
+          currency: 'coins',
+          icon: Icons.psychology_alt_rounded,
+          iconColor: PyraTheme.primaryPink,
+          ownedCount: titlesOwned.contains('Menteur Pathologique 🤥') ? 1 : 0,
+          type: 'title',
+          isOwned: titlesOwned.contains('Menteur Pathologique 🤥'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'Dieu de la Pyramide 👁️',
+          title: 'Dieu de la Pyramide 👁️',
+          desc: 'Le titre honorifique suprême. Vous dominez le jeu.',
+          cost: 1000,
+          currency: 'coins',
+          icon: Icons.visibility_rounded,
+          iconColor: PyraTheme.primaryCyan,
+          ownedCount: titlesOwned.contains('Dieu de la Pyramide 👁️') ? 1 : 0,
+          type: 'title',
+          isOwned: titlesOwned.contains('Dieu de la Pyramide 👁️'),
+        ),
+        const SizedBox(height: 32),
+        _buildBordersSection(profile?.bordersOwned ?? ['classic']),
+        const SizedBox(height: 32),
+        _buildThemesSection(profile?.themesOwned ?? ['classic']),
+      ],
+    );
+  }
+
+  Widget _buildBordersSection(List<String> bordersOwned) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Cadres d\'Avatar animés',
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        _buildItemPurchaseCard(
+          id: 'neon',
+          title: 'Cadre Néon Fluo ⚡',
+          desc: 'Un cercle néon stylisé qui brille autour de ton avatar.',
+          cost: 300,
+          currency: 'coins',
+          icon: Icons.lens_blur_rounded,
+          iconColor: PyraTheme.primaryCyan,
+          ownedCount: bordersOwned.contains('neon') ? 1 : 0,
+          type: 'border',
+          isOwned: bordersOwned.contains('neon'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'fire',
+          title: 'Cadre en Feu 🔥',
+          desc: 'Ton profil s\'enflamme et impressionne la galerie.',
+          cost: 500,
+          currency: 'coins',
+          icon: Icons.local_fire_department_rounded,
+          iconColor: Colors.orange,
+          ownedCount: bordersOwned.contains('fire') ? 1 : 0,
+          type: 'border',
+          isOwned: bordersOwned.contains('fire'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'gold',
+          title: 'Cadre Or Massif 👑',
+          desc: 'L\'ultime cadre doré scintillant réservé aux gros gagnants.',
+          cost: 200,
+          currency: 'diamonds',
+          icon: Icons.stars_rounded,
+          iconColor: const Color(0xFFFFD700),
+          ownedCount: bordersOwned.contains('gold') ? 1 : 0,
+          type: 'border',
+          isOwned: bordersOwned.contains('gold'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildThemesSection(List<String> themesOwned) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Thèmes Musicaux (Host) 🎶',
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Quand tu crées une partie, cette musique jouera pour tous les joueurs dans ton salon !',
+          style: TextStyle(color: Colors.white54, fontSize: 13),
+        ),
+        const SizedBox(height: 12),
+        _buildItemPurchaseCard(
+          id: 'casino',
+          title: 'Thème Casino Royal 🎰',
+          desc: 'Ambiance lounge, piano et tension feutrée.',
+          cost: 600,
+          currency: 'coins',
+          icon: Icons.music_note_rounded,
+          iconColor: PyraTheme.primaryPink,
+          ownedCount: themesOwned.contains('casino') ? 1 : 0,
+          type: 'theme',
+          isOwned: themesOwned.contains('casino'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'clubbing',
+          title: 'Thème Clubbing 🪩',
+          desc: 'Grosse basse et ambiance de folie.',
+          cost: 800,
+          currency: 'coins',
+          icon: Icons.speaker_group_rounded,
+          iconColor: PyraTheme.primaryCyan,
+          ownedCount: themesOwned.contains('clubbing') ? 1 : 0,
+          type: 'theme',
+          isOwned: themesOwned.contains('clubbing'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'horror',
+          title: 'Thème Tension Horrifique 🔪',
+          desc: 'Parfait pour déstabiliser les menteurs...',
+          cost: 150,
+          currency: 'diamonds',
+          icon: Icons.piano_rounded,
+          iconColor: Colors.redAccent,
+          ownedCount: themesOwned.contains('horror') ? 1 : 0,
+          type: 'theme',
+          isOwned: themesOwned.contains('horror'),
         ),
       ],
     );
@@ -301,7 +582,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
 
     return GestureDetector(
       onTap: () {
-        if (type == 'cardBack' || type == 'title') {
+        if (type == 'cardBack' || type == 'title' || type == 'border' || type == 'theme') {
           showDialog(
             context: context,
             builder: (ctx) => Dialog(
@@ -315,6 +596,11 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 24),
                         child: Card3DShowcase(skinId: id, width: 140, height: 196),
+                      )
+                    else if (type == 'border')
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: AvatarWithBorder(emoji: '😎', size: 80, borderType: id),
                       )
                     else
                       Icon(icon, color: iconColor, size: 80),
@@ -355,6 +641,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       width: 32,
                       height: 44,
                     ),
+                  )
+                : type == 'border'
+                ? Center(
+                    child: AvatarWithBorder(emoji: '😎', size: 30, borderType: id),
                   )
                 : Icon(icon, color: iconColor, size: 28),
           ),
@@ -477,6 +767,11 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     final profile = userProfileAsync.value;
     final currentCoins = profile?.coins ?? 0;
     final currentDiamonds = profile?.diamonds ?? 0;
+    
+    final titlesOwned = profile?.titles ?? ['Novice 🐣'];
+    final cardBacksOwned = profile?.cardBacks ?? ['classic'];
+    final bordersOwned = profile?.bordersOwned ?? ['classic'];
+    final themesOwned = profile?.themesOwned ?? ['classic'];
 
     return Scaffold(
       backgroundColor: PyraTheme.bgDark,

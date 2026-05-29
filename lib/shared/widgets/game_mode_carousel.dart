@@ -82,8 +82,8 @@ class GameModeCarousel extends StatelessWidget {
               _buildModeCard(
                 context,
                 mode: GameMode.speedRun,
-                title: 'Vitesse Éclair ⏱️',
-                description: 'Pas le temps de réfléchir ! Les décisions de bluff durent 10 secondes maximum !',
+                title: 'Speed-Run ⏱️',
+                description: 'Pas le temps de réfléchir ! Décision en 5s max sinon punition de 2 gorgées !',
                 icon: '🚀',
                 color: Colors.redAccent,
               ),

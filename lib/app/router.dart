@@ -111,7 +111,7 @@ CustomTransitionPage<T> _zoomFade<T>(BuildContext context, GoRouterState state, 
 
 // ─── Router ─────────────────────────────────────────────────────────────────
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final initialRouteProvider = Provider<String>((ref) => '/home');
@@ -119,7 +119,7 @@ final initialRouteProvider = Provider<String>((ref) => '/home');
 final routerProvider = Provider<GoRouter>((ref) {
   final initialRoute = ref.watch(initialRouteProvider);
   return GoRouter(
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: rootNavigatorKey,
     initialLocation: initialRoute,
     routes: [
       GoRoute(
@@ -167,31 +167,31 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/auth',
         name: 'auth',
         pageBuilder: (context, state) => _slideRight(context, state, const AuthScreen()),
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/level',
         name: 'level',
         pageBuilder: (context, state) => _slideRight(context, state, const LevelScreen()),
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/lobby/local',
         name: 'localLobby',
         pageBuilder: (context, state) => _slideRight(context, state, const LocalLobbyScreen()),
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/lobby/online',
         name: 'onlineLobby',
         pageBuilder: (context, state) => _slideRight(context, state, const OnlineLobbyScreen()),
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/game/local',
         name: 'localGame',
         pageBuilder: (context, state) {
@@ -200,13 +200,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/game/online',
         name: 'onlineGame',
         pageBuilder: (context, state) => _zoomFade(context, state, const OnlineGameScreen()),
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/scoreboard',
         name: 'scoreboard',
         pageBuilder: (context, state) {
@@ -220,7 +220,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/coming-soon',
         name: 'comingSoon',
         pageBuilder: (context, state) {
@@ -229,13 +229,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/friends',
         name: 'friends',
         pageBuilder: (context, state) => _slideRight(context, state, const FriendsScreen()),
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         path: '/quests',
         name: 'quests',
         pageBuilder: (context, state) => _slideRight(context, state, const QuestsScreen()),

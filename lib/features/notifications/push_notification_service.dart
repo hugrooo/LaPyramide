@@ -1,10 +1,12 @@
-import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
+import '../../app/router.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -63,8 +65,29 @@ class PushNotificationService {
 
       // Message ouvert depuis une notification (Background/Terminated)
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        // Optionnel: Gérer la navigation ici
+        _handleMessageAction(message);
       });
+      
+      // Si l'application était complètement fermée, vérifier si elle a été ouverte par une notification
+      FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+        if (message != null) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            _handleMessageAction(message);
+          });
+        }
+      });
+    }
+  }
+
+  void _handleMessageAction(RemoteMessage message) {
+    if (message.data.containsKey('roomCode')) {
+      final roomCode = message.data['roomCode'];
+      if (roomCode != null && rootNavigatorKey.currentContext != null) {
+        // Naviguer vers le salon
+        rootNavigatorKey.currentContext!.pushNamed('onlineLobby');
+        // Idéalement on devrait préremplir le code ou rejoindre automatiquement
+        // Mais pour simplifier, on emmène juste sur l'écran du salon en ligne.
+      }
     }
   }
 
@@ -86,7 +109,7 @@ class PushNotificationService {
     await _localNotifications.initialize(initializationSettings);
 
     // Créer la chaîne de notification pour Android 8.0+
-    if (Platform.isAndroid) {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       const AndroidNotificationChannel channel = AndroidNotificationChannel(
         'high_importance_channel', // id
         'Notifications Importantes', // name

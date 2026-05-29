@@ -74,6 +74,7 @@ class OnlineGameService {
 
     final activeCardBack = userProfile?.activeCardBack ?? 'classic';
     final activeTitle = userProfile?.activeTitle ?? '';
+    final selectedBorder = userProfile?.selectedBorder ?? 'classic';
     final level = userProfile?.level ?? 1;
     final xp = userProfile?.xp ?? 0;
 
@@ -84,6 +85,7 @@ class OnlineGameService {
       photoUrl: user.photoURL,
       activeCardBack: activeCardBack,
       activeTitle: activeTitle,
+      selectedBorder: selectedBorder,
       level: level,
       xp: xp,
       isReady: true, // L'hôte est prêt par défaut
@@ -178,6 +180,7 @@ class OnlineGameService {
 
     final activeCardBack = userProfile?.activeCardBack ?? 'classic';
     final activeTitle = userProfile?.activeTitle ?? '';
+    final selectedBorder = userProfile?.selectedBorder ?? 'classic';
     final level = userProfile?.level ?? 1;
     final xp = userProfile?.xp ?? 0;
 
@@ -188,6 +191,7 @@ class OnlineGameService {
       photoUrl: user.photoURL,
       activeCardBack: activeCardBack,
       activeTitle: activeTitle,
+      selectedBorder: selectedBorder,
       level: level,
       xp: xp,
       isReady: false,
@@ -354,6 +358,19 @@ class OnlineGameService {
     await updateGameState(newState);
   }
 
+  /// Timeout en mode Speed-Run
+  Future<void> speedRunTimeout(String roomCode) async {
+    final state = await _fetchCurrentState(roomCode);
+    if (state == null) return;
+    
+    // Ajoute un message de notification d'événement pour que tout le monde le voie
+    final newState = GameLogic.speedRunTimeoutPenalty(state).copyWith(
+      lastEventMessage: "⏱️ Trop lent ! 2 gorgées de pénalité !",
+      lastEventTime: DateTime.now().millisecondsSinceEpoch,
+    );
+    await updateGameState(newState);
+  }
+
   /// Utiliser un pouvoir
   Future<void> usePower(String roomCode, String cardId) async {
     final state = await _fetchCurrentState(roomCode);
@@ -451,6 +468,7 @@ class OnlineGameService {
       photoUrl: p.photoUrl,
       activeCardBack: p.activeCardBack,
       activeTitle: p.activeTitle,
+      selectedBorder: p.selectedBorder,
       level: p.level,
       xp: p.xp,
       isReady: p.id == state.players.first.id, // L'hôte est prêt par défaut

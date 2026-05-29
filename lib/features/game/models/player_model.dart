@@ -12,6 +12,7 @@ class Player {
   String? photoUrl; // Nouveau champ pour la photo de profil
   String activeCardBack;
   String activeTitle;
+  String selectedBorder;
   int level;
   int xp;
   List<PyraCard> hand;
@@ -45,6 +46,7 @@ class Player {
     this.photoUrl,
     this.activeCardBack = 'classic',
     this.activeTitle = '',
+    this.selectedBorder = 'classic',
     this.level = 1,
     this.xp = 0,
     List<PyraCard>? hand,
@@ -73,6 +75,7 @@ class Player {
     'photoUrl': photoUrl,
     'activeCardBack': activeCardBack,
     'activeTitle': activeTitle,
+    'selectedBorder': selectedBorder,
     'level': level,
     'xp': xp,
     'hand': hand.map((c) => c.toJson()).toList(),
@@ -97,6 +100,7 @@ class Player {
     photoUrl: json['photoUrl'],
     activeCardBack: json['activeCardBack'] ?? 'classic',
     activeTitle: json['activeTitle'] ?? '',
+    selectedBorder: json['selectedBorder'] ?? 'classic',
     level: json['level'] ?? 1,
     xp: json['xp'] ?? 0,
     hand: json['hand'] != null 
@@ -123,6 +127,7 @@ class Player {
     String? photoUrl,
     String? activeCardBack,
     String? activeTitle,
+    String? selectedBorder,
     int? level,
     int? xp,
     List<PyraCard>? hand,
@@ -146,6 +151,7 @@ class Player {
       photoUrl: photoUrl ?? this.photoUrl,
       activeCardBack: activeCardBack ?? this.activeCardBack,
       activeTitle: activeTitle ?? this.activeTitle,
+      selectedBorder: selectedBorder ?? this.selectedBorder,
       level: level ?? this.level,
       xp: xp ?? this.xp,
       hand: hand ?? this.hand,

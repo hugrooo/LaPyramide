@@ -226,6 +226,23 @@ class GameLogic {
     return _applyDrink(newState, assignment);
   }
 
+  /// Le temps est écoulé en mode Speed-Run, on prend les gorgées + 2 de punition
+  static GameState speedRunTimeoutPenalty(GameState state) {
+    if (state.pendingDrinks.isEmpty) return state;
+
+    final assignment = state.pendingDrinks.last;
+    GameState newState = state.copyWith(pendingDrinks: []);
+    
+    // On ajoute 2 gorgées de pénalité pour trop de temps
+    final penaltyAssignment = DrinkAssignment(
+      fromPlayerId: assignment.fromPlayerId,
+      toPlayerId: assignment.toPlayerId,
+      sips: assignment.sips + 2,
+    );
+    
+    return _applyDrink(newState, penaltyAssignment);
+  }
+
   /// Le joueur ciblé utilise un pouvoir pour se défendre
   static GameState usePower({
     required GameState state,

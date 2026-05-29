@@ -276,6 +276,10 @@ class BluffDialog extends StatefulWidget {
   final bool isBluffCalled;
   final List<PyraCard>? cardsToProve;
   final void Function(String? cardId)? onResolveBluff;
+  
+  // Speed Run Mode
+  final bool isSpeedRun;
+  final VoidCallback? onTimeout;
 
   const BluffDialog({
     super.key,
@@ -290,6 +294,8 @@ class BluffDialog extends StatefulWidget {
     this.isBluffCalled = false,
     this.cardsToProve,
     this.onResolveBluff,
+    this.isSpeedRun = false,
+    this.onTimeout,
   });
 
   @override
@@ -303,12 +309,20 @@ class _BluffDialogState extends State<BluffDialog> {
   @override
   void initState() {
     super.initState();
+    _countdown = widget.isSpeedRun ? 5 : 10;
+    
     if (!widget.isBluffCalled) {
-      _timerSubscription = Stream.periodic(const Duration(seconds: 1), (i) => 9 - i)
-          .take(10)
+      _timerSubscription = Stream.periodic(const Duration(seconds: 1), (i) => (_countdown - 1) - i)
+          .take(_countdown)
           .listen((v) {
         if (mounted) setState(() => _countdown = v);
-        if (v == 0) widget.onAccept(); // Auto-accept si pas de réponse
+        if (v == 0) {
+          if (widget.isSpeedRun && widget.onTimeout != null) {
+            widget.onTimeout!();
+          } else {
+            widget.onAccept(); // Auto-accept si pas de réponse
+          }
+        }
       });
     }
   }

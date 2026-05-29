@@ -5,13 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../../app/theme.dart';
 import '../../shared/widgets/animated_background.dart';
 import '../../shared/widgets/glass_card.dart';
+import '../../shared/widgets/avatar_with_border.dart';
 import 'friend_service.dart';
 
-final friendsProvider = StreamProvider.autoDispose<List<UserProfile>>((ref) {
+final friendsProvider = StreamProvider.autoDispose<List<FriendProfile>>((ref) {
   return ref.watch(friendServiceProvider).getFriends();
 });
 
-final friendRequestsProvider = StreamProvider.autoDispose<List<UserProfile>>((ref) {
+final friendRequestsProvider = StreamProvider.autoDispose<List<FriendProfile>>((ref) {
   return ref.watch(friendServiceProvider).getPendingRequests();
 });
 
@@ -24,7 +25,7 @@ class FriendsScreen extends ConsumerStatefulWidget {
 
 class _FriendsScreenState extends ConsumerState<FriendsScreen> {
   final _searchController = TextEditingController();
-  List<UserProfile> _searchResults = [];
+  List<FriendProfile> _searchResults = [];
   bool _isSearching = false;
 
   void _searchUsers(String query) async {
@@ -187,9 +188,12 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              CircleAvatar(
-                backgroundColor: PyraTheme.primaryPurple.withOpacity(0.5),
-                child: Text(user.emoji ?? '👤'),
+              AvatarWithBorder(
+                emoji: user.emoji ?? '👤',
+                photoUrl: user.photoUrl,
+                borderType: user.selectedBorder,
+                size: 40,
+                showLevel: false,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -211,16 +215,19 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     );
   }
 
-  Widget _buildRequestTile(UserProfile req) {
+  Widget _buildRequestTile(FriendProfile req) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: GlassCard(
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: PyraTheme.primaryPink.withOpacity(0.5),
-              child: Text(req.emoji ?? '👤'),
+            AvatarWithBorder(
+              emoji: req.emoji ?? '👤',
+              photoUrl: req.photoUrl,
+              borderType: req.selectedBorder,
+              size: 40,
+              showLevel: false,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -244,16 +251,19 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     );
   }
 
-  Widget _buildFriendTile(UserProfile friend) {
+  Widget _buildFriendTile(FriendProfile friend) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: GlassCard(
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: PyraTheme.primaryPurple.withOpacity(0.5),
-              child: Text(friend.emoji ?? '👤'),
+            AvatarWithBorder(
+              emoji: friend.emoji ?? '👤',
+              photoUrl: friend.photoUrl,
+              borderType: friend.selectedBorder,
+              size: 40,
+              showLevel: false,
             ),
             const SizedBox(width: 16),
             Expanded(

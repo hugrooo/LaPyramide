@@ -12,6 +12,7 @@ import '../../shared/widgets/card_3d_showcase.dart';
 import '../../shared/widgets/glass_container.dart';
 import '../../shared/widgets/neo_badge.dart';
 import '../../shared/widgets/pulsar_button.dart';
+import '../../shared/widgets/avatar_with_border.dart';
 import '../auth/auth_service.dart';
 import 'user_profile_provider.dart';
 
@@ -158,6 +159,14 @@ class LevelScreen extends ConsumerWidget {
       'neon': {'name': 'Néon Cyberpunk', 'emoji': '⚡', 'color': Color(0xFF00F5FF)},
       'pirate': {'name': 'Pirate Doré', 'emoji': '☠️', 'color': Color(0xFFFFB703)},
       'retro': {'name': 'Rétro Pixel', 'emoji': '👾', 'color': Color(0xFF8338EC)},
+      'girl': {'name': 'Girly Rose', 'emoji': '🎀', 'color': Color(0xFFFF1493)},
+      'beta': {'name': 'Testeur Bêta', 'emoji': '🥂', 'color': Color(0xFFE040FB)},
+      'pharaoh': {'name': 'Pharaon', 'emoji': '👁️', 'color': Color(0xFFD4AF37)},
+      'casino': {'name': 'Casino Royal', 'emoji': '🎲', 'color': Color(0xFF006400)},
+      'toxic': {'name': 'Toxique', 'emoji': '🧪', 'color': Color(0xFF39FF14)},
+      'clubbing': {'name': 'Clubbing', 'emoji': '🪩', 'color': Color(0xFFFF00FF)},
+      'demon': {'name': 'Démoniaque', 'emoji': '😈', 'color': Color(0xFFFF4500)},
+      'vip': {'name': 'VIP Diamant', 'emoji': '💎', 'color': Color(0xFF80DEEA)},
     };
     HapticFeedback.mediumImpact();
     showModalBottomSheet(
@@ -218,6 +227,147 @@ class LevelScreen extends ConsumerWidget {
                   ],
                 ),
               ).animate().slideX(begin: -0.2, delay: (i * 40).ms, duration: 300.ms),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // ── Sélecteur de Cadre ──────────────────────────────────────────────────────
+  void _showBorderPicker(
+      BuildContext context, String uid, String currentBorder, List<String> ownedBorders) {
+    const borderData = {
+      'classic': {'name': 'Sans Cadre', 'color': Colors.grey},
+      'neon': {'name': 'Néon Fluo ⚡', 'color': Color(0xFF00F5FF)},
+      'fire': {'name': 'Feu Ardent 🔥', 'color': Colors.orange},
+      'gold': {'name': 'Or Massif 👑', 'color': Color(0xFFFFD700)},
+    };
+    HapticFeedback.mediumImpact();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => _AppearanceSheet(
+        title: 'Choisir le Cadre',
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: ownedBorders.length,
+          itemBuilder: (_, i) {
+            final borderId = ownedBorders[i];
+            final data = borderData[borderId];
+            final name = data?['name'] as String? ?? borderId;
+            final color = data?['color'] as Color? ?? PyraTheme.primaryCyan;
+            final isSelected = borderId == currentBorder;
+            return GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                _updateProfileField('selectedBorder', borderId, uid);
+                Navigator.pop(ctx);
+              },
+              child: AnimatedContainer(
+                duration: 200.ms,
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                decoration: BoxDecoration(
+                  color: isSelected ? color.withOpacity(0.2) : Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isSelected ? color : Colors.white12,
+                    width: isSelected ? 1.5 : 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    AvatarWithBorder(emoji: '😎', size: 30, borderType: borderId),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.white70,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    if (isSelected)
+                      Icon(Icons.check_circle_rounded, color: color, size: 22),
+                  ],
+                ),
+              ).animate().slideX(begin: -0.2, delay: (i * 30).ms, duration: 300.ms),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // ── Sélecteur de Thème Musical ──────────────────────────────────────────────
+  void _showThemePicker(
+      BuildContext context, String uid, String currentTheme, List<String> ownedThemes) {
+    const themeData = {
+      'classic': {'name': 'Musique Classique Pyramide', 'icon': Icons.music_note_rounded, 'color': Colors.grey},
+      'casino': {'name': 'Casino Royal 🎰', 'icon': Icons.casino_rounded, 'color': Color(0xFFFFB703)},
+      'clubbing': {'name': 'Clubbing 🪩', 'icon': Icons.speaker_group_rounded, 'color': Color(0xFFFF00FF)},
+      'horror': {'name': 'Tension Horrifique 🔪', 'icon': Icons.piano_rounded, 'color': Colors.redAccent},
+    };
+    HapticFeedback.mediumImpact();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => _AppearanceSheet(
+        title: 'Choisir le Thème Musical',
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: ownedThemes.length,
+          itemBuilder: (_, i) {
+            final themeId = ownedThemes[i];
+            final data = themeData[themeId];
+            final name = data?['name'] as String? ?? themeId;
+            final icon = data?['icon'] as IconData? ?? Icons.music_note_rounded;
+            final color = data?['color'] as Color? ?? PyraTheme.primaryCyan;
+            final isSelected = themeId == currentTheme;
+            return GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                _updateProfileField('selectedTheme', themeId, uid);
+                Navigator.pop(ctx);
+              },
+              child: AnimatedContainer(
+                duration: 200.ms,
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                decoration: BoxDecoration(
+                  color: isSelected ? color.withOpacity(0.2) : Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isSelected ? color : Colors.white12,
+                    width: isSelected ? 1.5 : 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(icon, color: isSelected ? color : Colors.white30, size: 22),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.white70,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    if (isSelected)
+                      Icon(Icons.check_circle_rounded, color: color, size: 22),
+                  ],
+                ),
+              ).animate().slideX(begin: -0.2, delay: (i * 30).ms, duration: 300.ms),
             );
           },
         ),
@@ -375,8 +525,7 @@ class LevelScreen extends ConsumerWidget {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(profile?.emoji ?? '😎',
-                                        style: const TextStyle(fontSize: 56)),
+                                    AvatarWithBorder(emoji: profile?.emoji ?? '😎', size: 56, borderType: profile?.selectedBorder ?? 'classic'),
                                     const SizedBox(height: 2),
                                     const Text('Modifier',
                                       style: TextStyle(color: PyraTheme.primaryCyan,
@@ -657,6 +806,97 @@ class LevelScreen extends ConsumerWidget {
                             ),
                           ),
                         ).animate().fadeIn(delay: 750.ms).slideY(begin: 0.1),
+                        const SizedBox(height: 10),
+
+                        // Cadre (pleine largeur)
+                        GestureDetector(
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            _showBorderPicker(context, user.uid,
+                                profile.selectedBorder, profile.bordersOwned);
+                          },
+                          child: GlassContainer(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 16),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: PyraTheme.primaryCyan.withOpacity(0.35)),
+                            child: Row(
+                              children: [
+                                AvatarWithBorder(emoji: '😎', size: 44, borderType: profile.selectedBorder),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('Cadre d\'Avatar',
+                                        style: TextStyle(color: Colors.white54,
+                                            fontSize: 12)),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        profile.selectedBorder == 'classic' ? 'Sans Cadre' : 'Spécial',
+                                        style: const TextStyle(color: Colors.white,
+                                            fontWeight: FontWeight.bold, fontSize: 15),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(Icons.arrow_forward_ios_rounded,
+                                    color: Colors.white30, size: 14),
+                              ],
+                            ),
+                          ),
+                        ).animate().fadeIn(delay: 775.ms).slideY(begin: 0.1),
+
+                        const SizedBox(height: 10),
+
+                        // Thème musical (pleine largeur)
+                        GestureDetector(
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            _showThemePicker(context, user.uid,
+                                profile.selectedTheme, profile.themesOwned);
+                          },
+                          child: GlassContainer(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 16),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: PyraTheme.primaryPink.withOpacity(0.35)),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.music_note_rounded, color: PyraTheme.primaryPink),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('Thème Musical',
+                                        style: TextStyle(color: Colors.white54,
+                                            fontSize: 12)),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        profile.selectedTheme == 'classic' ? 'Classique' : 'Spécial',
+                                        style: const TextStyle(color: Colors.white,
+                                            fontWeight: FontWeight.bold, fontSize: 15),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(Icons.arrow_forward_ios_rounded,
+                                    color: Colors.white30, size: 14),
+                              ],
+                            ),
+                          ),
+                        ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.1),
                       ],
 
                       const SizedBox(height: 24),

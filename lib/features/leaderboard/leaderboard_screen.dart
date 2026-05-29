@@ -7,6 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../app/theme.dart';
 import '../../shared/widgets/animated_background.dart';
 import '../../shared/widgets/glass_container.dart';
+import '../../shared/widgets/avatar_with_border.dart';
 import 'leaderboard_service.dart';
 
 class LeaderboardScreen extends ConsumerStatefulWidget {
@@ -34,6 +35,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             'id': e.key.toString(),
             'name': val['name']?.toString() ?? val['pseudo']?.toString() ?? 'Inconnu',
             'emoji': val['emoji']?.toString() ?? '😎',
+            'photoUrl': val['photoUrl']?.toString(),
+            'selectedBorder': val['selectedBorder']?.toString() ?? 'classic',
             'xp': (val['xp'] as int?) ?? 0,
             'level': (val['level'] as int?) ?? 1,
           };
@@ -65,6 +68,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => context.pop(),
+                      ),
                       const Expanded(
                         child: Text(
                           '🌍 Hall of Fame',
@@ -168,6 +175,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
   Widget _buildPodiumStep(Map<String, dynamic> player, int rank, double height, Color color) {
     final String name = player['name'] ?? 'Inconnu';
     final String emoji = player['emoji'] ?? '😎';
+    final String? photoUrl = player['photoUrl'];
+    final String selectedBorder = player['selectedBorder'] ?? 'classic';
     final int xp = player['xp'] ?? 0;
     final int level = player['level'] ?? 1;
 
@@ -183,9 +192,13 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               padding: EdgeInsets.only(bottom: 8),
               child: Icon(Icons.star_rounded, color: PyraTheme.primaryYellow, size: 32),
             ),
-          Text(
-            emoji,
-            style: const TextStyle(fontSize: 32),
+          AvatarWithBorder(
+            emoji: emoji,
+            photoUrl: photoUrl,
+            size: isFirst ? 60 : 48,
+            borderType: selectedBorder,
+            showLevel: true,
+            level: level,
           ),
           const SizedBox(height: 8),
           Container(
@@ -240,6 +253,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
   Widget _buildRankCard(Map<String, dynamic> player, int rank) {
     final String name = player['name'] ?? 'Inconnu';
     final String emoji = player['emoji'] ?? '😎';
+    final String? photoUrl = player['photoUrl'];
+    final String selectedBorder = player['selectedBorder'] ?? 'classic';
     final int xp = player['xp'] ?? 0;
     final int level = player['level'] ?? 1;
 
@@ -261,9 +276,12 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               ),
             ),
             const SizedBox(width: 12),
-            Text(
-              emoji,
-              style: const TextStyle(fontSize: 24),
+            AvatarWithBorder(
+              emoji: emoji,
+              photoUrl: photoUrl,
+              size: 40,
+              borderType: selectedBorder,
+              showLevel: false,
             ),
             const SizedBox(width: 16),
             Expanded(

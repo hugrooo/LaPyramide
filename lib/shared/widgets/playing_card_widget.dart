@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../app/theme.dart';
 import '../../features/game/models/card_model.dart';
 import '../../features/profile/user_profile_provider.dart';
@@ -198,6 +199,97 @@ class PlayingCardWidget extends ConsumerWidget {
         centerSymbol = '👾';
         bgPattern = '0 1\n1 0';
         break;
+      case 'girl':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFB6C1), Color(0xFFFF1493)], // Light pink to Deep pink
+        );
+        borderColor = Colors.white;
+        centerGlowColor = Colors.white;
+        centerSymbol = '🎀';
+        bgPattern = '✨\n💖';
+        break;
+      case 'beta':
+        bgGradient = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF9C27B0).withOpacity(0.7), // Transparent purple
+            const Color(0xFF4A148C).withOpacity(0.9),
+          ],
+        );
+        borderColor = const Color(0xFFE040FB); // Bright purple
+        centerGlowColor = const Color(0xFFE040FB);
+        centerSymbol = '🥂\nBÊTA';
+        bgPattern = '🥂\n⭐';
+        break;
+      case 'pharaoh':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFD4AF37), Color(0xFF8B6508)],
+        );
+        borderColor = const Color(0xFFFFF8DC);
+        centerGlowColor = const Color(0xFFFFF8DC);
+        centerSymbol = '👁️';
+        bgPattern = '🐪\n🐫';
+        break;
+      case 'casino':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF006400), Color(0xFF003300)],
+        );
+        borderColor = const Color(0xFFFFD700);
+        centerGlowColor = const Color(0xFFFFD700);
+        centerSymbol = '🎲';
+        bgPattern = '♠️\n♣️';
+        break;
+      case 'toxic':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1A1A1A), Color(0xFF000000)],
+        );
+        borderColor = const Color(0xFF39FF14);
+        centerGlowColor = const Color(0xFF39FF14);
+        centerSymbol = '🧪';
+        bgPattern = '☣️\n💀';
+        break;
+      case 'vip':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE0F7FA), Color(0xFF80DEEA)],
+        );
+        borderColor = Colors.white;
+        centerGlowColor = Colors.white;
+        centerSymbol = '💎';
+        bgPattern = '✨\n💎';
+        break;
+      case 'clubbing':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF000000), Color(0xFF120024)],
+        );
+        borderColor = const Color(0xFFFF00FF);
+        centerGlowColor = const Color(0xFF00FFFF);
+        centerSymbol = '🪩';
+        bgPattern = '🍸\n🎵';
+        break;
+      case 'demon':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF8B0000), Color(0xFF3A0000)],
+        );
+        borderColor = const Color(0xFFFF4500);
+        centerGlowColor = const Color(0xFFFF4500);
+        centerSymbol = '😈';
+        bgPattern = '🔥\n👹';
+        break;
       case 'classic':
       default:
         bgGradient = const LinearGradient(
@@ -212,7 +304,7 @@ class PlayingCardWidget extends ConsumerWidget {
         break;
     }
 
-    return Container(
+    Widget cardBack = Container(
       decoration: BoxDecoration(gradient: bgGradient),
       child: Stack(
         children: [
@@ -236,12 +328,12 @@ class PlayingCardWidget extends ConsumerWidget {
           // Cadre central
           Center(
             child: Container(
-              margin: const EdgeInsets.all(6),
+              margin: EdgeInsets.all(width * 0.1),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(style == 'retro' ? 0 : 6),
+                borderRadius: BorderRadius.circular(style == 'retro' ? 0 : width * 0.1),
                 border: Border.all(
                   color: borderColor.withOpacity(0.5),
-                  width: 1.5,
+                  width: width * 0.025 > 1.0 ? width * 0.025 : 1.0,
                 ),
                 gradient: RadialGradient(
                   colors: [
@@ -252,13 +344,30 @@ class PlayingCardWidget extends ConsumerWidget {
                 ),
               ),
               child: Center(
-                child: Text(centerSymbol, style: const TextStyle(fontSize: 22)),
+                child: Text(
+                  centerSymbol, 
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: style == 'beta' ? width * 0.23 : width * 0.36,
+                    fontWeight: style == 'beta' ? FontWeight.bold : FontWeight.normal,
+                    color: style == 'beta' ? const Color(0xFFE040FB) : null,
+                  )
+                ),
               ),
             ),
           ),
         ],
       ),
     );
+
+    if (style == 'vip') {
+      cardBack = cardBack
+          .animate(onPlay: (controller) => controller.repeat(reverse: true))
+          .shimmer(duration: 2500.ms, color: Colors.white.withOpacity(0.6), angle: 0.8)
+          .elevation(end: 10, duration: 1250.ms, color: Colors.cyanAccent.withOpacity(0.3));
+    }
+
+    return cardBack;
   }
 }
 

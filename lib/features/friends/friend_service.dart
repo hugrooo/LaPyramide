@@ -8,18 +8,28 @@ final friendServiceProvider = Provider<FriendService>((ref) {
   return FriendService(FirebaseDatabase.instance, auth);
 });
 
-class UserProfile {
+class FriendProfile {
   final String id;
   final String name;
   final String? emoji;
+  final String? photoUrl;
+  final String selectedBorder;
 
-  UserProfile({required this.id, required this.name, this.emoji});
+  FriendProfile({
+    required this.id, 
+    required this.name, 
+    this.emoji,
+    this.photoUrl,
+    this.selectedBorder = 'classic',
+  });
 
-  factory UserProfile.fromJson(String id, Map<dynamic, dynamic> json) {
-    return UserProfile(
+  factory FriendProfile.fromJson(String id, Map<dynamic, dynamic> json) {
+    return FriendProfile(
       id: id,
       name: json['name'] ?? 'Inconnu',
       emoji: json['emoji'],
+      photoUrl: json['photoUrl'],
+      selectedBorder: json['selectedBorder'] ?? 'classic',
     );
   }
 }
@@ -43,7 +53,7 @@ class FriendService {
   }
 
   /// Rechercher des utilisateurs par nom (rudimentaire avec Realtime Database)
-  Future<List<UserProfile>> searchUsers(String query) async {
+  Future<List<FriendProfile>> searchUsers(String query) async {
     if (query.isEmpty) return [];
     final user = _auth.currentUser;
     final q = query.toLowerCase();
@@ -58,11 +68,11 @@ class FriendService {
     if (!snapshot.exists) return [];
 
     final Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
-    final List<UserProfile> results = [];
+    final List<FriendProfile> results = [];
     
     data.forEach((key, value) {
       if (user != null && key == user.uid) return; // Ignorer soi-même
-      results.add(UserProfile.fromJson(key, value as Map<dynamic, dynamic>));
+      results.add(FriendProfile.fromJson(key, value as Map<dynamic, dynamic>));
     });
 
     return results;
@@ -108,7 +118,7 @@ class FriendService {
   }
 
   /// Récupérer les amis
-  Stream<List<UserProfile>> getFriends() {
+  Stream<List<FriendProfile>> getFriends() {
     final user = _auth.currentUser;
     if (user == null) return Stream.value([]);
 
@@ -118,11 +128,11 @@ class FriendService {
       final Map<dynamic, dynamic> friendsMap = event.snapshot.value as Map<dynamic, dynamic>;
       final friendIds = friendsMap.keys.cast<String>().toList();
       
-      final List<UserProfile> friendsList = [];
+      final List<FriendProfile> friendsList = [];
       for (final fid in friendIds) {
         final profileSnap = await _db.ref('users/$fid').get();
         if (profileSnap.exists && profileSnap.value != null) {
-          friendsList.add(UserProfile.fromJson(fid, profileSnap.value as Map<dynamic, dynamic>));
+          friendsList.add(FriendProfile.fromJson(fid, profileSnap.value as Map<dynamic, dynamic>));
         }
       }
       return friendsList;
@@ -130,7 +140,7 @@ class FriendService {
   }
   
   /// Récupérer les requêtes reçues
-  Stream<List<UserProfile>> getPendingRequests() {
+  Stream<List<FriendProfile>> getPendingRequests() {
     final user = _auth.currentUser;
     if (user == null) return Stream.value([]);
 
@@ -140,14 +150,29 @@ class FriendService {
       final Map<dynamic, dynamic> reqMap = event.snapshot.value as Map<dynamic, dynamic>;
       final reqIds = reqMap.keys.cast<String>().toList();
       
-      final List<UserProfile> reqList = [];
+      final List<FriendProfile> reqList = [];
       for (final rid in reqIds) {
         final profileSnap = await _db.ref('users/$rid').get();
         if (profileSnap.exists && profileSnap.value != null) {
-          reqList.add(UserProfile.fromJson(rid, profileSnap.value as Map<dynamic, dynamic>));
+          reqList.add(FriendProfile.fromJson(rid, profileSnap.value as Map<dynamic, dynamic>));
         }
       }
       return reqList;
+    });
+  }
+
+  /// Envoyer une invitation de jeu
+  Future<void> inviteToGame(String friendUid, String roomCode, String hostName) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    
+    // On écrit dans /users/{friendUid}/invites avec un ID unique
+    final inviteRef = _db.ref('users/$friendUid/invites').push();
+    await inviteRef.set({
+      'inviterId': user.uid,
+      'inviterName': hostName,
+      'roomCode': roomCode,
+      'timestamp': ServerValue.timestamp,
     });
   }
 }

@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import '../../app/theme.dart';
 import '../../shared/widgets/glass_container.dart';
 import '../../shared/widgets/neo_badge.dart';
+import '../../shared/widgets/avatar_with_border.dart';
 import '../profile/user_profile_provider.dart';
 import '../notifications/push_notification_service.dart';
 import 'widgets/play_card_3d.dart';
@@ -66,6 +67,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         hasAnyNewQuest = true;
       }
     }
+
+    final hasClaimedBetaGift = profile?.cardBacks.contains('beta') ?? false;
 
     // Texte et badge dynamiques pour le panneau quêtes
     String questTitle;
@@ -151,31 +154,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               // Avatar + Parties jouées
                               Row(
                                 children: [
-                                  Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.1),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Center(child: Text(profile?.emoji ?? '😎', style: const TextStyle(fontSize: 20))),
-                                      ),
-                                      Positioned(
-                                        bottom: 0,
-                                        right: -2,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                                          decoration: BoxDecoration(
-                                            color: PyraTheme.primaryCyan,
-                                            borderRadius: BorderRadius.circular(4),
-                                          ),
-                                          child: Text('Lvl $level', style: const TextStyle(color: Colors.black, fontSize: 8, fontWeight: FontWeight.w900)),
-                                        ),
-                                      ),
-                                    ],
+                                  AvatarWithBorder(
+                                    emoji: profile?.emoji ?? '😎',
+                                    size: 40,
+                                    borderType: profile?.selectedBorder ?? 'classic',
+                                    showLevel: true,
+                                    level: level,
                                   ),
                                   const SizedBox(width: 12),
                                   Row(
@@ -336,6 +320,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.2),
 
+                // ── Annonce Cadeau Bêta ──────────────────────────────
+                if (!hasClaimedBetaGift)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        context.pushNamed('store');
+                      },
+                      child: GlassContainer(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: PyraTheme.primaryYellow.withOpacity(0.5)),
+                        innerGlow: true,
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: PyraTheme.primaryYellow.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.star_rounded, color: PyraTheme.primaryYellow, size: 20),
+                            ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1,1), end: const Offset(1.1,1.1), duration: 1.seconds),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Cadeaux de Bêta Testeur 🎁',
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                  ),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    'Récupère tes récompenses gratuites !',
+                                    style: TextStyle(color: Colors.white54, fontSize: 11),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 14),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ).animate().fadeIn(duration: 700.ms).slideX(begin: -0.2),
+
                 const Spacer(),
 
                 // ── Carte 3D Centrale (Bouton Jouer) ─────────────────────
@@ -346,8 +378,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ).animate().fadeIn(duration: 800.ms, curve: Curves.easeOutBack).scale(begin: const Offset(0.8, 0.8)),
 
                 const Spacer(),
-                const SizedBox(height: 100),
-              ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GlassContainer(
+                      padding: const EdgeInsets.all(8),
+                      borderRadius: BorderRadius.circular(20),
+                      child: IconButton(
+                        icon: const Icon(Icons.people_alt_rounded, color: PyraTheme.primaryCyan, size: 32),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          context.pushNamed('friends');
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 32),
+                    GlassContainer(
+                      padding: const EdgeInsets.all(8),
+                      borderRadius: BorderRadius.circular(20),
+                      child: IconButton(
+                        icon: const Icon(Icons.leaderboard_rounded, color: PyraTheme.primaryYellow, size: 32),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          context.pushNamed('leaderboard');
+                        },
+                      ),
+                    ),
+                  ],
+                ).animate().fadeIn(duration: 900.ms).slideY(begin: 0.2),
+                const SizedBox(height: 48),
             ),
           ),
         ],

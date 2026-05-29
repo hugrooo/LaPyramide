@@ -7,6 +7,8 @@ import '../../../app/theme.dart';
 import '../../../core/audio/audio_manager.dart';
 import '../../../shared/widgets/animated_background.dart';
 import '../../auth/auth_service.dart';
+import '../../../shared/widgets/card_3d_showcase.dart';
+import '../../../shared/widgets/avatar_with_border.dart';
 import 'dart:math';
 import '../game_logic.dart';
 import '../models/card_model.dart';
@@ -583,6 +585,11 @@ class OnlineGameScreen extends ConsumerWidget {
             accused: toPlayer,
             sips: assignment.sips,
             availablePowers: availablePowers,
+            isSpeedRun: state.settings.mode == GameMode.speedRun,
+            onTimeout: () {
+              HapticFeedback.heavyImpact();
+              service.speedRunTimeout(state.gameId);
+            },
             onAccept: () {
               HapticFeedback.lightImpact();
               service.acceptDrink(state.gameId);
@@ -619,7 +626,13 @@ class OnlineGameScreen extends ConsumerWidget {
                     // Donneur
                     Column(
                       children: [
-                        Text(fromPlayer.emoji, style: const TextStyle(fontSize: 40)),
+                        AvatarWithBorder(
+                          emoji: fromPlayer.emoji,
+                          photoUrl: fromPlayer.photoUrl,
+                          size: 50,
+                          borderType: fromPlayer.selectedBorder,
+                        ),
+                        const SizedBox(height: 4),
                         Text(fromPlayer.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       ],
                     ).animate().slideX(begin: -0.5, end: 0, duration: 400.ms, curve: Curves.easeOutBack),
@@ -649,7 +662,13 @@ class OnlineGameScreen extends ConsumerWidget {
                     // Victime (Secouée)
                     Column(
                       children: [
-                        Text(toPlayer.emoji, style: const TextStyle(fontSize: 40)),
+                        AvatarWithBorder(
+                          emoji: toPlayer.emoji,
+                          photoUrl: toPlayer.photoUrl,
+                          size: 50,
+                          borderType: toPlayer.selectedBorder,
+                        ),
+                        const SizedBox(height: 4),
                         Text(toPlayer.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       ],
                     ).animate(onPlay: (c) => c.repeat(reverse: true)).shake(hz: 8),
