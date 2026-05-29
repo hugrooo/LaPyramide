@@ -175,6 +175,16 @@ class ScoreboardScreen extends ConsumerWidget {
     final sorted = [...players]..sort((a, b) => b.totalSips.compareTo(a.totalSips));
     final service = ref.read(onlineGameServiceProvider);
 
+    if (isOnline && roomCode != null) {
+      ref.listen(onlineGameStateProvider, (previous, next) {
+        if (next.value != null && next.value!.phase == GamePhase.setup) {
+          if (context.mounted) {
+            context.goNamed('onlineLobby');
+          }
+        }
+      });
+    }
+
     return Scaffold(
       body: Stack(
         children: [

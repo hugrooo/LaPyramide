@@ -674,8 +674,11 @@ class OnlineGameScreen extends ConsumerWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryOrange),
           onPressed: () {
-            // Seul l'hôte peut redémarrer la partie pour le moment
-            // Ou on permet à tout le monde d'aller au scoreboard
+             context.goNamed('scoreboard', extra: {
+                'players': state.players,
+                'isOnline': true,
+                'roomCode': state.gameId,
+             });
           },
           child: const Text('Voir le Classement', style: TextStyle(color: Colors.white)),
         ),
@@ -752,7 +755,46 @@ class OnlineGameScreen extends ConsumerWidget {
                     if (allPassed) {
                       HapticFeedback.mediumImpact();
                       final nextState = GameLogic.nextCard(updatedState);
-                      service.updateGameState(nextState);
+                      
+                      if (nextState.phase == GamePhase.revealing) {
+                        ref.read(randomEventProvider.notifier).tryTriggerEvent(probability: 0.2);
+                        final event = ref.read(randomEventProvider);
+                        ref.read(randomEventProvider.notifier).clearEvent();
+                        final newState = GameLogic.revealCurrentCard(nextState);
+                        
+                        if (event != null) {
+                           String finalDescription = event.description;
+                           List<Player> updatedPlayers = newState.players;
+                           
+                           final titleLower = event.title.toLowerCase();
+                           if ((titleLower.contains("mort") || titleLower.contains("gorgée")) && updatedPlayers.isNotEmpty) {
+                             final random = Random();
+                             final chosenPlayer = updatedPlayers[random.nextInt(updatedPlayers.length)];
+                             finalDescription = "Le jeu désigne ${chosenPlayer.emoji} ${chosenPlayer.name} au hasard qui boit 3 gorgées... Courage !";
+                             
+                             updatedPlayers = updatedPlayers.map((p) {
+                               if (p.id == chosenPlayer.id) {
+                                 return p.copyWith(totalSips: p.totalSips + 3);
+                               }
+                               return p;
+                             }).toList();
+                           }
+
+                           service.updateGameState(newState.copyWith(
+                             players: updatedPlayers,
+                             currentRandomEvent: {
+                               'title': event.title,
+                               'description': finalDescription,
+                               'emoji': event.emoji,
+                               'type': event.type,
+                             },
+                           ));
+                         } else {
+                            service.updateGameState(newState);
+                         }
+                      } else {
+                        service.updateGameState(nextState);
+                      }
                     } else {
                       service.updateGameState(updatedState);
                     }
