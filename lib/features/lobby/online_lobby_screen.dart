@@ -571,8 +571,7 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                                     ),
                                   ),
                                 ],
-                              ),
-                            ).animate().scale(duration: 500.ms, curve: Curves.elasticOut),
+                              ).animate().scale(duration: 500.ms, curve: Curves.elasticOut),
                         );
                       }),
                     ],
