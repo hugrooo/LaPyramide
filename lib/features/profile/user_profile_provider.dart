@@ -19,6 +19,8 @@ class UserProfile {
   final Map<String, int> jokers;
   final List<String> cardBacks;
   final List<String> titles;
+  // Quêtes : clé = path de la quête, valeur = {progress, claimed}
+  final Map<String, Map<String, dynamic>> quests;
 
   UserProfile({
     required this.level,
@@ -37,6 +39,7 @@ class UserProfile {
     required this.jokers,
     required this.cardBacks,
     required this.titles,
+    this.quests = const {},
   });
 
   factory UserProfile.fromMap(Map<dynamic, dynamic> map) {
@@ -76,6 +79,20 @@ class UserProfile {
       titlesList.add('Novice 🐣');
     }
 
+    // Parser les quêtes depuis Firebase
+    final Map<String, Map<String, dynamic>> questsMap = {};
+    final rawQuests = map['quests'];
+    if (rawQuests is Map) {
+      rawQuests.forEach((key, val) {
+        if (val is Map) {
+          questsMap[key.toString()] = {
+            'progress': (val['progress'] as num? ?? 0).toInt(),
+            'claimed': val['claimed'] == true,
+          };
+        }
+      });
+    }
+
     return UserProfile(
       level: (map['level'] as num? ?? 1).toInt(),
       xp: (map['xp'] as num? ?? 0).toInt(),
@@ -93,6 +110,7 @@ class UserProfile {
       jokers: jokersMap,
       cardBacks: cardBacksList,
       titles: titlesList,
+      quests: questsMap,
     );
   }
 

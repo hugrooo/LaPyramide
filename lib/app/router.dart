@@ -211,7 +211,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'scoreboard',
         pageBuilder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
-          return _zoomFade(context, state, ScoreboardScreen(players: extra['players']));
+          return _zoomFade(context, state, ScoreboardScreen(
+            players: extra['players'],
+            isOnline: extra['isOnline'] ?? false,
+            roomCode: extra['roomCode'],
+          ));
         },
       ),
 

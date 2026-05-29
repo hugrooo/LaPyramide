@@ -1,18 +1,167 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/animated_background.dart';
 import '../game/models/player_model.dart';
-import '../../shared/widgets/gradient_button.dart';
+
 import '../../shared/widgets/pulsar_button.dart';
 import '../../shared/widgets/glass_container.dart';
+import '../game/online/online_game_service.dart';
 
-class ScoreboardScreen extends StatelessWidget {
+// ─── Particule de confetti légère ──────────────────────
+class _ConfettiParticle {
+  final double x;
+  final double startY;
+  final double size;
+  final Color color;
+  final double rotation;
+  final double speed;
+  final bool isCircle;
+
+  _ConfettiParticle({
+    required this.x,
+    required this.startY,
+    required this.size,
+    required this.color,
+    required this.rotation,
+    required this.speed,
+    required this.isCircle,
+  });
+}
+
+class _ConfettiOverlay extends StatefulWidget {
+  const _ConfettiOverlay();
+
+  @override
+  State<_ConfettiOverlay> createState() => _ConfettiOverlayState();
+}
+
+class _ConfettiOverlayState extends State<_ConfettiOverlay>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_ConfettiParticle> _particles;
+
+  static const _colors = [
+    PyraTheme.primaryYellow,
+    PyraTheme.primaryPink,
+    PyraTheme.primaryCyan,
+    PyraTheme.primaryPurple,
+    Colors.white,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    );
+
+    // Génère seulement 25 particules (léger et élégant)
+    final rnd = Random();
+    _particles = List.generate(25, (i) {
+      return _ConfettiParticle(
+        x: rnd.nextDouble(),
+        startY: -0.05 - rnd.nextDouble() * 0.3,
+        size: 6 + rnd.nextDouble() * 8,
+        color: _colors[rnd.nextInt(_colors.length)],
+        rotation: rnd.nextDouble() * 2 * pi,
+        speed: 0.4 + rnd.nextDouble() * 0.6,
+        isCircle: rnd.nextBool(),
+      );
+    });
+
+    // Lance l'animation et ne la répète pas
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        // Fondu des confettis après 3.5 secondes
+        final opacity = _controller.value < 0.7
+            ? 1.0
+            : (1.0 - (_controller.value - 0.7) / 0.3).clamp(0.0, 1.0);
+
+        return Opacity(
+          opacity: opacity,
+          child: CustomPaint(
+            painter: _ConfettiPainter(_particles, _controller.value),
+            child: const SizedBox.expand(),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ConfettiPainter extends CustomPainter {
+  final List<_ConfettiParticle> particles;
+  final double progress;
+
+  _ConfettiPainter(this.particles, this.progress);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final p in particles) {
+      final t = (progress * p.speed).clamp(0.0, 1.0);
+      final x = p.x * size.width + sin(t * pi * 3 + p.rotation) * 30;
+      final y = (p.startY + t * 1.5) * size.height;
+
+      if (y > size.height) continue;
+
+      final paint = Paint()..color = p.color.withOpacity(0.85);
+      final angle = p.rotation + t * pi * 4;
+
+      canvas.save();
+      canvas.translate(x, y);
+      canvas.rotate(angle);
+
+      if (p.isCircle) {
+        canvas.drawCircle(Offset.zero, p.size / 2, paint);
+      } else {
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size / 2),
+            const Radius.circular(2),
+          ),
+          paint,
+        );
+      }
+
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ConfettiPainter old) => true;
+}
+
+// ─── Écran Scoreboard ──────────────────────────────────
+class ScoreboardScreen extends ConsumerWidget {
   final List<Player> players;
+  final bool isOnline;
+  final String? roomCode;
 
-  const ScoreboardScreen({super.key, required this.players});
+  const ScoreboardScreen({
+    super.key,
+    required this.players,
+    this.isOnline = false,
+    this.roomCode,
+  });
 
   Player get _mostDrunk =>
       players.reduce((a, b) => a.totalSips >= b.totalSips ? a : b);
@@ -21,14 +170,19 @@ class ScoreboardScreen extends StatelessWidget {
       players.reduce((a, b) => a.bluffsWon >= b.bluffsWon ? a : b);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final sorted = [...players]..sort((a, b) => b.totalSips.compareTo(a.totalSips));
+    final service = ref.read(onlineGameServiceProvider);
 
     return Scaffold(
       body: Stack(
         children: [
           const AnimatedBackground(),
+
+          // Confettis élégants (25 particules max)
+          const _ConfettiOverlay(),
+
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -40,7 +194,7 @@ class ScoreboardScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.displayMedium?.copyWith(
                           color: PyraTheme.primaryYellow,
                         ),
-                  ).animate().fadeIn().scale(),
+                  ).animate().fadeIn(duration: 400.ms).scale(curve: Curves.easeOutBack),
 
                   const SizedBox(height: 24),
 
@@ -95,19 +249,61 @@ class ScoreboardScreen extends StatelessWidget {
 
                   // Boutons
                   const SizedBox(height: 16),
-                  PulsarButton(
-                    text: '🎲 ${l10n.scoreboard_play_again}',
-                    gradient: PyraTheme.purplePinkGradient,
-                    onPressed: () => context.goNamed('localLobby'), // Or something depending if online/local
-                  ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.3),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () => context.goNamed('home'),
-                    child: Text(
-                      l10n.scoreboard_home,
-                      style: const TextStyle(color: PyraTheme.textSecondary),
+
+                  if (isOnline && roomCode != null) ...[
+                    // Mode En Ligne : bouton Rejouer (remet le salon en lobby)
+                    SizedBox(
+                      width: double.infinity,
+                      child: PulsarButton(
+                        text: '🔄 Rejouer avec le même groupe',
+                        gradient: PyraTheme.purplePinkGradient,
+                        onPressed: () async {
+                          HapticFeedback.mediumImpact();
+                          try {
+                            await service.restartRoom(roomCode!);
+                            if (context.mounted) {
+                              context.goNamed('onlineLobby');
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Erreur : $e'), backgroundColor: Colors.red),
+                              );
+                            }
+                          }
+                        },
+                      ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.3),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () async {
+                        HapticFeedback.lightImpact();
+                        // Nettoyer le code salon avant de rentrer à l'accueil
+                        ref.read(currentRoomCodeProvider.notifier).state = null;
+                        await service.leaveRoom(roomCode!);
+                        if (context.mounted) context.goNamed('home');
+                      },
+                      child: const Text(
+                        '🏠 Retour à l\'accueil',
+                        style: TextStyle(color: PyraTheme.textSecondary),
+                      ),
+                    ),
+                  ] else ...[
+                    // Mode Local
+                    PulsarButton(
+                      text: '🎲 ${l10n.scoreboard_play_again}',
+                      gradient: PyraTheme.purplePinkGradient,
+                      onPressed: () => context.goNamed('localLobby'),
+                    ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.3),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () => context.goNamed('home'),
+                      child: Text(
+                        l10n.scoreboard_home,
+                        style: const TextStyle(color: PyraTheme.textSecondary),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

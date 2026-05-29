@@ -296,6 +296,7 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
     final profile = userProfileAsync.value;
     final currentCoins = profile?.coins ?? 0;
     final currentDiamonds = profile?.diamonds ?? 0;
+    final quests = profile?.quests ?? {};
 
     // Détermination de l'état du coffre
     final int nextClaimAvailable = (profile?.lastDailyChestClaimed ?? 0) + 24 * 60 * 60 * 1000;
@@ -444,10 +445,10 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                         path: 'bluff',
                         title: 'Légende du Bluff 🎭',
                         desc: 'Réussir 3 bluffs en partie en ligne ou locale.',
-                        progress: 0, // Dans un vrai jeu, ceci viendrait d'un noeud Firebase dynamic
+                        progress: (quests['bluff']?['progress'] as int?) ?? 0,
                         target: 3,
                         reward: 80,
-                        claimed: false,
+                        claimed: (quests['bluff']?['claimed'] as bool?) ?? false,
                         userCoins: currentCoins,
                       ),
                       const SizedBox(height: 16),
@@ -457,10 +458,10 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                         path: 'games',
                         title: 'Soirée Active 🍻',
                         desc: 'Jouer 1 partie de Pyramide complète.',
-                        progress: 1, // Simulé complété pour test facile
+                        progress: (quests['games']?['progress'] as int?) ?? 0,
                         target: 1,
                         reward: 50,
-                        claimed: false,
+                        claimed: (quests['games']?['claimed'] as bool?) ?? false,
                         userCoins: currentCoins,
                       ),
                       const SizedBox(height: 16),
@@ -470,10 +471,10 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                         path: 'shop',
                         title: 'Acheteur Averti 🛒',
                         desc: 'Acheter 1 Joker consommable dans la Boutique.',
-                        progress: 0,
+                        progress: (quests['shop']?['progress'] as int?) ?? 0,
                         target: 1,
                         reward: 60,
-                        claimed: false,
+                        claimed: (quests['shop']?['claimed'] as bool?) ?? false,
                         userCoins: currentCoins,
                       ),
                     ],

@@ -440,7 +440,7 @@ class SettingsScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
                       Center(
                         child: Text(
-                          'Pyramide Party v1.0.1\nApp Store Review Build',
+                          'Pyramide Party v1.0.2\nApp Store Review Build',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
                         ),

@@ -375,13 +375,61 @@ class OnlineGameService {
 
   /// Écoute en temps réel de l'état du salon
   Stream<GameState> streamGameState(String roomCode) {
-    return _db.ref('games/$roomCode').onValue.map((event) {
-      if (event.snapshot.value == null) {
-        throw Exception('Le salon a été fermé');
-      }
+    return _db.ref('games/$roomCode').onValue
+        .where((event) => event.snapshot.value != null) // Ignorer silencieusement si le salon est supprimé
+        .map((event) {
       final data = jsonDecode(jsonEncode(event.snapshot.value)) as Map<String, dynamic>;
       return GameState.fromJson(data);
     });
+  }
+
+
+  /// Remet le salon en phase de préparation avec les mêmes joueurs (Rejouer)
+  Future<void> restartRoom(String roomCode) async {
+    final state = await _fetchCurrentState(roomCode);
+    if (state == null) throw Exception('Salon introuvable');
+
+    // Recrée un deck et une pyramide frais
+    final settings = state.settings;
+    final deck = PyraCard.generateDeck();
+    final List<List<PyraCard>> pyramid = [];
+    int cardIndex = 0;
+
+    for (int r = 0; r < settings.pyramidRows; r++) {
+      final row = <PyraCard>[];
+      for (int c = 0; c <= r; c++) {
+        if (cardIndex < deck.length) {
+          row.add(deck[cardIndex++]);
+        }
+      }
+      pyramid.add(row);
+    }
+
+    // Réinitialise les joueurs (main vide, stats à zéro, mais on garde noms/emojis)
+    final resetPlayers = state.players.map((p) => Player(
+      id: p.id,
+      name: p.name,
+      emoji: p.emoji,
+      photoUrl: p.photoUrl,
+      isReady: p.id == state.players.first.id, // L'hôte est prêt par défaut
+    )).toList();
+
+    final newState = GameState(
+      gameId: roomCode,
+      pyramid: pyramid,
+      players: resetPlayers,
+      deck: deck.sublist(cardIndex),
+      phase: GamePhase.setup,
+      currentRow: settings.pyramidRows - 1,
+      currentCardIndex: 0,
+      pendingDrinks: [],
+      settings: settings,
+      presence: state.presence,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    final DatabaseReference roomRef = _db.ref('games/$roomCode');
+    await roomRef.set(newState.toJson());
   }
 
   /// Nettoie les salons de jeu obsolètes (inactifs depuis plus de 2 heures)
