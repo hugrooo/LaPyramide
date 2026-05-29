@@ -62,7 +62,16 @@ class OnlineGameService {
     // Créer le joueur hôte
     final prefs = await SharedPreferences.getInstance();
     final avatar = prefs.getString('userAvatar') ?? '😎';
-    final userProfile = _ref.read(userProfileProvider).value;
+    
+    // Fetch profile safely from Firebase to guarantee we have the data
+    UserProfile? userProfile;
+    try {
+      final profileSnap = await _db.ref('users/${user.uid}').get();
+      if (profileSnap.exists && profileSnap.value != null) {
+        userProfile = UserProfile.fromMap(profileSnap.value as Map<dynamic, dynamic>);
+      }
+    } catch (_) {}
+
     final activeCardBack = userProfile?.activeCardBack ?? 'classic';
     final activeTitle = userProfile?.activeTitle ?? '';
     final level = userProfile?.level ?? 1;
@@ -157,7 +166,16 @@ class OnlineGameService {
     // Ajouter le joueur
     final prefs = await SharedPreferences.getInstance();
     final avatar = prefs.getString('userAvatar') ?? '😎';
-    final userProfile = _ref.read(userProfileProvider).value;
+    
+    // Fetch profile safely from Firebase to guarantee we have the data
+    UserProfile? userProfile;
+    try {
+      final profileSnap = await _db.ref('users/${user.uid}').get();
+      if (profileSnap.exists && profileSnap.value != null) {
+        userProfile = UserProfile.fromMap(profileSnap.value as Map<dynamic, dynamic>);
+      }
+    } catch (_) {}
+
     final activeCardBack = userProfile?.activeCardBack ?? 'classic';
     final activeTitle = userProfile?.activeTitle ?? '';
     final level = userProfile?.level ?? 1;

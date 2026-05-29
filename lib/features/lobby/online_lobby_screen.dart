@@ -18,6 +18,7 @@ import '../game/models/game_state.dart';
 import '../game/models/player_model.dart';
 import '../game/online/online_game_service.dart';
 import '../profile/user_profile_provider.dart';
+import '../../shared/widgets/card_3d_showcase.dart';
 
 class OnlineLobbyScreen extends ConsumerStatefulWidget {
   const OnlineLobbyScreen({super.key});
@@ -540,6 +541,16 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                                             style: const TextStyle(color: Colors.black,
                                                 fontSize: 8, fontWeight: FontWeight.w900),
                                           ),
+                                        ),
+                                      ),
+                                      
+                                      // Dos de carte équipé
+                                      Positioned(
+                                        bottom: -8, left: -16,
+                                        child: Card3DShowcase(
+                                          skinId: player.activeCardBack,
+                                          width: 28,
+                                          height: 38,
                                         ),
                                       ),
                                     ],
