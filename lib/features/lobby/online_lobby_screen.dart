@@ -209,18 +209,6 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
             ),
           ),
 
-          // We handle the back button directly in the Top Bar of _buildLobbyMenu
-          // But keep it here for _buildWaitingRoom which doesn't have a top bar
-          if (roomCode != null)
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                  onPressed: () => context.pop(),
-                ),
-              ),
-            ),
         ],
       ),
     );
