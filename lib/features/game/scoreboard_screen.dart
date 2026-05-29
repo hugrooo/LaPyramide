@@ -8,6 +8,7 @@ import '../../app/theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/animated_background.dart';
 import '../game/models/player_model.dart';
+import '../game/models/game_state.dart';
 
 import '../../shared/widgets/pulsar_button.dart';
 import '../../shared/widgets/glass_container.dart';
