@@ -407,6 +407,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                 ).animate().fadeIn(duration: 900.ms).slideY(begin: 0.2),
                 const SizedBox(height: 48),
+              ],
             ),
           ),
         ],
