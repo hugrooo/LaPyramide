@@ -74,7 +74,7 @@ class OnlineGameScreen extends ConsumerWidget {
                           Column(
                             children: [
                               const Icon(Icons.water_drop, color: PyraTheme.primaryCyan),
-                              Text('${me.drinksGiven} Gorgées', style: const TextStyle(color: Colors.white)),
+                              Text('${me.drinksGiven} Pénalités', style: const TextStyle(color: Colors.white)),
                             ],
                           ),
                           Column(
@@ -446,10 +446,10 @@ class OnlineGameScreen extends ConsumerWidget {
                            List<Player> updatedPlayers = newState.players;
                            
                            final titleLower = event.title.toLowerCase();
-                           if ((titleLower.contains("mort") || titleLower.contains("gorgée")) && updatedPlayers.isNotEmpty) {
+                           if ((titleLower.contains("mort") || titleLower.contains("pénalité")) && updatedPlayers.isNotEmpty) {
                              final random = Random();
                              final chosenPlayer = updatedPlayers[random.nextInt(updatedPlayers.length)];
-                             finalDescription = "Le jeu désigne ${chosenPlayer.emoji} ${chosenPlayer.name} au hasard qui boit 3 gorgées... Courage !";
+                             finalDescription = "Le jeu désigne ${chosenPlayer.emoji} ${chosenPlayer.name} au hasard qui prend 3 pénalités... Courage !";
                              
                              updatedPlayers = updatedPlayers.map((p) {
                                if (p.id == chosenPlayer.id) {
@@ -544,7 +544,7 @@ class OnlineGameScreen extends ConsumerWidget {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 onPressed: () => service.resolveBluff(state.gameId, null),
-                child: const Text("J'avoue, j'ai menti... (Cul Sec)"),
+                child: const Text("J'avoue, j'ai menti... (Gage Fatal)"),
               )
             ],
           ).animate().shake();
@@ -578,7 +578,7 @@ class OnlineGameScreen extends ConsumerWidget {
         }
       } else {
         if (assignment.toPlayerId == currentUserId) {
-          // C'est à MOI de boire ou de refuser
+          // C'est à MOI de prendre ou de refuser
           final availablePowers = toPlayer.hand.where((c) => c.powerType != PowerType.none).toList();
           return BluffDialog(
             accuser: fromPlayer,
@@ -676,7 +676,7 @@ class OnlineGameScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  '${assignment.sips} gorgées en jeu...',
+                  '${assignment.sips} pénalités en jeu...',
                   style: const TextStyle(color: Colors.white70, fontSize: 16),
                 ),
                 const SizedBox(height: 12),
@@ -721,7 +721,7 @@ class OnlineGameScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '🍺 ${state.currentSips} gorgée${state.currentSips > 1 ? 's' : ''}',
+                    '🍺 ${state.currentSips} pénalité${state.currentSips > 1 ? 's' : ''}',
                     style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -735,7 +735,7 @@ class OnlineGameScreen extends ConsumerWidget {
               width: double.infinity,
               child: PulsarButton(
                 paddingVertical: 11,
-                text: '🃏 Je l\'ai ! → Donner ${state.currentSips} gorgée${state.currentSips > 1 ? 's' : ''}',
+                text: '🃏 Je l\'ai ! → Donner ${state.currentSips} pénalité${state.currentSips > 1 ? 's' : ''}',
                 gradient: PyraTheme.festiveGradient,
                 onPressed: () {
                   _showPlayerSelectionDialog(context, state, currentUserId, service);
@@ -786,10 +786,10 @@ class OnlineGameScreen extends ConsumerWidget {
                            List<Player> updatedPlayers = newState.players;
                            
                            final titleLower = event.title.toLowerCase();
-                           if ((titleLower.contains("mort") || titleLower.contains("gorgée")) && updatedPlayers.isNotEmpty) {
+                           if ((titleLower.contains("mort") || titleLower.contains("pénalité")) && updatedPlayers.isNotEmpty) {
                              final random = Random();
                              final chosenPlayer = updatedPlayers[random.nextInt(updatedPlayers.length)];
-                             finalDescription = "Le jeu désigne ${chosenPlayer.emoji} ${chosenPlayer.name} au hasard qui boit 3 gorgées... Courage !";
+                             finalDescription = "Le jeu désigne ${chosenPlayer.emoji} ${chosenPlayer.name} au hasard qui prend 3 pénalités... Courage !";
                              
                              updatedPlayers = updatedPlayers.map((p) {
                                if (p.id == chosenPlayer.id) {
@@ -893,7 +893,7 @@ class OnlineGameScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'À qui donner ${isPigeon ? state.currentSips * 2 : state.currentSips} gorgées ?',
+                  'À qui donner ${isPigeon ? state.currentSips * 2 : state.currentSips} pénalités ?',
                   style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),

@@ -5,7 +5,7 @@ enum GamePhase {
   setup,         // Configuration
   distribution,  // Le Bus (distribution)
   revealing,     // Révélation des cartes
-  assigning,     // Attribution des gorgées
+  assigning,     // Attribution des pénalités
   bluffing,      // Phase de bluff en cours
   transition,    // Passage au joueur suivant
   miniGame,      // Phase d'un mini-jeu
@@ -25,7 +25,7 @@ enum BluffResult { none, caught, success }
 
 class DrinkAssignment {
   final String fromPlayerId;  // Celui qui assigne
-  final String toPlayerId;    // Celui qui doit boire
+  final String toPlayerId;    // Celui qui doit prendre
   final int sips;
   final bool isBluff;         // Vrai si la carte posée est un bluff
   final bool isBluffCalled;   // Vrai si la cible a crié au bluff
@@ -94,7 +94,7 @@ class GameSettings {
     );
   }
 
-  /// Nombre de gorgées pour une rangée donnée (0-indexed depuis le bas)
+  /// Nombre de pénalités pour une rangée donnée (0-indexed depuis le bas)
   int sipsForRow(int rowIndex) => rowIndex + 1;
 
   Map<String, dynamic> toJson() => {

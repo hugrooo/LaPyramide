@@ -18,11 +18,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<Map<String, String>> _pages = [
     {
       'title': 'Bienvenue',
-      'subtitle': 'Découvre le meilleur jeu de cartes à boire pour tes soirées entre amis.',
+      'subtitle': 'Découvre le meilleur jeu de cartes à prendre pour tes soirées entre amis.',
     },
     {
       'title': 'Distribue',
-      'subtitle': 'Pose des questions, distribue des gorgées et maîtrise l\'art du bluff.',
+      'subtitle': 'Pose des questions, distribue des pénalités et maîtrise l\'art du bluff.',
     },
     {
       'title': 'Pouvoirs',

@@ -12,6 +12,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../profile/user_profile_provider.dart';
 import 'store_service.dart';
 import '../../shared/widgets/card_3d_showcase.dart';
+import '../auth/auth_service.dart';
 
 enum StoreTab { coins, jokers, cosmetics }
 
@@ -124,6 +125,13 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             fontSize: 12,
             gradient: isPopular ? const LinearGradient(colors: [PyraTheme.primaryPink, Colors.pinkAccent]) : PyraTheme.festiveGradient,
             onPressed: () async {
+              final user = ref.read(authServiceProvider).currentUser;
+              if (user == null || user.isAnonymous) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Veuillez vous connecter avec un compte pour obtenir des récompenses.'), backgroundColor: Colors.redAccent));
+                }
+                return;
+              }
               await ref.read(storeServiceProvider).addCoinsFictitiously(coins);
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -150,7 +158,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         _buildItemPurchaseCard(
           id: 'miroir',
           title: 'Joker Miroir 🪞',
-          desc: 'Renvoie instantanément les gorgées reçues vers l\'envoyeur en partie.',
+          desc: 'Renvoie instantanément les pénalités reçues vers l\'envoyeur en partie.',
           cost: 150,
           currency: 'coins',
           icon: Icons.repeat_on_rounded,
@@ -162,7 +170,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         _buildItemPurchaseCard(
           id: 'bouclier',
           title: 'Joker Bouclier 🛡️',
-          desc: 'Réduit de moitié les gorgées que vous devez boire sur un tour.',
+          desc: 'Réduit de moitié les pénalités que vous devez prendre sur un tour.',
           cost: 100,
           currency: 'coins',
           icon: Icons.shield_rounded,
@@ -186,7 +194,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         _buildItemPurchaseCard(
           id: 'double_dose',
           title: 'Joker Double Dose 🧪',
-          desc: 'Multiplie par deux le nombre de gorgées que vous distribuez à vos cibles.',
+          desc: 'Multiplie par deux le nombre de pénalités que vous distribuez à vos cibles.',
           cost: 120,
           currency: 'coins',
           icon: Icons.science_rounded,
@@ -304,7 +312,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         _buildItemPurchaseCard(
           id: 'toxic',
           title: 'Dos Toxique 🧪',
-          desc: 'Distribuez les gorgées empoisonnées à vos amis.',
+          desc: 'Distribuez les pénalités empoisonnées à vos amis.',
           cost: 250,
           currency: 'diamonds',
           icon: Icons.science_rounded,
@@ -387,7 +395,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         _buildItemPurchaseCard(
           id: 'Pilier de Bar 🍻',
           title: 'Pilier de Bar 🍻',
-          desc: 'Un titre idéal pour ceux qui ne reculent devant aucune gorgée.',
+          desc: 'Un titre idéal pour ceux qui ne reculent devant aucune pénalité.',
           cost: 150,
           currency: 'coins',
           icon: Icons.sports_bar_rounded,
@@ -694,6 +702,13 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               iconSize: 14,
               gradient: isCoins ? PyraTheme.cyanGradient : PyraTheme.purplePinkGradient,
               onPressed: () async {
+                  final user = ref.read(authServiceProvider).currentUser;
+                  if (user == null || user.isAnonymous) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Veuillez vous connecter avec un compte pour effectuer cet achat.'), backgroundColor: Colors.redAccent));
+                    }
+                    return;
+                  }
                   bool success = false;
                   if (type == 'joker') {
                     success = await ref.read(storeServiceProvider).buyJoker(id, cost);

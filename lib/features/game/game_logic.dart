@@ -43,7 +43,7 @@ class GameLogic {
     }).toList();
 
     // Construire la pyramide (sommet = 1 carte en haut, base = N cartes en bas)
-    // Rangée 0 = sommet (plus de gorgées), dernière rangée = base (moins)
+    // Rangée 0 = sommet (plus de pénalités), dernière rangée = base (moins)
     // Pour s'aligner avec la logique en ligne et éviter les crashs de ligne,
     // on construit la pyramide avec la base en bas (ligne pyramidRows - 1)
     final pyramid = <List<PyraCard>>[];
@@ -80,7 +80,7 @@ class GameLogic {
     String? eventMessage;
     int? eventTime;
     if (state.settings.mode == GameMode.truthOrSip && (revealedCard.value == 1 || revealedCard.value >= 11)) {
-      eventMessage = "🎭 Vérité ou Gorgée ! " + _getRandomTruthOrSip();
+      eventMessage = "🎭 Vérité ou Pénalité ! " + _getRandomTruthOrSip();
       eventTime = DateTime.now().millisecondsSinceEpoch;
     }
 
@@ -98,7 +98,7 @@ class GameLogic {
     return state.copyWith(phase: GamePhase.assigning);
   }
 
-  /// Un joueur assigne des gorgées à un autre joueur
+  /// Un joueur assigne des pénalités à un autre joueur
   /// Peut poser une carte (vraie ou bluff) ou assigner directement
   static GameState assignDrink({
     required GameState state,
@@ -177,7 +177,7 @@ class GameLogic {
     final isActuallyBluff = revealedCard == null || targetCard == null || revealedCard.value != targetCard.value;
 
     if (isActuallyBluff) {
-      // Le bluffeur a menti (ou s'est trompé) -> il boit le double
+      // Le bluffeur a menti (ou s'est trompé) -> il prend le double
       final penalty = DrinkAssignment(
         fromPlayerId: assignment.toPlayerId,
         toPlayerId: assignment.fromPlayerId,
@@ -192,11 +192,11 @@ class GameLogic {
         lastBluffResult: BluffResult.caught,
         lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
         lastBlufferId: assignment.fromPlayerId,
-        lastEventMessage: "💥 Bluff démasqué ! ${fromPlayer.name} boit ${penalty.sips} gorgées !",
+        lastEventMessage: "💥 Bluff démasqué ! ${fromPlayer.name} prend ${penalty.sips} pénalités !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else {
-      // Le joueur dit la vérité -> la cible boit le double
+      // Le joueur dit la vérité -> la cible prend le double
       final penalty = DrinkAssignment(
         fromPlayerId: assignment.fromPlayerId,
         toPlayerId: assignment.toPlayerId,
@@ -211,13 +211,13 @@ class GameLogic {
         lastBluffResult: BluffResult.success,
         lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
         lastBlufferId: assignment.fromPlayerId,
-        lastEventMessage: "✅ Pas de bluff ! ${toPlayer.name} boit ${penalty.sips} gorgées !",
+        lastEventMessage: "✅ Pas de bluff ! ${toPlayer.name} prend ${penalty.sips} pénalités !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     }
   }
 
-  /// Le joueur ciblé accepte (boit sans challenger)
+  /// Le joueur ciblé accepte (prend sans challenger)
   static GameState acceptDrink(GameState state) {
     if (state.pendingDrinks.isEmpty) return state;
 
@@ -226,14 +226,14 @@ class GameLogic {
     return _applyDrink(newState, assignment);
   }
 
-  /// Le temps est écoulé en mode Speed-Run, on prend les gorgées + 2 de punition
+  /// Le temps est écoulé en mode Speed-Run, on prend les pénalités + 2 de punition
   static GameState speedRunTimeoutPenalty(GameState state) {
     if (state.pendingDrinks.isEmpty) return state;
 
     final assignment = state.pendingDrinks.last;
     GameState newState = state.copyWith(pendingDrinks: []);
     
-    // On ajoute 2 gorgées de pénalité pour trop de temps
+    // On ajoute 2 pénalités de pénalité pour trop de temps
     final penaltyAssignment = DrinkAssignment(
       fromPlayerId: assignment.fromPlayerId,
       toPlayerId: assignment.toPlayerId,
@@ -278,14 +278,14 @@ class GameLogic {
     );
 
     if (card.powerType == PowerType.shield) {
-      // Bouclier : annule les gorgées
+      // Bouclier : annule les pénalités
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "🛡️ ${player.name} utilise un Bouclier ! Gorgées annulées.",
+        lastEventMessage: "🛡️ ${player.name} utilise un Bouclier ! Pénalités annulées.",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (card.powerType == PowerType.mirror) {
-      // Miroir : renvoie les gorgées à l'attaquant
+      // Miroir : renvoie les pénalités à l'attaquant
       final reflection = DrinkAssignment(
         fromPlayerId: assignment.toPlayerId,
         toPlayerId: assignment.fromPlayerId,
@@ -297,11 +297,11 @@ class GameLogic {
 
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "🪞 ${player.name} sort le Miroir ! ${attacker.name} prend le retour de flamme : ${reflection.sips} gorgées !",
+        lastEventMessage: "🪞 ${player.name} sort le Miroir ! ${attacker.name} prend le retour de flamme : ${reflection.sips} pénalités !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (card.powerType == PowerType.multiplier) {
-      // Multiplicateur : renvoie le double des gorgées à l'attaquant
+      // Multiplicateur : renvoie le double des pénalités à l'attaquant
       final reflection = DrinkAssignment(
         fromPlayerId: assignment.toPlayerId,
         toPlayerId: assignment.fromPlayerId,
@@ -313,7 +313,7 @@ class GameLogic {
 
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "⚡ ${player.name} utilise un Multiplicateur ! ${attacker.name} prend ${reflection.sips} gorgées (x2) !",
+        lastEventMessage: "⚡ ${player.name} utilise un Multiplicateur ! ${attacker.name} prend ${reflection.sips} pénalités (x2) !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     }
@@ -435,10 +435,10 @@ class GameLogic {
 
   static List<PyraCard> _injectMiniGames(List<PyraCard> originalDeck) {
     final miniGames = [
-      PyraCard(isMiniGame: true, miniGameTitle: 'Dans ma valise', miniGameDescription: 'Tour à tour, chacun répète les objets précédents et en ajoute un nouveau. Le premier qui se trompe boit 2 gorgées !'),
-      PyraCard(isMiniGame: true, miniGameTitle: 'Le jeu des Rimes', miniGameDescription: 'L\'hôte choisit un mot. Chacun doit trouver une rime. Le premier qui bloque boit 2 gorgées !'),
-      PyraCard(isMiniGame: true, miniGameTitle: 'Thème', miniGameDescription: 'L\'hôte choisit un thème (ex: Marques de voitures). Chacun donne un exemple. Le premier qui bloque boit 2 gorgées !'),
-      PyraCard(isMiniGame: true, miniGameTitle: 'Action ou Vérité', miniGameDescription: 'Le joueur qui a retourné la carte choisit quelqu\'un. Action ou Vérité ? S\'il refuse, il boit 3 gorgées !'),
+      PyraCard(isMiniGame: true, miniGameTitle: 'Dans ma valise', miniGameDescription: 'Tour à tour, chacun répète les objets précédents et en ajoute un nouveau. Le premier qui se trompe prend 2 pénalités !'),
+      PyraCard(isMiniGame: true, miniGameTitle: 'Le jeu des Rimes', miniGameDescription: 'L\'hôte choisit un mot. Chacun doit trouver une rime. Le premier qui bloque prend 2 pénalités !'),
+      PyraCard(isMiniGame: true, miniGameTitle: 'Thème', miniGameDescription: 'L\'hôte choisit un thème (ex: Marques de voitures). Chacun donne un exemple. Le premier qui bloque prend 2 pénalités !'),
+      PyraCard(isMiniGame: true, miniGameTitle: 'Action ou Vérité', miniGameDescription: 'Le joueur qui a retourné la carte choisit quelqu\'un. Action ou Vérité ? S\'il refuse, il prend 3 pénalités !'),
     ];
     miniGames.shuffle();
     
@@ -455,7 +455,7 @@ class GameLogic {
   static List<String> _getSecretMissions() {
     return [
       'Glisse le mot "Parapluie" dans une phrase sans te faire remarquer.',
-      'Fais boire 2 fois le joueur à ta droite pendant cette partie.',
+      'Fais prendre 2 fois le joueur à ta droite pendant cette partie.',
       'Place 3 bluffs sans jamais te faire prendre.',
       'Fais en sorte que quelqu\'un d\'autre utilise le mot "Pyramide".',
       'Appelle l\'hôte par un surnom inventé sans qu\'il s\'en rende compte.',
@@ -466,13 +466,13 @@ class GameLogic {
   static String _getRandomTruthOrSip() {
     final questions = [
       "Vérité: Raconte ton pire rencard amoureux.",
-      "Action: Danse la carioca pendant 30 secondes ou prends 4 gorgées.",
+      "Action: Danse la carioca pendant 30 secondes ou prends 4 pénalités.",
       "Vérité: Quel est le joueur le plus menteur selon toi ?",
-      "Action: Fais rire quelqu'un d'autre ou prends 3 gorgées.",
+      "Action: Fais rire quelqu'un d'autre ou prends 3 pénalités.",
       "Vérité: Quel est le secret inavouable que tu gardes ?",
-      "Action: Fais un câlin à un joueur ou prends 4 gorgées.",
+      "Action: Fais un câlin à un joueur ou prends 4 pénalités.",
       "Vérité: Qui a le meilleur bluff à cette table ?",
-      "Action: Laisse ton voisin de droite lire tes SMS ou prends 5 gorgées.",
+      "Action: Laisse ton voisin de droite lire tes SMS ou prends 5 pénalités.",
     ];
     return questions[Random().nextInt(questions.length)];
   }
@@ -500,7 +500,7 @@ class GameLogic {
       
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "🪞 Joker Miroir ! Les ${reflection.sips} gorgées de ${attacker.name} se retournent contre lui !",
+        lastEventMessage: "🪞 Joker Miroir ! Les ${reflection.sips} pénalités de ${attacker.name} se retournent contre lui !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (jokerId == 'bouclier' && assignment.toPlayerId == playerId) {
@@ -518,7 +518,7 @@ class GameLogic {
       
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "🛡️ Joker Bouclier ! ${defender.name} réduit ses gorgées à $reducedSips (au lieu de ${assignment.sips}) !",
+        lastEventMessage: "🛡️ Joker Bouclier ! ${defender.name} réduit ses pénalités à $reducedSips (au lieu de ${assignment.sips}) !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (jokerId == 'double_dose' && assignment.fromPlayerId == playerId) {
@@ -538,7 +538,7 @@ class GameLogic {
       
       return state.copyWith(
         pendingDrinks: newPending,
-        lastEventMessage: "🧪 Joker Double Dose ! ${fromPlayer.name} double la punition : $newSips gorgées !",
+        lastEventMessage: "🧪 Joker Double Dose ! ${fromPlayer.name} double la punition : $newSips pénalités !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     }

@@ -36,7 +36,7 @@ class PyramidWidget extends StatelessWidget {
   Widget _buildRow(BuildContext context, int rowIdx) {
     final row = pyramid[rowIdx];
     final isCurrentRow = rowIdx == currentRow && phase != GamePhase.finished;
-    final sips = pyramid.length - rowIdx; // sommet = plus de gorgées
+    final sips = pyramid.length - rowIdx; // sommet = plus de pénalités
     final rowColor = PyraTheme.pyramidRowColors[
         (rowIdx % PyraTheme.pyramidRowColors.length)];
 
@@ -44,7 +44,7 @@ class PyramidWidget extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: Column(
         children: [
-          // Indicateur de gorgées
+          // Indicateur de pénalités
           if (isCurrentRow)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
@@ -54,7 +54,7 @@ class PyramidWidget extends StatelessWidget {
                 border: Border.all(color: rowColor.withOpacity(0.5)),
               ),
               child: Text(
-                '🍺 $sips gorgée${sips > 1 ? 's' : ''}',
+                '🍺 $sips pénalité${sips > 1 ? 's' : ''}',
                 style: TextStyle(
                   color: rowColor,
                   fontSize: 11,

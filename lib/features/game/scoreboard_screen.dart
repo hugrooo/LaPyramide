@@ -332,7 +332,7 @@ class ScoreboardScreen extends ConsumerWidget {
             emoji: '🍺',
             label: l10n.scoreboard_most_drunk,
             player: _mostDrunk,
-            value: '${_mostDrunk.totalSips} gorgées',
+            value: '${_mostDrunk.totalSips} pénalités',
             color: PyraTheme.primaryOrange,
           ).animate().fadeIn(delay: 200.ms).slideX(begin: -0.3),
         ),

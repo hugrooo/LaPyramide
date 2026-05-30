@@ -125,7 +125,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String game_drink_sips(String name, int sips) {
-    return '$name doit boire $sips gorgée(s) !';
+    return '$name doit prendre $sips pénalité(s) !';
   }
 
   @override
@@ -147,7 +147,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String game_row_sips(int row, int sips) {
-    return 'Rangée $row — $sips gorgée(s)';
+    return 'Rangée $row — $sips pénalité(s)';
   }
 
   @override
@@ -164,7 +164,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String scoreboard_total_sips(int sips) {
-    return '$sips gorgées au total';
+    return '$sips pénalités au total';
   }
 
   @override

@@ -49,7 +49,7 @@ class DistributionLogic {
       } else if (option == 'exterieur') {
         isCorrect = drawnCard.value < minVal || drawnCard.value > maxVal;
       } else {
-        // Variante où c'est égal à l'une des bornes (souvent on boit d'office, ou c'est faux)
+        // Variante où c'est égal à l'une des bornes (souvent on prend d'office, ou c'est faux)
         isCorrect = false; 
       }
     } 
@@ -62,7 +62,7 @@ class DistributionLogic {
     // 4. Mettre à jour la main du joueur
     final updatedHand = List<PyraCard>.from(player.hand)..add(drawnCard.copyWith(isFaceUp: true));
     
-    // 5. Appliquer les gorgées (si faux, le joueur boit)
+    // 5. Appliquer les pénalités (si faux, le joueur prend)
     int sipsToAdd = isCorrect ? 0 : (cardIndex + 1);
     final updatedPlayer = player.copyWith(
       hand: updatedHand,
@@ -70,8 +70,8 @@ class DistributionLogic {
     );
 
     String message = isCorrect 
-        ? "✅ ${player.name} a juste ! Il distribue ${cardIndex + 1} gorgée(s) !"
-        : "💥 ${player.name} a faux ! Il boit ${cardIndex + 1} gorgée(s) !";
+        ? "✅ ${player.name} a juste ! Il distribue ${cardIndex + 1} pénalité(s) !"
+        : "💥 ${player.name} a faux ! Il prend ${cardIndex + 1} pénalité(s) !";
 
     final updatedPlayers = List<Player>.from(state.players);
     updatedPlayers[playerIndex] = updatedPlayer;
@@ -118,7 +118,7 @@ class DistributionLogic {
     }
   }
 
-  /// Lorsqu'un joueur a juste et distribue ses gorgées
+  /// Lorsqu'un joueur a juste et distribue ses pénalités
   static GameState distributeBusDrinks({
     required GameState state,
     required String targetPlayerId,
@@ -127,7 +127,7 @@ class DistributionLogic {
 
     final assignment = state.pendingDrinks.first;
     
-    // Ajouter les gorgées à la cible
+    // Ajouter les pénalités à la cible
     final updatedPlayers = state.players.map((p) {
       if (p.id == targetPlayerId) {
         return p.copyWith(totalSips: p.totalSips + assignment.sips);
@@ -162,7 +162,7 @@ class DistributionLogic {
       currentDistributionCardIndex: nextCardIndex,
       phase: nextPhase,
       pendingDrinks: [],
-      lastEventMessage: "🍻 ${fromPlayer.name} a donné ${assignment.sips} gorgée(s) à ${toPlayer.name} !",
+      lastEventMessage: "🍻 ${fromPlayer.name} a donné ${assignment.sips} pénalité(s) à ${toPlayer.name} !",
       lastEventTime: DateTime.now().millisecondsSinceEpoch,
     );
   }

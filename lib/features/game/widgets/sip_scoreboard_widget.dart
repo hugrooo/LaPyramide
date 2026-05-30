@@ -11,7 +11,7 @@ class SipScoreboardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Trier par gorgées reçues, puis bluffs réussis
+    // Trier par pénalités reçues, puis bluffs réussis
     final sortedPlayers = List<Player>.from(players)
       ..sort((a, b) {
         int cmp = b.totalSips.compareTo(a.totalSips);

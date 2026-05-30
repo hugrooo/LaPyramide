@@ -287,7 +287,7 @@ class OnlineGameService {
     return GameState.fromJson(data);
   }
 
-  /// Pénalité d'une gorgée pour avoir regardé une carte (Peeking)
+  /// Pénalité d'une pénalité pour avoir regardé une carte (Peeking)
   Future<void> peekCard(String roomCode, String playerId) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
@@ -300,14 +300,14 @@ class OnlineGameService {
 
     final newState = state.copyWith(
       players: updatedPlayers,
-      lastEventMessage: "📢 ${player.name} a regardé une de ses cartes et prend 1 gorgée !",
+      lastEventMessage: "📢 ${player.name} a regardé une de ses cartes et prend 1 pénalité !",
       lastEventTime: DateTime.now().millisecondsSinceEpoch,
     );
     
     await updateGameState(newState);
   }
 
-  /// Pénalité de 2 gorgées (Fin de partie)
+  /// Pénalité de 2 pénalités (Fin de partie)
   Future<void> addPenalty(String roomCode, String playerId) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
@@ -320,7 +320,7 @@ class OnlineGameService {
 
     final newState = state.copyWith(
       players: updatedPlayers,
-      lastEventMessage: "💥 ${player.name} s'est trompé(e) et prend 2 gorgées !",
+      lastEventMessage: "💥 ${player.name} s'est trompé(e) et prend 2 pénalités !",
       lastEventTime: DateTime.now().millisecondsSinceEpoch,
     );
     
@@ -336,7 +336,7 @@ class OnlineGameService {
     await updateGameState(newState);
   }
 
-  /// Assigner une gorgée
+  /// Assigner une pénalité
   Future<void> assignDrink(String roomCode, String targetId, {bool isPigeon = false}) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
@@ -350,7 +350,7 @@ class OnlineGameService {
     await updateGameState(newState);
   }
 
-  /// Accepte les gorgées
+  /// Accepte les pénalités
   Future<void> acceptDrink(String roomCode) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
@@ -365,7 +365,7 @@ class OnlineGameService {
     
     // Ajoute un message de notification d'événement pour que tout le monde le voie
     final newState = GameLogic.speedRunTimeoutPenalty(state).copyWith(
-      lastEventMessage: "⏱️ Trop lent ! 2 gorgées de pénalité !",
+      lastEventMessage: "⏱️ Trop lent ! 2 pénalités de pénalité !",
       lastEventTime: DateTime.now().millisecondsSinceEpoch,
     );
     await updateGameState(newState);
@@ -419,7 +419,7 @@ class OnlineGameService {
     await updateGameState(newState);
   }
 
-  /// Distribuer les gorgées dans le Bus
+  /// Distribuer les pénalités dans le Bus
   Future<void> distributeBusDrinks(String roomCode, String targetPlayerId) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;

@@ -14,25 +14,25 @@ class RandomEventNotifier extends StateNotifier<RandomEvent?> {
   final List<RandomEvent> _possibleEvents = const [
     RandomEvent(
       title: "La Cascade 🌊",
-      description: "Tout le monde commence à boire. Le Maître du Jeu s'arrête, puis le suivant, etc.",
+      description: "Tout le monde commence à prendre. Le Maître du Jeu s'arrête, puis le suivant, etc.",
       emoji: "🌊",
       type: "global",
     ),
     RandomEvent(
       title: "Le Roi des Pouces 👍",
-      description: "Le dernier à mettre son pouce sur l'écran boit 2 gorgées !",
+      description: "Le dernier à mettre son pouce sur l'écran prend 2 pénalités !",
       emoji: "👍",
       type: "mini_game",
     ),
     RandomEvent(
       title: "Je n'ai jamais 🚫",
-      description: "Le Maître du Jeu dit 'Je n'ai jamais...'. Ceux qui l'ont fait boivent 1 gorgée.",
+      description: "Le Maître du Jeu dit 'Je n'ai jamais...'. Ceux qui l'ont fait boivent 1 pénalité.",
       emoji: "🤫",
       type: "global",
     ),
     RandomEvent(
-      title: "Gorgée de la Mort ☠️",
-      description: "Le jeu désigne une personne au hasard qui boit 3 gorgées... Courage.",
+      title: "Pénalité de la Mort ☠️",
+      description: "Le jeu désigne une personne au hasard qui prend 3 pénalités... Courage.",
       emoji: "☠️",
       type: "target",
     ),
@@ -43,7 +43,7 @@ class RandomEventNotifier extends StateNotifier<RandomEvent?> {
       type: "global",
     ),
     RandomEvent(
-      title: "Cul Sec Général 🍻",
+      title: "Gage Fatal Général 🍻",
       description: "TRÈS RARE ! Tout le monde finit son verre. Santé !",
       emoji: "🍻",
       type: "global",

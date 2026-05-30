@@ -24,11 +24,11 @@ class PyraTheme {
 
   // === Couleurs des rangées de la pyramide (bas → haut) ===
   static const List<Color> pyramidRowColors = [
-    Color(0xFF10B981), // Rangée 1 (1 gorgée) - vert
-    Color(0xFF3B82F6), // Rangée 2 (2 gorgées) - bleu
-    Color(0xFFF59E0B), // Rangée 3 (3 gorgées) - jaune
-    Color(0xFFEF4444), // Rangée 4 (4 gorgées) - rouge
-    Color(0xFF00D1FF), // Rangée 5 (5 gorgées) - cyan (sommet)
+    Color(0xFF10B981), // Rangée 1 (1 pénalité) - vert
+    Color(0xFF3B82F6), // Rangée 2 (2 pénalités) - bleu
+    Color(0xFFF59E0B), // Rangée 3 (3 pénalités) - jaune
+    Color(0xFFEF4444), // Rangée 4 (4 pénalités) - rouge
+    Color(0xFF00D1FF), // Rangée 5 (5 pénalités) - cyan (sommet)
   ];
 
   // === Gradients ===

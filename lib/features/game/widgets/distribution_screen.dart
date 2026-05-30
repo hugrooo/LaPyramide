@@ -86,7 +86,7 @@ class DistributionScreen extends ConsumerWidget {
           else
             Center(
               child: Text(
-                '${activePlayer.name} choisit à qui donner ${state.pendingDrinks.first.sips} gorgée(s)...',
+                '${activePlayer.name} choisit à qui donner ${state.pendingDrinks.first.sips} pénalité(s)...',
                 style: const TextStyle(color: PyraTheme.primaryPink, fontSize: 18),
               ),
             )
@@ -150,7 +150,7 @@ class DistributionScreen extends ConsumerWidget {
     return Column(
       children: [
         Text(
-          'À qui donner ${assignment.sips} gorgée(s) ?',
+          'À qui donner ${assignment.sips} pénalité(s) ?',
           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: PyraTheme.primaryPink),
         ).animate().shake(duration: 400.ms),
         const SizedBox(height: 24),

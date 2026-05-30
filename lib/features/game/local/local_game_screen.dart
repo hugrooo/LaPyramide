@@ -138,7 +138,7 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
             child: _buildGameContent(context, gameState),
           ),
 
-          // Overlay boire
+          // Overlay prendre
           if (gameState.phase == GamePhase.transition &&
               gameState.players.isNotEmpty)
             _buildDrinkOverlay(gameState),
@@ -269,7 +269,7 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
                       if (mounted) {
                         ref.read(localGameProvider.notifier).useJoker('double_dose', currentPlayer.id);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Double Dose activé ! Vos gorgées sont doublées pour ce tour !'), backgroundColor: Colors.purpleAccent),
+                          const SnackBar(content: Text('Double Dose activé ! Vos pénalités sont doublées pour ce tour !'), backgroundColor: Colors.purpleAccent),
                         );
                       }
                     },
@@ -322,7 +322,7 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
   }
 
   Widget _buildDrinkOverlay(GameState gameState) {
-    // Trouver le joueur qui doit boire (le dernier qui a reçu des gorgées)
+    // Trouver le joueur qui doit prendre (le dernier qui a reçu des pénalités)
     final player = gameState.players.reduce(
         (a, b) => a.totalSips > b.totalSips ? a : b);
 

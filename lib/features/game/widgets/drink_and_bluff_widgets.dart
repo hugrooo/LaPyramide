@@ -17,7 +17,7 @@ import '../../profile/user_profile_provider.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../auth/auth_service.dart';
 
-/// Overlay animé affiché quand un joueur doit boire
+/// Overlay animé affiché quand un joueur doit prendre
 class DrinkOverlay extends ConsumerStatefulWidget {
   final Player player;
   final int sips;
@@ -119,13 +119,13 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
                 if (widget.message == null)
                   const SizedBox(height: 12),
 
-                // Texte "doit boire"
+                // Texte "doit prendre"
                 if (widget.message == null)
                   ShaderMask(
                     shaderCallback: (bounds) =>
                         PyraTheme.orangeYellowGradient.createShader(bounds),
                     child: Text(
-                      'doit boire',
+                      'doit prendre',
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                             color: Colors.white,
                           ),
@@ -134,7 +134,7 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
 
                 const SizedBox(height: 16),
 
-                // Compteur de gorgées
+                // Compteur de pénalités
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                   decoration: BoxDecoration(
@@ -143,7 +143,7 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
                     boxShadow: PyraTheme.glowOrange,
                   ),
                   child: Text(
-                    '${widget.sips} gorgée${widget.sips > 1 ? 's' : ''} !',
+                    '${widget.sips} pénalité${widget.sips > 1 ? 's' : ''} !',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 36,
@@ -161,7 +161,7 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
 
                 const SizedBox(height: 32),
 
-                // Bouton Joker (si le joueur actuel est celui qui boit et a assez de pièces)
+                // Bouton Joker (si le joueur actuel est celui qui prend et a assez de pièces)
                 Consumer(
                   builder: (context, ref, child) {
                     final currentUser = ref.watch(authStateChangesProvider).value;
@@ -264,7 +264,7 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
 /// Dialog de bluff — Challenge ou Accepter
 class BluffDialog extends StatefulWidget {
   final Player accuser;  // Celui qui a posé la carte
-  final Player accused;  // Celui qui doit boire ou challenger
+  final Player accused;  // Celui qui doit prendre ou challenger
   final int sips;
   final List<PyraCard> availablePowers;
   final VoidCallback onChallenge;
@@ -429,12 +429,12 @@ class _BluffDialogState extends State<BluffDialog> {
 
         const SizedBox(height: 24),
 
-        // Bouton pour s'avouer vaincu (Cul Sec / Menti)
+        // Bouton pour s'avouer vaincu (Gage Fatal / Menti)
         SizedBox(
           width: double.infinity,
           child: PulsarButton(
             paddingVertical: 12,
-            text: '🏳️ J\'ai menti... (Cul Sec)',
+            text: '🏳️ J\'ai menti... (Gage Fatal)',
             gradient: const LinearGradient(
               colors: [Color(0xFFEF4444), Color(0xFF991B1B)],
             ),
@@ -477,7 +477,7 @@ class _BluffDialogState extends State<BluffDialog> {
               ),
               const TextSpan(text: 'envoie '),
               TextSpan(
-                text: '${widget.sips} gorgée${widget.sips > 1 ? 's' : ''} ',
+                text: '${widget.sips} pénalité${widget.sips > 1 ? 's' : ''} ',
                 style: const TextStyle(color: PyraTheme.primaryOrange, fontWeight: FontWeight.bold),
               ),
               const TextSpan(text: 'à '),

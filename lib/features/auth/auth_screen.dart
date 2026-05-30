@@ -200,7 +200,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 ).animate().fadeIn(duration: 800.ms).slideY(begin: -0.2),
                 const SizedBox(height: 8),
                 Text(
-                  'Prépare-toi à boire',
+                  'Prépare-toi à prendre',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.7),
                     fontSize: 16,

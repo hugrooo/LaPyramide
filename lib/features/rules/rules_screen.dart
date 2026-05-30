@@ -22,13 +22,13 @@ class _RulesScreenState extends State<RulesScreen> {
       'emoji': '🔺',
       'title': 'La Pyramide',
       'content':
-          'Les cartes sont disposées en pyramide face cachée. La base comporte le plus de cartes et vaut 1 gorgée. Le sommet comporte 1 carte et vaut autant de gorgées que de rangées.',
+          'Les cartes sont disposées en pyramide face cachée. La base comporte le plus de cartes et vaut 1 pénalité. Le sommet comporte 1 carte et vaut autant de pénalités que de rangées.',
     },
     {
       'emoji': '🃏',
       'title': 'Distribution',
       'content':
-          'Chaque joueur reçoit 4 cartes face cachée. Ces cartes peuvent être utilisées pour envoyer des gorgées aux autres joueurs.',
+          'Chaque joueur reçoit 4 cartes face cachée. Ces cartes peuvent être utilisées pour envoyer des pénalités aux autres joueurs.',
     },
     {
       'emoji': '🔄',
@@ -40,7 +40,7 @@ class _RulesScreenState extends State<RulesScreen> {
       'emoji': '😈',
       'title': 'Le Bluff',
       'content':
-          'Tu peux poser une carte même si tu ne l\'as pas ! C\'est du bluff. La personne ciblée peut te "challenger". Si tu bluffais, tu bois le double. Sinon, elle boit le double.',
+          'Tu peux poser une carte même si tu ne l\'as pas ! C\'est du bluff. La personne ciblée peut te "challenger". Si tu bluffais, tu bois le double. Sinon, elle prend le double.',
     },
     {
       'emoji': '🏆',
@@ -110,10 +110,13 @@ class _RulesScreenState extends State<RulesScreen> {
                     itemCount: _rules.length,
                     itemBuilder: (context, index) {
                       final rule = _rules[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 600),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
                           child: GlassContainer(
                             padding: EdgeInsets.symmetric(
                               horizontal: 24,
@@ -174,6 +177,7 @@ class _RulesScreenState extends State<RulesScreen> {
                                     .slideY(begin: 0.2),
                               ],
                             ),
+                            ),
                           ),
                         ),
                       );
@@ -182,10 +186,13 @@ class _RulesScreenState extends State<RulesScreen> {
                 ),
 
                 // ── Indicateurs de page + Bouton Suivant ─────────────────
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                      24, 12, 24, isSmallScreen ? 16 : 28),
-                  child: Column(
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                          24, 12, 24, isSmallScreen ? 16 : 28),
+                      child: Column(
                     children: [
                       // Points de navigation
                       Row(
@@ -222,7 +229,9 @@ class _RulesScreenState extends State<RulesScreen> {
                     ],
                   ),
                 ),
-              ],
+              ),
+            ),
+          ],
             ),
           ),
         ],

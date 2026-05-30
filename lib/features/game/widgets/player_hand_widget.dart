@@ -38,13 +38,13 @@ class _PlayerHandWidgetState extends State<PlayerHandWidget> {
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF1F1A2A), // PyraTheme.bgCard fallback
         title: const Text('Regarder la carte ?', style: TextStyle(color: Colors.white)),
-        content: const Text('Oublié ta carte ? Ça te coûtera 1 gorgée !', style: TextStyle(color: Colors.white70)),
+        content: const Text('Oublié ta carte ? Ça te coûtera 1 pénalité !', style: TextStyle(color: Colors.white70)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annuler', style: TextStyle(color: Colors.grey))),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF2A5F)),
             onPressed: () => Navigator.pop(ctx, true), 
-            child: const Text('Boire 1 gorgée', style: TextStyle(color: Colors.white)),
+            child: const Text('Prendre 1 pénalité', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

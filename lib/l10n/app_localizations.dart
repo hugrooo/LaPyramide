@@ -323,7 +323,7 @@ abstract class AppLocalizations {
   /// No description provided for @game_drink_sips.
   ///
   /// In fr, this message translates to:
-  /// **'{name} doit boire {sips} gorgée(s) !'**
+  /// **'{name} doit prendre {sips} pénalité(s) !'**
   String game_drink_sips(String name, int sips);
 
   /// No description provided for @game_bluff_question.
@@ -359,7 +359,7 @@ abstract class AppLocalizations {
   /// No description provided for @game_row_sips.
   ///
   /// In fr, this message translates to:
-  /// **'Rangée {row} — {sips} gorgée(s)'**
+  /// **'Rangée {row} — {sips} pénalité(s)'**
   String game_row_sips(int row, int sips);
 
   /// No description provided for @scoreboard_title.
@@ -389,7 +389,7 @@ abstract class AppLocalizations {
   /// No description provided for @scoreboard_total_sips.
   ///
   /// In fr, this message translates to:
-  /// **'{sips} gorgées au total'**
+  /// **'{sips} pénalités au total'**
   String scoreboard_total_sips(int sips);
 
   /// No description provided for @scoreboard_play_again.

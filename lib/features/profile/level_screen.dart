@@ -656,7 +656,7 @@ class LevelScreen extends ConsumerWidget {
                           const SizedBox(width: 10),
                           _StatCard(
                             icon: '🍺',
-                            label: 'Gorgées',
+                            label: 'Pénalités',
                             value: numberFormat.format(profile?.drinksGiven ?? 0),
                             color: PyraTheme.primaryOrange,
                             delay: 540,

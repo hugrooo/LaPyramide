@@ -259,7 +259,7 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
                   ref.read(onlineGameServiceProvider).addPenalty(roomCode, widget.currentUserId);
                 },
                 icon: const Icon(Icons.close, color: Colors.white),
-                label: const Text('Faux (+2 gorgées)', style: TextStyle(color: Colors.white)),
+                label: const Text('Faux (+2 pénalités)', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
