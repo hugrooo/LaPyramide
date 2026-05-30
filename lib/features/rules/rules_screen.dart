@@ -80,12 +80,14 @@ class _RulesScreenState extends State<RulesScreen> {
               children: [
                 // ── Top Bar ──────────────────────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                        icon: const Icon(Icons.close,
+                            color: Colors.white, size: 28),
                         onPressed: () => context.pop(),
                       ),
                       const Text(
@@ -117,66 +119,70 @@ class _RulesScreenState extends State<RulesScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
-                          child: GlassContainer(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: isSmallScreen ? 24 : 40,
-                            ),
-                            borderRadius: BorderRadius.circular(32),
-                            innerGlow: true,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // Emoji adapté à la taille d'écran
-                                Text(
-                                  rule['emoji']!,
-                                  style: TextStyle(
-                                      fontSize: isSmallScreen ? 56 : 72),
-                                )
-                                    .animate(
-                                        target: _currentPage == index ? 1 : 0)
-                                    .scale(
-                                      begin: const Offset(0.5, 0.5),
-                                      end: const Offset(1, 1),
-                                      curve: Curves.elasticOut,
-                                      duration: 800.ms,
-                                    ),
+                              child: GlassContainer(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: isSmallScreen ? 24 : 40,
+                                ),
+                                borderRadius: BorderRadius.circular(32),
+                                innerGlow: true,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Emoji adapté à la taille d'écran
+                                    Text(
+                                      rule['emoji']!,
+                                      style: TextStyle(
+                                          fontSize: isSmallScreen ? 56 : 72),
+                                    )
+                                        .animate(
+                                            target:
+                                                _currentPage == index ? 1 : 0)
+                                        .scale(
+                                          begin: const Offset(0.5, 0.5),
+                                          end: const Offset(1, 1),
+                                          curve: Curves.elasticOut,
+                                          duration: 800.ms,
+                                        ),
 
-                                SizedBox(height: isSmallScreen ? 16 : 28),
+                                    SizedBox(height: isSmallScreen ? 16 : 28),
 
-                                // Titre
-                                Text(
-                                  rule['title']!,
-                                  style: TextStyle(
-                                    color: PyraTheme.primaryYellow,
-                                    fontSize: isSmallScreen ? 22 : 26,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                )
-                                    .animate(
-                                        target: _currentPage == index ? 1 : 0)
-                                    .fadeIn(delay: 200.ms)
-                                    .slideY(begin: 0.2),
+                                    // Titre
+                                    Text(
+                                      rule['title']!,
+                                      style: TextStyle(
+                                        color: PyraTheme.primaryYellow,
+                                        fontSize: isSmallScreen ? 22 : 26,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    )
+                                        .animate(
+                                            target:
+                                                _currentPage == index ? 1 : 0)
+                                        .fadeIn(delay: 200.ms)
+                                        .slideY(begin: 0.2),
 
-                                SizedBox(height: isSmallScreen ? 14 : 20),
+                                    SizedBox(height: isSmallScreen ? 14 : 20),
 
-                                // Contenu
-                                Text(
-                                  rule['content']!,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: isSmallScreen ? 15 : 17,
-                                    height: 1.6,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                )
-                                    .animate(
-                                        target: _currentPage == index ? 1 : 0)
-                                    .fadeIn(delay: 400.ms)
-                                    .slideY(begin: 0.2),
-                              ],
-                            ),
+                                    // Contenu
+                                    Text(
+                                      rule['content']!,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: isSmallScreen ? 15 : 17,
+                                        height: 1.6,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    )
+                                        .animate(
+                                            target:
+                                                _currentPage == index ? 1 : 0)
+                                        .fadeIn(delay: 400.ms)
+                                        .slideY(begin: 0.2),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -193,45 +199,46 @@ class _RulesScreenState extends State<RulesScreen> {
                       padding: EdgeInsets.fromLTRB(
                           24, 12, 24, isSmallScreen ? 16 : 28),
                       child: Column(
-                    children: [
-                      // Points de navigation
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          _rules.length,
-                          (index) => AnimatedContainer(
-                            duration: 300.ms,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            width: _currentPage == index ? 24 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: _currentPage == index
-                                  ? PyraTheme.primaryCyan
-                                  : Colors.white24,
-                              borderRadius: BorderRadius.circular(4),
+                        children: [
+                          // Points de navigation
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              _rules.length,
+                              (index) => AnimatedContainer(
+                                duration: 300.ms,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                width: _currentPage == index ? 24 : 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: _currentPage == index
+                                      ? PyraTheme.primaryCyan
+                                      : Colors.white24,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      SizedBox(height: isSmallScreen ? 16 : 24),
+                          SizedBox(height: isSmallScreen ? 16 : 24),
 
-                      // Bouton Suivant / C'est parti
-                      PulsarButton(
-                        text: _currentPage == _rules.length - 1
-                            ? "C'est parti !"
-                            : "Suivant",
-                        onPressed: _nextPage,
-                        width: double.infinity,
-                        icon: _currentPage == _rules.length - 1
-                            ? Icons.check
-                            : Icons.arrow_forward_rounded,
+                          // Bouton Suivant / C'est parti
+                          PulsarButton(
+                            text: _currentPage == _rules.length - 1
+                                ? "C'est parti !"
+                                : "Suivant",
+                            onPressed: _nextPage,
+                            width: double.infinity,
+                            icon: _currentPage == _rules.length - 1
+                                ? Icons.check
+                                : Icons.arrow_forward_rounded,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ],
+              ],
             ),
           ),
         ],
