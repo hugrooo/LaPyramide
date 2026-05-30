@@ -29,3 +29,7 @@ HOMEBREW_NO_AUTO_UPDATE=1 brew install cocoapods
 # Install CocoaPods dependencies.
 cd ios
 pod install
+
+# Generate Flutter iOS files (Generated.xcconfig, etc) so Xcode can build.
+cd ..
+flutter build ios --config-only
