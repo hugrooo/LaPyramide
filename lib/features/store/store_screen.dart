@@ -651,6 +651,57 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
       ),
     ));
   }
+  Widget _buildRealProductCard(ProductDetails product) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: GlassContainer(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: PyraTheme.primaryYellow.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: PyraTheme.primaryYellow.withValues(alpha: 0.3)),
+              ),
+              child: const Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 28),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.title,
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    product.description,
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.55), fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            PulsarButton(
+              width: null,
+              text: product.price,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              fontSize: 14,
+              gradient: PyraTheme.cyanGradient,
+              onPressed: () {
+                ref.read(storeServiceProvider).buyProduct(product);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildTabButton(String text, IconData icon, StoreTab tab) {
     final bool isActive = _activeTab == tab;

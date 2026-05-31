@@ -104,8 +104,6 @@ abstract class AppLocalizations {
   /// **'La Pyramide'**
   String get appName;
 
-
-
   /// No description provided for @home_title.
   ///
   /// In fr, this message translates to:
@@ -301,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @game_drink_sips.
   ///
   /// In fr, this message translates to:
-  /// **'{name} doit prendre {sips} pénalité(s) !'**
+  /// **'{name} reçoit {sips} pénalité(s) !'**
   String game_drink_sips(String name, int sips);
 
   /// No description provided for @game_bluff_question.
@@ -355,7 +353,7 @@ abstract class AppLocalizations {
   /// No description provided for @scoreboard_most_drunk.
   ///
   /// In fr, this message translates to:
-  /// **'Le plus assoiffé 🍺'**
+  /// **'Le plus puni 🎯'**
   String get scoreboard_most_drunk;
 
   /// No description provided for @scoreboard_best_bluffer.

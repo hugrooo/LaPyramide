@@ -11,8 +11,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get appName => 'The Pyramid';
 
-
-
   @override
   String get home_title => 'The Pyramid';
 

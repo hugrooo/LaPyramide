@@ -11,8 +11,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get appName => 'La Pyramide';
 
-
-
   @override
   String get home_title => 'La Pyramide';
 
@@ -113,7 +111,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String game_drink_sips(String name, int sips) {
-    return '$name doit prendre $sips pénalité(s) !';
+    return '$name reçoit $sips pénalité(s) !';
   }
 
   @override
