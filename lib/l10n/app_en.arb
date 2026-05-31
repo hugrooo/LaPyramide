@@ -2,11 +2,6 @@
   "@@locale": "en",
   "appName": "The Pyramid",
 
-  "disclaimer_title": "⚠️ Drink Responsibly",
-  "disclaimer_body": "This game is intended for adults aged 18 and over. Excessive alcohol consumption is harmful to your health. Play responsibly and never drink and drive.",
-  "disclaimer_checkbox": "I am 18 or older and accept these conditions",
-  "disclaimer_confirm": "Enter the game",
-
   "home_title": "The Pyramid",
   "home_subtitle": "The card game of chaos",
   "home_play_local": "🃏 Play Locally",
@@ -48,7 +43,7 @@
   "game_its_your_turn": "It's your turn!",
   "game_pass_phone": "Pass the phone to",
   "game_tap_to_continue": "Tap to continue",
-  "game_drink_sips": "{name} must drink {sips} sip(s)!",
+  "game_drink_sips": "{name} receives {sips} penalty(ies)!",
   "@game_drink_sips": {
     "placeholders": {
       "name": { "type": "String" },
@@ -65,7 +60,7 @@
   "game_accept": "I Accept",
   "game_bluff_caught": "BLUFF CAUGHT! 😈",
   "game_bluff_success": "NO BLUFF! ✅",
-  "game_row_sips": "Row {row} — {sips} sip(s)",
+  "game_row_sips": "Row {row} — {sips} penalty(ies)",
   "@game_row_sips": {
     "placeholders": {
       "row": { "type": "int" },
@@ -75,9 +70,9 @@
 
   "scoreboard_title": "Results",
   "scoreboard_winner": "Winner",
-  "scoreboard_most_drunk": "Most Thirsty 🍺",
+  "scoreboard_most_drunk": "Most Penalized 🎯",
   "scoreboard_best_bluffer": "Best Bluffer 😈",
-  "scoreboard_total_sips": "{sips} total sips",
+  "scoreboard_total_sips": "{sips} total penalties",
   "@scoreboard_total_sips": {
     "placeholders": {
       "sips": { "type": "int" }

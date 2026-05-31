@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/splash/disclaimer_screen.dart';
+
 import '../features/home/home_screen.dart';
 import '../features/lobby/local_lobby_screen.dart';
 import '../features/lobby/online_lobby_screen.dart';
@@ -127,11 +127,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'onboarding',
         pageBuilder: (context, state) => const NoTransitionPage(child: OnboardingScreen()),
       ),
-      GoRoute(
-        path: '/disclaimer',
-        name: 'disclaimer',
-        pageBuilder: (context, state) => _fadeSlideUp(context, state, const DisclaimerScreen()),
-      ),
+
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {

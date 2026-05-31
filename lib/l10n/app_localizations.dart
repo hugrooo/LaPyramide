@@ -104,29 +104,7 @@ abstract class AppLocalizations {
   /// **'La Pyramide'**
   String get appName;
 
-  /// No description provided for @disclaimer_title.
-  ///
-  /// In fr, this message translates to:
-  /// **'⚠️ Consommation responsable'**
-  String get disclaimer_title;
 
-  /// No description provided for @disclaimer_body.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ce jeu est destiné aux personnes majeures (18 ans et plus). L\'abus d\'alcool est dangereux pour la santé. Jouez de manière responsable et ne conduisez jamais après avoir bu.'**
-  String get disclaimer_body;
-
-  /// No description provided for @disclaimer_checkbox.
-  ///
-  /// In fr, this message translates to:
-  /// **'J\'ai 18 ans ou plus et j\'accepte ces conditions'**
-  String get disclaimer_checkbox;
-
-  /// No description provided for @disclaimer_confirm.
-  ///
-  /// In fr, this message translates to:
-  /// **'Entrer dans le jeu'**
-  String get disclaimer_confirm;
 
   /// No description provided for @home_title.
   ///

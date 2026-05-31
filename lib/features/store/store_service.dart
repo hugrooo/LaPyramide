@@ -107,15 +107,7 @@ class StoreService {
     }
   }
 
-  Future<void> addCoinsFictitiously(int amount) async {
-    final user = _ref.read(authServiceProvider).currentUser;
-    if (user == null) return;
-    final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}/coins');
-    final snapshot = await dbRef.get();
-    final currentCoins = (snapshot.value as int?) ?? 0;
-    await dbRef.set(currentCoins + amount);
-    print("Achat fictif: Ajout de $amount pièces au compte ${user.uid}");
-  }
+
 
   Future<bool> buyJoker(String jokerId, int cost) async {
     final user = _ref.read(authServiceProvider).currentUser;

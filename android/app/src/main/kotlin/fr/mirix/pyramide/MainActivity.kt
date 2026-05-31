@@ -1,4 +1,4 @@
-package com.lapyramide.la_pyramide
+package fr.mirix.pyramide
 
 import io.flutter.embedding.android.FlutterActivity
 

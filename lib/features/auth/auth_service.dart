@@ -2,8 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:sign_in_with_apple/sign_in_with_apple.dart'; // Utile pour iOS natif
-
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 /// Fournisseur global pour l'instance de FirebaseAuth
@@ -116,33 +115,55 @@ class AuthService {
     }
   }
 
-  /// Connexion avec Apple (Simplifiée pour l'instant)
+  /// Connexion avec Apple (Native + Firebase)
   Future<UserCredential?> signInWithApple() async {
-    // Note: L'implémentation complète nécessite de configurer les identifiants Apple dans Firebase
-    // Pour l'instant, on utilise le provider Firebase natif si supporté (Web/iOS 13+)
-    final appleProvider = AppleAuthProvider();
-    // appleProvider.addScope('email');
-    // appleProvider.addScope('name');
-    final cred = await _auth.signInWithProvider(appleProvider);
-    
-    if (cred.user != null) {
-      await _db.ref('users/${cred.user!.uid}').update({
-        'lastLogin': ServerValue.timestamp,
-      });
-      
-      final snapshot = await _db.ref('users/${cred.user!.uid}/level').get();
-      if (!snapshot.exists) {
-        await _db.ref('users/${cred.user!.uid}').update({
-          'name': cred.user!.displayName ?? 'Utilisateur',
-          'searchName': (cred.user!.displayName ?? 'Utilisateur').toLowerCase(),
-          'level': 1,
-          'xp': 0,
-          'coins': 0,
-          'diamonds': 0,
-        });
+    if (kIsWeb) {
+      final appleProvider = AppleAuthProvider();
+      return await _auth.signInWithPopup(appleProvider);
+    } else {
+      try {
+        final AuthorizationCredentialAppleID appleCredential =
+            await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+        );
+
+        final oauthCredential = OAuthProvider('apple.com').credential(
+          idToken: appleCredential.identityToken,
+          accessToken: appleCredential.authorizationCode,
+        );
+
+        final cred = await _auth.signInWithCredential(oauthCredential);
+        
+        if (cred.user != null) {
+          final String displayName = appleCredential.givenName != null
+              ? '${appleCredential.givenName} ${appleCredential.familyName ?? ''}'.trim()
+              : cred.user!.displayName ?? 'Joueur iOS';
+
+          await _db.ref('users/${cred.user!.uid}').update({
+            'lastLogin': ServerValue.timestamp,
+          });
+          
+          final snapshot = await _db.ref('users/${cred.user!.uid}/level').get();
+          if (!snapshot.exists) {
+            await _db.ref('users/${cred.user!.uid}').update({
+              'name': displayName,
+              'searchName': displayName.toLowerCase(),
+              'level': 1,
+              'xp': 0,
+              'coins': 0,
+              'diamonds': 0,
+            });
+          }
+        }
+        return cred;
+      } catch (e) {
+        print('Erreur Apple Sign-In: $e');
+        return null;
       }
     }
-    return cred;
   }
 
   /// Déconnexion

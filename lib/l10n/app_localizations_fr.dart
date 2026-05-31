@@ -11,19 +11,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get appName => 'La Pyramide';
 
-  @override
-  String get disclaimer_title => '⚠️ Consommation responsable';
 
-  @override
-  String get disclaimer_body =>
-      'Ce jeu est destiné aux personnes majeures (18 ans et plus). L\'abus d\'alcool est dangereux pour la santé. Jouez de manière responsable et ne conduisez jamais après avoir bu.';
-
-  @override
-  String get disclaimer_checkbox =>
-      'J\'ai 18 ans ou plus et j\'accepte ces conditions';
-
-  @override
-  String get disclaimer_confirm => 'Entrer dans le jeu';
 
   @override
   String get home_title => 'La Pyramide';
@@ -157,7 +145,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scoreboard_winner => 'Vainqueur';
 
   @override
-  String get scoreboard_most_drunk => 'Le plus assoiffé 🍺';
+  String get scoreboard_most_drunk => 'Le plus puni 🎯';
 
   @override
   String get scoreboard_best_bluffer => 'Meilleur Bluffeur 😈';

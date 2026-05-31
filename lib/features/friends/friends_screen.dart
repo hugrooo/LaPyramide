@@ -269,15 +269,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
             Expanded(
               child: Text(friend.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
-            // Placeholder pour un bouton 'Inviter'
-            IconButton(
-              icon: const Icon(Icons.sports_esports, color: PyraTheme.primaryYellow),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Invitation envoyée à ${friend.name} ! (bientôt disponible)')),
-                );
-              },
-            ),
+
           ],
         ),
       ).animate().fadeIn().slideY(begin: 0.1),

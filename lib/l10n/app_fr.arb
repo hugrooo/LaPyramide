@@ -2,11 +2,6 @@
   "@@locale": "fr",
   "appName": "La Pyramide",
 
-  "disclaimer_title": "⚠️ Consommation responsable",
-  "disclaimer_body": "Ce jeu est destiné aux personnes majeures (18 ans et plus). L'abus d'alcool est dangereux pour la santé. Jouez de manière responsable et ne conduisez jamais après avoir bu.",
-  "disclaimer_checkbox": "J'ai 18 ans ou plus et j'accepte ces conditions",
-  "disclaimer_confirm": "Entrer dans le jeu",
-
   "home_title": "La Pyramide",
   "home_subtitle": "Le jeu de cartes du chaos",
   "home_play_local": "🃏 Jouer en local",
@@ -48,7 +43,7 @@
   "game_its_your_turn": "C'est ton tour !",
   "game_pass_phone": "Passe le téléphone à",
   "game_tap_to_continue": "Appuie pour continuer",
-  "game_drink_sips": "{name} doit boire {sips} gorgée(s) !",
+  "game_drink_sips": "{name} reçoit {sips} pénalité(s) !",
   "@game_drink_sips": {
     "placeholders": {
       "name": { "type": "String" },
@@ -65,7 +60,7 @@
   "game_accept": "J'accepte",
   "game_bluff_caught": "BLUFF DÉMASQUÉ ! 😈",
   "game_bluff_success": "PAS DE BLUFF ! ✅",
-  "game_row_sips": "Rangée {row} — {sips} gorgée(s)",
+  "game_row_sips": "Rangée {row} — {sips} pénalité(s)",
   "@game_row_sips": {
     "placeholders": {
       "row": { "type": "int" },
@@ -75,9 +70,9 @@
 
   "scoreboard_title": "Résultats",
   "scoreboard_winner": "Vainqueur",
-  "scoreboard_most_drunk": "Le plus assoiffé 🍺",
+  "scoreboard_most_drunk": "Le plus puni 🎯",
   "scoreboard_best_bluffer": "Meilleur Bluffeur 😈",
-  "scoreboard_total_sips": "{sips} gorgées au total",
+  "scoreboard_total_sips": "{sips} pénalités au total",
   "@scoreboard_total_sips": {
     "placeholders": {
       "sips": { "type": "int" }

@@ -60,95 +60,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     super.dispose();
   }
 
-  Widget _buildFallbackPacks() {
-    return Column(
-      children: [
-        _buildPackCard('Récompense Quotidienne', 'Reviens tous les jours !', 'Ouvrir 🎁', 100)
-            .animate().fadeIn(duration: 400.ms).slideY(begin: 0.2),
-        const SizedBox(height: 16),
-        _buildPackCard('Visionner une Pub', 'Soutenez-nous', 'Regarder 📺', 500, isPopular: true)
-            .animate().fadeIn(duration: 400.ms, delay: 100.ms).slideY(begin: 0.2),
-        const SizedBox(height: 16),
-        _buildPackCard('Défi de la Pyramide', 'Gagne 3 parties de suite', 'Réclamer 🏆', 1200)
-            .animate().fadeIn(duration: 400.ms, delay: 200.ms).slideY(begin: 0.2),
-      ],
-    );
-  }
 
-  Widget _buildPackCard(String title, String desc, String buttonText, int coins, {bool isPopular = false}) {
-    return GlassContainer(
-      innerGlow: isPopular,
-      padding: const EdgeInsets.all(20),
-      borderRadius: BorderRadius.circular(24),
-      border: isPopular ? Border.all(color: PyraTheme.primaryPink.withOpacity(0.5), width: 2) : null,
-      child: Row(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              gradient: isPopular ? PyraTheme.purplePinkGradient : const LinearGradient(colors: [PyraTheme.bgSurface, PyraTheme.bgCard]),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: isPopular ? PyraTheme.glowPink : null,
-              border: Border.all(color: Colors.white24),
-            ),
-            child: const Center(
-              child: Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 36),
-            ),
-          ).animate(onPlay: (c) => isPopular ? c.repeat(reverse: true) : null).scale(begin: const Offset(1,1), end: const Offset(1.05, 1.05), duration: 2.seconds),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (isPopular)
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: PyraTheme.primaryCyan,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: PyraTheme.glowCyan,
-                    ),
-                    child: const Text('BONUS', style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w900)),
-                  ).animate().shimmer(duration: 2.seconds, delay: 1.seconds),
-                Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
-                Text(desc, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13)),
-              ],
-            ),
-          ),
-          PulsarButton(
-            text: buttonText,
-            width: null, // Let it size-to-fit
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            fontSize: 12,
-            gradient: isPopular ? const LinearGradient(colors: [PyraTheme.primaryPink, Colors.pinkAccent]) : PyraTheme.festiveGradient,
-            onPressed: () async {
-              final user = ref.read(authServiceProvider).currentUser;
-              if (user == null || user.isAnonymous) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Veuillez vous connecter avec un compte pour obtenir des récompenses.'), backgroundColor: Colors.redAccent));
-                }
-                return;
-              }
-              await ref.read(storeServiceProvider).addCoinsFictitiously(coins);
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('🎉 Félicitations ! +$coins pièces ajoutées !'),
-                    backgroundColor: Colors.green,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  ),
-                );
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildJokersTab(UserProfile? profile) {
     final Map<String, int> jokersOwned = profile?.jokers ?? {};
@@ -866,7 +778,16 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
-                        _buildFallbackPacks(),
+                        if (_isLoading)
+                          const Center(child: CircularProgressIndicator(color: PyraTheme.primaryYellow))
+                        else if (_products.isEmpty)
+                          const Text(
+                            'Aucun produit disponible actuellement.',
+                            style: TextStyle(color: Colors.white70),
+                            textAlign: TextAlign.center,
+                          )
+                        else
+                          ..._products.map((p) => _buildRealProductCard(p)),
                       ] else if (_activeTab == StoreTab.jokers) ...[
                         const Text(
                           'Utilise tes pièces pour acheter des Jokers dévastateurs utilisables en pleine partie !',

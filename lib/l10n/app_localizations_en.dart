@@ -11,19 +11,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get appName => 'The Pyramid';
 
-  @override
-  String get disclaimer_title => '⚠️ Drink Responsibly';
 
-  @override
-  String get disclaimer_body =>
-      'This game is intended for adults aged 18 and over. Excessive alcohol consumption is harmful to your health. Play responsibly and never drink and drive.';
-
-  @override
-  String get disclaimer_checkbox =>
-      'I am 18 or older and accept these conditions';
-
-  @override
-  String get disclaimer_confirm => 'Enter the game';
 
   @override
   String get home_title => 'The Pyramid';
@@ -125,7 +113,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String game_drink_sips(String name, int sips) {
-    return '$name must drink $sips sip(s)!';
+    return '$name receives $sips penalty(ies)!';
   }
 
   @override
@@ -147,7 +135,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String game_row_sips(int row, int sips) {
-    return 'Row $row — $sips sip(s)';
+    return 'Row $row — $sips penalty(ies)';
   }
 
   @override
@@ -157,14 +145,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scoreboard_winner => 'Winner';
 
   @override
-  String get scoreboard_most_drunk => 'Most Thirsty 🍺';
+  String get scoreboard_most_drunk => 'Most Penalized 🎯';
 
   @override
   String get scoreboard_best_bluffer => 'Best Bluffer 😈';
 
   @override
   String scoreboard_total_sips(int sips) {
-    return '$sips total sips';
+    return '$sips total penalties';
   }
 
   @override

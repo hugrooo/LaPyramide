@@ -49,53 +49,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final int now = DateTime.now().millisecondsSinceEpoch;
     final int nextClaim = (profile?.lastDailyChestClaimed ?? 0) + 24 * 60 * 60 * 1000;
     final bool isChestAvailable = now >= nextClaim;
-
-    // Vérifier si une quête est complète et non réclamée
-    final quests = profile?.quests ?? {};
-    const questTargets = {'bluff': 3, 'games': 1, 'shop': 1};
-    bool hasQuestToCollect = false;
-    bool hasAnyNewQuest = false;
-
-    for (final entry in questTargets.entries) {
-      final data = quests[entry.key];
-      final progress = data?['progress'] as int? ?? 0;
-      final claimed = data?['claimed'] as bool? ?? false;
-      if (!claimed && progress >= entry.value) {
-        hasQuestToCollect = true;
-      }
-      if (data == null) {
-        hasAnyNewQuest = true;
-      }
-    }
-
     final hasClaimedBetaGift = profile?.cardBacks.contains('beta') ?? false;
 
-    // Texte et badge dynamiques pour le panneau quêtes
+    // Texte et badge dynamiques pour le panneau de coffre
     String questTitle;
     String? questSubtitle;
     Widget? questBadge;
 
-    if (isChestAvailable || hasQuestToCollect) {
-      questTitle = isChestAvailable ? 'Coffre Quotidien Disponible 🎁' : 'Récompense à récupérer !';
-      questSubtitle = isChestAvailable ? 'Ouvre-le avant minuit !' : 'Une quête est terminée, réclame ta mise.';
+    if (isChestAvailable) {
+      questTitle = 'Coffre Quotidien Disponible 🎁';
+      questSubtitle = 'Ouvre-le avant minuit !';
       questBadge = const NeoBadge(
         text: 'RÉCUPÉRER',
         fontSize: 8,
         gradient: PyraTheme.festiveGradient,
         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       );
-    } else if (hasAnyNewQuest) {
-      questTitle = 'Nouvelles Quêtes Disponibles';
-      questSubtitle = 'De nouveaux défis t\'attendent !';
-      questBadge = const NeoBadge(
-        text: 'NOUVEAU',
-        fontSize: 8,
-        gradient: PyraTheme.purplePinkGradient,
-        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      );
     } else {
-      questTitle = 'Défis & Quêtes';
-      questSubtitle = 'Suis ta progression quotidienne';
+      questTitle = 'Coffre Quotidien';
+      questSubtitle = 'Reviens demain pour ton prochain cadeau';
       questBadge = null;
     }
     
@@ -253,29 +225,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: (isChestAvailable || hasQuestToCollect)
+                        color: isChestAvailable
                             ? PyraTheme.primaryPink.withOpacity(0.5)
                             : Colors.white.withOpacity(0.15),
                       ),
-                      innerGlow: isChestAvailable || hasQuestToCollect,
+                      innerGlow: isChestAvailable,
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: (isChestAvailable || hasQuestToCollect)
+                              color: isChestAvailable
                                   ? PyraTheme.primaryPink.withOpacity(0.2)
                                   : Colors.white.withOpacity(0.08),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              isChestAvailable ? Icons.card_giftcard_rounded : Icons.checklist_rounded,
-                              color: (isChestAvailable || hasQuestToCollect) ? PyraTheme.primaryPink : Colors.white54,
+                              Icons.card_giftcard_rounded,
+                              color: isChestAvailable ? PyraTheme.primaryPink : Colors.white54,
                               size: 20,
                             ),
                           ).animate(
                             onPlay: (c) {
-                              if (isChestAvailable || hasQuestToCollect) c.repeat(reverse: true);
+                              if (isChestAvailable) c.repeat(reverse: true);
                             },
                           ).scale(begin: const Offset(1,1), end: const Offset(1.1,1.1), duration: 1.seconds),
                           const SizedBox(width: 12),

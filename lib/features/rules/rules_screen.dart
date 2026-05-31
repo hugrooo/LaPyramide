@@ -40,13 +40,13 @@ class _RulesScreenState extends State<RulesScreen> {
       'emoji': '😈',
       'title': 'Le Bluff',
       'content':
-          'Tu peux poser une carte même si tu ne l\'as pas ! C\'est du bluff. La personne ciblée peut te "challenger". Si tu bluffais, tu bois le double. Sinon, elle prend le double.',
+          'Tu peux poser une carte même si tu ne l\'as pas ! C\'est du bluff. La personne ciblée peut te "challenger". Si tu bluffais, tu prends le double de pénalités. Sinon, elle prend le double.',
     },
     {
       'emoji': '🏆',
       'title': 'Fin de partie',
       'content':
-          'La partie se termine quand toutes les cartes ont été retournées. Le classement final affiche qui a bu le plus et qui est le meilleur bluffeur !',
+          'La partie se termine quand toutes les cartes ont été retournées. Le classement final affiche qui a pris le plus de pénalités et qui est le meilleur bluffeur !',
     },
   ];
 
@@ -114,7 +114,7 @@ class _RulesScreenState extends State<RulesScreen> {
                       final rule = _rules[index];
                       return Center(
                         child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 600),
+                          constraints: BoxConstraints(maxWidth: isSmallScreen ? 600 : 800),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: SingleChildScrollView(
@@ -152,7 +152,7 @@ class _RulesScreenState extends State<RulesScreen> {
                                       rule['title']!,
                                       style: TextStyle(
                                         color: PyraTheme.primaryYellow,
-                                        fontSize: isSmallScreen ? 22 : 26,
+                                        fontSize: isSmallScreen ? 22 : 32,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       textAlign: TextAlign.center,
@@ -170,7 +170,7 @@ class _RulesScreenState extends State<RulesScreen> {
                                       rule['content']!,
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: isSmallScreen ? 15 : 17,
+                                        fontSize: isSmallScreen ? 15 : 22,
                                         height: 1.6,
                                       ),
                                       textAlign: TextAlign.center,
