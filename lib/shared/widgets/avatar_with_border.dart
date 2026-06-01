@@ -36,9 +36,11 @@ class AvatarWithBorder extends StatelessWidget {
                 width: size,
                 height: size,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Center(child: Text(emoji, style: TextStyle(fontSize: size * 0.5))),
+                errorBuilder: (_, __, ___) => Center(
+                    child: Text(emoji, style: TextStyle(fontSize: size * 0.5))),
               )
-            : Center(child: Text(emoji, style: TextStyle(fontSize: size * 0.5))),
+            : Center(
+                child: Text(emoji, style: TextStyle(fontSize: size * 0.5))),
       ),
     );
 
@@ -68,9 +70,10 @@ class AvatarWithBorder extends StatelessWidget {
           ),
           child: avatarChild,
         ),
-      ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(duration: 2.seconds, color: Colors.white);
-    } 
-    else if (borderType == 'fire') {
+      )
+          .animate(onPlay: (c) => c.repeat(reverse: true))
+          .shimmer(duration: 2.seconds, color: Colors.white);
+    } else if (borderType == 'fire') {
       avatarChild = Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -95,9 +98,11 @@ class AvatarWithBorder extends StatelessWidget {
           ),
           child: avatarChild,
         ),
-      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(duration: 800.ms, begin: const Offset(1,1), end: const Offset(1.05, 1.05));
-    }
-    else if (borderType == 'gold') {
+      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+          duration: 800.ms,
+          begin: const Offset(1, 1),
+          end: const Offset(1.05, 1.05));
+    } else if (borderType == 'gold') {
       avatarChild = Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -121,7 +126,9 @@ class AvatarWithBorder extends StatelessWidget {
           ),
           child: avatarChild,
         ),
-      ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1500.ms, color: Colors.white, angle: 1.0);
+      )
+          .animate(onPlay: (c) => c.repeat())
+          .shimmer(duration: 1500.ms, color: Colors.white, angle: 1.0);
     }
 
     if (showLevel && level != null) {

@@ -47,9 +47,9 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
   final currentUser = FirebaseAuth.instance.currentUser;
-  
-  final initialRoute = !hasSeenOnboarding 
-      ? '/onboarding' 
+
+  final initialRoute = !hasSeenOnboarding
+      ? '/onboarding'
       : (currentUser == null ? '/auth' : '/home');
 
   runApp(

@@ -37,8 +37,8 @@ class PyramidWidget extends StatelessWidget {
     final row = pyramid[rowIdx];
     final isCurrentRow = rowIdx == currentRow && phase != GamePhase.finished;
     final sips = pyramid.length - rowIdx; // sommet = plus de pénalités
-    final rowColor = PyraTheme.pyramidRowColors[
-        (rowIdx % PyraTheme.pyramidRowColors.length)];
+    final rowColor = PyraTheme
+        .pyramidRowColors[(rowIdx % PyraTheme.pyramidRowColors.length)];
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -70,7 +70,8 @@ class PyramidWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               for (int cardIdx = 0; cardIdx < row.length; cardIdx++)
-                _buildCardWithGesture(context, rowIdx, cardIdx, row[cardIdx], rowColor),
+                _buildCardWithGesture(
+                    context, rowIdx, cardIdx, row[cardIdx], rowColor),
             ],
           ),
         ],
@@ -122,11 +123,10 @@ class PyramidWidget extends StatelessWidget {
               color: rowColor.withOpacity(0.6),
               angle: 0.5,
             )
-            .animate(onPlay: isActive ? (ctrl) => ctrl.repeat(reverse: true) : null)
+            .animate(
+                onPlay: isActive ? (ctrl) => ctrl.repeat(reverse: true) : null)
             .animate()
-            .fadeIn(
-                delay: (rowIdx * 200 + cardIdx * 100).ms,
-                duration: 500.ms)
+            .fadeIn(delay: (rowIdx * 200 + cardIdx * 100).ms, duration: 500.ms)
             .slideY(
                 begin: 12.0, // Part de tout en bas
                 delay: (rowIdx * 200 + cardIdx * 100).ms,

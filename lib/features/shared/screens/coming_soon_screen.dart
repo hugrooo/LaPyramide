@@ -11,13 +11,15 @@ class ComingSoonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0817), // Couleur sombre comme sur la maquette
+      backgroundColor:
+          const Color(0xFF0F0817), // Couleur sombre comme sur la maquette
       body: SafeArea(
         child: Column(
           children: [
             // Header: Close | Title | Settings
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -41,7 +43,7 @@ class ComingSoonScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Earn badge
             Container(
               margin: const EdgeInsets.only(top: 8),
@@ -92,11 +94,14 @@ class ComingSoonScreen extends StatelessWidget {
                           Image.asset(
                             'assets/images/coming_soon_trophy.png',
                             fit: BoxFit.contain,
-                          ).animate().scale(delay: 200.ms, duration: 600.ms, curve: Curves.easeOutBack),
+                          ).animate().scale(
+                              delay: 200.ms,
+                              duration: 600.ms,
+                              curve: Curves.easeOutBack),
                         ],
                       ),
                     ),
-                    
+
                     // Texts
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -132,14 +137,17 @@ class ComingSoonScreen extends StatelessWidget {
                       child: GestureDetector(
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Tu seras averti dès que ce sera prêt !')),
+                            const SnackBar(
+                                content: Text(
+                                    'Tu seras averti dès que ce sera prêt !')),
                           );
                         },
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF986D8E), // Couleur mauve sourde
+                            color:
+                                const Color(0xFF986D8E), // Couleur mauve sourde
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
@@ -159,7 +167,10 @@ class ComingSoonScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                        ).animate().fadeIn(delay: 800.ms).scale(begin: const Offset(0.9, 0.9)),
+                        )
+                            .animate()
+                            .fadeIn(delay: 800.ms)
+                            .scale(begin: const Offset(0.9, 0.9)),
                       ),
                     ),
                     const SizedBox(height: 48),

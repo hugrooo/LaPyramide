@@ -2,7 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-final settingsProvider = StateNotifierProvider<SettingsNotifier, SettingsState>((ref) {
+final settingsProvider =
+    StateNotifierProvider<SettingsNotifier, SettingsState>((ref) {
   return SettingsNotifier();
 });
 
@@ -103,7 +104,8 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
 }
 
 final audioServiceProvider = Provider<AudioService>((ref) {
-  final isSoundEnabled = ref.watch(settingsProvider.select((s) => s.soundEnabled));
+  final isSoundEnabled =
+      ref.watch(settingsProvider.select((s) => s.soundEnabled));
   return AudioService(isSoundEnabled);
 });
 

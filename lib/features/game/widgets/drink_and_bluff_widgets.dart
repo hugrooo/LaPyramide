@@ -97,12 +97,14 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
                 // Message de pouvoir éventuel
                 if (widget.message != null)
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: PyraTheme.primaryPink.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: PyraTheme.primaryPink.withOpacity(0.5)),
+                      border: Border.all(
+                          color: PyraTheme.primaryPink.withOpacity(0.5)),
                       boxShadow: PyraTheme.glowPurple,
                     ),
                     child: Text(
@@ -114,10 +116,12 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ).animate().fadeIn(delay: 100.ms).scale(curve: Curves.elasticOut),
+                  )
+                      .animate()
+                      .fadeIn(delay: 100.ms)
+                      .scale(curve: Curves.elasticOut),
 
-                if (widget.message == null)
-                  const SizedBox(height: 12),
+                if (widget.message == null) const SizedBox(height: 12),
 
                 // Texte "doit prendre"
                 if (widget.message == null)
@@ -126,9 +130,10 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
                         PyraTheme.orangeYellowGradient.createShader(bounds),
                     child: Text(
                       'doit prendre',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            color: Colors.white,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: Colors.white,
+                              ),
                     ),
                   ).animate().fadeIn(delay: 300.ms),
 
@@ -136,7 +141,8 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
 
                 // Compteur de pénalités
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                   decoration: BoxDecoration(
                     gradient: PyraTheme.orangeYellowGradient,
                     borderRadius: BorderRadius.circular(20),
@@ -150,10 +156,7 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                )
-                    .animate()
-                    .fadeIn(delay: 400.ms, duration: 500.ms)
-                    .scale(
+                ).animate().fadeIn(delay: 400.ms, duration: 500.ms).scale(
                       begin: const Offset(0.5, 0.5),
                       delay: 400.ms,
                       curve: Curves.elasticOut,
@@ -164,12 +167,14 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
                 // Bouton Joker (si le joueur actuel est celui qui prend et a assez de pièces)
                 Consumer(
                   builder: (context, ref, child) {
-                    final currentUser = ref.watch(authStateChangesProvider).value;
+                    final currentUser =
+                        ref.watch(authStateChangesProvider).value;
                     // Vérifier si c'est le joueur actuel (on suppose que le pseudo ou l'ID correspond)
-                    if (currentUser != null && currentUser.displayName == widget.player.name) {
+                    if (currentUser != null &&
+                        currentUser.displayName == widget.player.name) {
                       final profile = ref.watch(userProfileProvider).value;
                       final coins = profile?.coins ?? 0;
-                      
+
                       return Column(
                         children: [
                           if (coins >= 50)
@@ -179,17 +184,21 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
                               paddingHorizontal: 24,
                               onPressed: () async {
                                 // Déduire 50 pièces
-                                final dbRef = FirebaseDatabase.instance.ref('users/${currentUser.uid}/coins');
+                                final dbRef = FirebaseDatabase.instance
+                                    .ref('users/${currentUser.uid}/coins');
                                 await dbRef.set(coins - 50);
-                                
+
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Joker utilisé !')),
+                                  const SnackBar(
+                                      content: Text('Joker utilisé !')),
                                 );
                                 widget.onDismiss();
                               },
                             )
                           else
-                            const Text('Pas assez de pièces pour un Joker (50)', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                            const Text('Pas assez de pièces pour un Joker (50)',
+                                style: TextStyle(
+                                    color: Colors.white54, fontSize: 12)),
                           const SizedBox(height: 24),
                         ],
                       );
@@ -249,8 +258,7 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
     path.moveTo(size.width, halfWidth);
 
     for (double step = 0; step < fullAngle; step += degreesPerStep) {
-      path.lineTo(
-          halfWidth + externalRadius * math.cos(step),
+      path.lineTo(halfWidth + externalRadius * math.cos(step),
           halfWidth + externalRadius * math.sin(step));
       path.lineTo(
           halfWidth + internalRadius * math.cos(step + halfDegreesPerStep),
@@ -263,20 +271,20 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
 
 /// Dialog de bluff — Challenge ou Accepter
 class BluffDialog extends StatefulWidget {
-  final Player accuser;  // Celui qui a posé la carte
-  final Player accused;  // Celui qui doit prendre ou challenger
+  final Player accuser; // Celui qui a posé la carte
+  final Player accused; // Celui qui doit prendre ou challenger
   final int sips;
   final List<PyraCard> availablePowers;
   final VoidCallback onChallenge;
   final VoidCallback onAccept;
   final void Function(String cardId)? onUsePower;
   final void Function(String jokerId)? onUseJoker;
-  
+
   // Phase de preuve en local (pass-the-phone)
   final bool isBluffCalled;
   final List<PyraCard>? cardsToProve;
   final void Function(String? cardId)? onResolveBluff;
-  
+
   // Speed Run Mode
   final bool isSpeedRun;
   final VoidCallback? onTimeout;
@@ -310,9 +318,10 @@ class _BluffDialogState extends State<BluffDialog> {
   void initState() {
     super.initState();
     _countdown = widget.isSpeedRun ? 5 : 10;
-    
+
     if (!widget.isBluffCalled) {
-      _timerSubscription = Stream.periodic(const Duration(seconds: 1), (i) => (_countdown - 1) - i)
+      _timerSubscription = Stream.periodic(
+              const Duration(seconds: 1), (i) => (_countdown - 1) - i)
           .take(_countdown)
           .listen((v) {
         if (mounted) setState(() => _countdown = v);
@@ -355,9 +364,12 @@ class _BluffDialogState extends State<BluffDialog> {
           innerGlow: true,
           padding: const EdgeInsets.all(20),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: PyraTheme.primaryOrange.withOpacity(0.5), width: 2),
+          border: Border.all(
+              color: PyraTheme.primaryOrange.withOpacity(0.5), width: 2),
           child: SingleChildScrollView(
-            child: widget.isBluffCalled ? _buildProofPhase(context) : _buildChallengePhase(context),
+            child: widget.isBluffCalled
+                ? _buildProofPhase(context)
+                : _buildChallengePhase(context),
           ),
         ),
       ),
@@ -384,14 +396,18 @@ class _BluffDialogState extends State<BluffDialog> {
         RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            style: const TextStyle(fontSize: 15, color: Colors.white70, height: 1.4),
+            style: const TextStyle(
+                fontSize: 15, color: Colors.white70, height: 1.4),
             children: [
               const TextSpan(text: '📱 Passe le téléphone à '),
               TextSpan(
                 text: widget.accuser.name,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
-              const TextSpan(text: '.\n\nIl doit choisir la carte correspondante dans sa main pour le prouver !'),
+              const TextSpan(
+                  text:
+                      '.\n\nIl doit choisir la carte correspondante dans sa main pour le prouver !'),
             ],
           ),
         ).animate().fadeIn(delay: 200.ms),
@@ -469,21 +485,26 @@ class _BluffDialogState extends State<BluffDialog> {
         RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            style: const TextStyle(fontSize: 15, color: Colors.white70, height: 1.4),
+            style: const TextStyle(
+                fontSize: 15, color: Colors.white70, height: 1.4),
             children: [
               TextSpan(
                 text: '${widget.accuser.emoji} ${widget.accuser.name} ',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
               const TextSpan(text: 'envoie '),
               TextSpan(
                 text: '${widget.sips} pénalité${widget.sips > 1 ? 's' : ''} ',
-                style: const TextStyle(color: PyraTheme.primaryOrange, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: PyraTheme.primaryOrange,
+                    fontWeight: FontWeight.bold),
               ),
               const TextSpan(text: 'à '),
               TextSpan(
                 text: '${widget.accused.emoji} ${widget.accused.name}',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
               const TextSpan(text: '\n\nEst-ce un bluff ?'),
             ],
@@ -498,7 +519,8 @@ class _BluffDialogState extends State<BluffDialog> {
           style: TextStyle(
             fontSize: 36,
             fontWeight: FontWeight.bold,
-            color: _countdown <= 3 ? PyraTheme.primaryPink : PyraTheme.textMuted,
+            color:
+                _countdown <= 3 ? PyraTheme.primaryPink : PyraTheme.textMuted,
           ),
         ).animate(target: _countdown <= 3 ? 1 : 0).scale(
               begin: const Offset(1.0, 1.0),
@@ -615,14 +637,15 @@ class _BluffDialogState extends State<BluffDialog> {
                             onPressed: () async {
                               HapticFeedback.heavyImpact();
                               _timerSubscription?.cancel();
-                              
-                              final user = ref.read(authStateChangesProvider).value;
+
+                              final user =
+                                  ref.read(authStateChangesProvider).value;
                               if (user != null) {
                                 await FirebaseDatabase.instance
                                     .ref('users/${user.uid}/jokers/miroir')
                                     .set(miroirCount - 1);
                               }
-                              
+
                               if (widget.onUseJoker != null) {
                                 widget.onUseJoker!('miroir');
                               }
@@ -645,14 +668,15 @@ class _BluffDialogState extends State<BluffDialog> {
                             onPressed: () async {
                               HapticFeedback.heavyImpact();
                               _timerSubscription?.cancel();
-                              
-                              final user = ref.read(authStateChangesProvider).value;
+
+                              final user =
+                                  ref.read(authStateChangesProvider).value;
                               if (user != null) {
                                 await FirebaseDatabase.instance
                                     .ref('users/${user.uid}/jokers/bouclier')
                                     .set(bouclierCount - 1);
                               }
-                              
+
                               if (widget.onUseJoker != null) {
                                 widget.onUseJoker!('bouclier');
                               }

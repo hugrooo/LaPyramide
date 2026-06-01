@@ -12,18 +12,21 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 
 // Fournisseur global pour le service de notifications
-final pushNotificationServiceProvider = Provider<PushNotificationService>((ref) {
+final pushNotificationServiceProvider =
+    Provider<PushNotificationService>((ref) {
   return PushNotificationService();
 });
 
 class PushNotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
-  
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
+
   bool _isInitialized = false;
 
   Future<void> initialize() async {
-    if (_isInitialized || kIsWeb) return; // Les notifications push web nécessitent une configuration VAPID
+    if (_isInitialized || kIsWeb)
+      return; // Les notifications push web nécessitent une configuration VAPID
     _isInitialized = true;
 
     // Initialiser les fuseaux horaires
@@ -57,7 +60,7 @@ class PushNotificationService {
       _fcm.onTokenRefresh.listen(_saveTokenToDatabase);
 
       // 4. Configurer les écouteurs de messages
-      
+
       // Message reçu quand l'app est au premier plan (Foreground)
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         _showLocalNotification(message);
@@ -67,9 +70,11 @@ class PushNotificationService {
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         _handleMessageAction(message);
       });
-      
+
       // Si l'application était complètement fermée, vérifier si elle a été ouverte par une notification
-      FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      FirebaseMessaging.instance
+          .getInitialMessage()
+          .then((RemoteMessage? message) {
         if (message != null) {
           Future.delayed(const Duration(milliseconds: 500), () {
             _handleMessageAction(message);
@@ -94,14 +99,15 @@ class PushNotificationService {
   Future<void> _initLocalNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    
+
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
             requestAlertPermission: false,
             requestBadgePermission: false,
             requestSoundPermission: false);
 
-    const InitializationSettings initializationSettings = InitializationSettings(
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
@@ -113,12 +119,14 @@ class PushNotificationService {
       const AndroidNotificationChannel channel = AndroidNotificationChannel(
         'high_importance_channel', // id
         'Notifications Importantes', // name
-        description: 'Ce canal est utilisé pour les notifications importantes comme les récompenses.',
+        description:
+            'Ce canal est utilisé pour les notifications importantes comme les récompenses.',
         importance: Importance.max,
       );
 
       await _localNotifications
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(channel);
     }
   }
@@ -135,7 +143,8 @@ class PushNotificationService {
           android: AndroidNotificationDetails(
             'high_importance_channel',
             'Notifications Importantes',
-            channelDescription: 'Ce canal est utilisé pour les notifications importantes comme les récompenses.',
+            channelDescription:
+                'Ce canal est utilisé pour les notifications importantes comme les récompenses.',
             icon: '@mipmap/ic_launcher',
             importance: Importance.max,
             priority: Priority.high,
@@ -158,9 +167,10 @@ class PushNotificationService {
   }
 
   // Permet de programmer une notification locale (Ex: Récompense dispo demain)
-  Future<void> scheduleRewardNotification(String title, String body, Duration delay) async {
+  Future<void> scheduleRewardNotification(
+      String title, String body, Duration delay) async {
     if (kIsWeb) return;
-    
+
     final tz.TZDateTime scheduledDate = tz.TZDateTime.now(tz.local).add(delay);
 
     await _localNotifications.zonedSchedule(
@@ -179,10 +189,11 @@ class PushNotificationService {
         iOS: DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
-  
+
   // Permet d'annuler une notification programmée
   Future<void> cancelRewardNotification() async {
     await _localNotifications.cancel(1001);

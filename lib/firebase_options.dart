@@ -43,7 +43,8 @@ class DefaultFirebaseOptions {
     projectId: 'la-pyramide-54588',
     databaseURL: 'https://la-pyramide-54588-default-rtdb.firebaseio.com',
     storageBucket: 'la-pyramide-54588.firebasestorage.app',
-    iosClientId: '545021164365-9sa39eol5505p56d7p4a1vlphjobpcti.apps.googleusercontent.com',
+    iosClientId:
+        '545021164365-9sa39eol5505p56d7p4a1vlphjobpcti.apps.googleusercontent.com',
     iosBundleId: 'com.lapyramide.laPyramide',
   );
 
@@ -57,5 +58,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'la-pyramide-54588.firebasestorage.app',
     measurementId: 'G-GHTY9KMSRY',
   );
-
 }

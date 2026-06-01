@@ -23,7 +23,8 @@ class SipScoreboardWidget extends StatelessWidget {
       innerGlow: true,
       padding: const EdgeInsets.all(16),
       borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: PyraTheme.primaryPink.withOpacity(0.5), width: 1.5),
+      border:
+          Border.all(color: PyraTheme.primaryPink.withOpacity(0.5), width: 1.5),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -39,10 +40,37 @@ class SipScoreboardWidget extends StatelessWidget {
           // En-têtes
           const Row(
             children: [
-              Expanded(flex: 3, child: Text('Joueur', style: TextStyle(color: PyraTheme.textMuted, fontWeight: FontWeight.bold, fontSize: 12))),
-              Expanded(flex: 2, child: Text('Reçues 🍺', textAlign: TextAlign.center, style: TextStyle(color: PyraTheme.textMuted, fontWeight: FontWeight.bold, fontSize: 12))),
-              Expanded(flex: 2, child: Text('Données 🎯', textAlign: TextAlign.center, style: TextStyle(color: PyraTheme.textMuted, fontWeight: FontWeight.bold, fontSize: 12))),
-              Expanded(flex: 2, child: Text('Bluffs 🎭', textAlign: TextAlign.center, style: TextStyle(color: PyraTheme.textMuted, fontWeight: FontWeight.bold, fontSize: 12))),
+              Expanded(
+                  flex: 3,
+                  child: Text('Joueur',
+                      style: TextStyle(
+                          color: PyraTheme.textMuted,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12))),
+              Expanded(
+                  flex: 2,
+                  child: Text('Reçues 🍺',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: PyraTheme.textMuted,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12))),
+              Expanded(
+                  flex: 2,
+                  child: Text('Données 🎯',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: PyraTheme.textMuted,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12))),
+              Expanded(
+                  flex: 2,
+                  child: Text('Bluffs 🎭',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: PyraTheme.textMuted,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12))),
             ],
           ),
           const Divider(color: Colors.white24),
@@ -67,7 +95,9 @@ class SipScoreboardWidget extends StatelessWidget {
                           Expanded(
                             child: Text(
                               p.name,
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -79,7 +109,10 @@ class SipScoreboardWidget extends StatelessWidget {
                       child: Text(
                         '${p.totalSips}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: PyraTheme.primaryOrange, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(
+                            color: PyraTheme.primaryOrange,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
                       ),
                     ),
                     Expanded(
@@ -87,7 +120,10 @@ class SipScoreboardWidget extends StatelessWidget {
                       child: Text(
                         '${p.drinksGiven}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: PyraTheme.primaryCyan, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(
+                            color: PyraTheme.primaryCyan,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
                       ),
                     ),
                     Expanded(
@@ -95,11 +131,17 @@ class SipScoreboardWidget extends StatelessWidget {
                       child: Text(
                         '${p.bluffsWon}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: PyraTheme.primaryPink, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: const TextStyle(
+                            color: PyraTheme.primaryPink,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
                       ),
                     ),
                   ],
-                ).animate().fadeIn(delay: Duration(milliseconds: 100 * i)).slideX(begin: 0.1);
+                )
+                    .animate()
+                    .fadeIn(delay: Duration(milliseconds: 100 * i))
+                    .slideX(begin: 0.1);
               },
             ),
           ),

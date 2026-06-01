@@ -55,6 +55,8 @@ class NeoBadge extends StatelessWidget {
           ),
         ],
       ),
-    ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(duration: 2.seconds, angle: 45, color: Colors.white24);
+    )
+        .animate(onPlay: (c) => c.repeat(reverse: true))
+        .shimmer(duration: 2.seconds, angle: 45, color: Colors.white24);
   }
 }

@@ -2,7 +2,14 @@ import 'package:uuid/uuid.dart';
 import 'card_model.dart';
 
 const List<String> kDefaultEmojis = [
-  '🎉', '🔥', '😎', '🍺', '👑', '🎲', '💀', '🤪',
+  '🎉',
+  '🔥',
+  '😎',
+  '🍺',
+  '👑',
+  '🎲',
+  '💀',
+  '🤪',
 ];
 
 class Player {
@@ -32,10 +39,10 @@ class Player {
   // Mode Spécial
   String? secretMission;
   bool missionCompleted;
-  
+
   // Mécanique Tir au Pigeon
   bool hasUsedPigeon;
-  
+
   // Mécanique Passage de Tour
   bool hasPassedThisTurn;
 
@@ -69,56 +76,56 @@ class Player {
   int get score => bluffsWon + challengesWon - bluffsLost - challengesLost;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'emoji': emoji,
-    'photoUrl': photoUrl,
-    'activeCardBack': activeCardBack,
-    'activeTitle': activeTitle,
-    'selectedBorder': selectedBorder,
-    'level': level,
-    'xp': xp,
-    'hand': hand.map((c) => c.toJson()).toList(),
-    'totalSips': totalSips,
-    'drinksGiven': drinksGiven,
-    'bluffsWon': bluffsWon,
-    'bluffsLost': bluffsLost,
-    'challengesWon': challengesWon,
-    'challengesLost': challengesLost,
-    'isReady': isReady,
-    'isConnected': isConnected,
-    'secretMission': secretMission,
-    'missionCompleted': missionCompleted,
-    'hasUsedPigeon': hasUsedPigeon,
-    'hasPassedThisTurn': hasPassedThisTurn,
-  };
+        'id': id,
+        'name': name,
+        'emoji': emoji,
+        'photoUrl': photoUrl,
+        'activeCardBack': activeCardBack,
+        'activeTitle': activeTitle,
+        'selectedBorder': selectedBorder,
+        'level': level,
+        'xp': xp,
+        'hand': hand.map((c) => c.toJson()).toList(),
+        'totalSips': totalSips,
+        'drinksGiven': drinksGiven,
+        'bluffsWon': bluffsWon,
+        'bluffsLost': bluffsLost,
+        'challengesWon': challengesWon,
+        'challengesLost': challengesLost,
+        'isReady': isReady,
+        'isConnected': isConnected,
+        'secretMission': secretMission,
+        'missionCompleted': missionCompleted,
+        'hasUsedPigeon': hasUsedPigeon,
+        'hasPassedThisTurn': hasPassedThisTurn,
+      };
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
-    id: json['id'],
-    name: json['name'],
-    emoji: json['emoji'],
-    photoUrl: json['photoUrl'],
-    activeCardBack: json['activeCardBack'] ?? 'classic',
-    activeTitle: json['activeTitle'] ?? '',
-    selectedBorder: json['selectedBorder'] ?? 'classic',
-    level: json['level'] ?? 1,
-    xp: json['xp'] ?? 0,
-    hand: json['hand'] != null 
-        ? (json['hand'] as List).map((c) => PyraCard.fromJson(c)).toList()
-        : [],
-    totalSips: json['totalSips'],
-    drinksGiven: json['drinksGiven'] ?? 0,
-    bluffsWon: json['bluffsWon'],
-    bluffsLost: json['bluffsLost'],
-    challengesWon: json['challengesWon'],
-    challengesLost: json['challengesLost'] ?? 0,
-    isReady: json['isReady'] ?? false,
-    isConnected: json['isConnected'] ?? true,
-    secretMission: json['secretMission'],
-    missionCompleted: json['missionCompleted'] ?? false,
-    hasUsedPigeon: json['hasUsedPigeon'] ?? false,
-    hasPassedThisTurn: json['hasPassedThisTurn'] ?? false,
-  );
+        id: json['id'],
+        name: json['name'],
+        emoji: json['emoji'],
+        photoUrl: json['photoUrl'],
+        activeCardBack: json['activeCardBack'] ?? 'classic',
+        activeTitle: json['activeTitle'] ?? '',
+        selectedBorder: json['selectedBorder'] ?? 'classic',
+        level: json['level'] ?? 1,
+        xp: json['xp'] ?? 0,
+        hand: json['hand'] != null
+            ? (json['hand'] as List).map((c) => PyraCard.fromJson(c)).toList()
+            : [],
+        totalSips: json['totalSips'],
+        drinksGiven: json['drinksGiven'] ?? 0,
+        bluffsWon: json['bluffsWon'],
+        bluffsLost: json['bluffsLost'],
+        challengesWon: json['challengesWon'],
+        challengesLost: json['challengesLost'] ?? 0,
+        isReady: json['isReady'] ?? false,
+        isConnected: json['isConnected'] ?? true,
+        secretMission: json['secretMission'],
+        missionCompleted: json['missionCompleted'] ?? false,
+        hasUsedPigeon: json['hasUsedPigeon'] ?? false,
+        hasPassedThisTurn: json['hasPassedThisTurn'] ?? false,
+      );
 
   Player copyWith({
     String? id,

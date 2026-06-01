@@ -42,7 +42,7 @@ class OnlineGameService {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rnd = Random();
     return String.fromCharCodes(Iterable.generate(
-      4, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+        4, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
   }
 
   /// Crée un nouveau salon en ligne
@@ -62,13 +62,14 @@ class OnlineGameService {
     // Créer le joueur hôte
     final prefs = await SharedPreferences.getInstance();
     final avatar = prefs.getString('userAvatar') ?? '😎';
-    
+
     // Fetch profile safely from Firebase to guarantee we have the data
     UserProfile? userProfile;
     try {
       final profileSnap = await _db.ref('users/${user.uid}').get();
       if (profileSnap.exists && profileSnap.value != null) {
-        userProfile = UserProfile.fromMap(profileSnap.value as Map<dynamic, dynamic>);
+        userProfile =
+            UserProfile.fromMap(profileSnap.value as Map<dynamic, dynamic>);
       }
     } catch (_) {}
 
@@ -122,13 +123,13 @@ class OnlineGameService {
 
     await roomRef.set(initialState.toJson());
     await roomRef.child('presence/${user.uid}').onDisconnect().set(false);
-    
+
     // Lancement asynchrone en arrière-plan du nettoyage des vieux salons
     cleanupOldRooms();
-    
+
     // Sauvegarder localement pour la reconnexion
     await prefs.setString('currentRoomCode', roomCode);
-    
+
     return roomCode;
   }
 
@@ -155,26 +156,30 @@ class OnlineGameService {
 
     // Vérifier si le joueur est déjà dans le salon (Reconnexion)
     if (state.players.any((p) => p.id == user.uid)) {
-      final updatedPresence = Map<String, bool>.from(state.presence)..[user.uid] = true;
+      final updatedPresence = Map<String, bool>.from(state.presence)
+        ..[user.uid] = true;
       await roomRef.child('presence').set(updatedPresence);
-      await roomRef.child('updatedAt').set(DateTime.now().millisecondsSinceEpoch);
+      await roomRef
+          .child('updatedAt')
+          .set(DateTime.now().millisecondsSinceEpoch);
       await roomRef.child('presence/${user.uid}').onDisconnect().set(false);
-      
+
       // Lancement asynchrone en arrière-plan du nettoyage
       cleanupOldRooms();
-      return; 
+      return;
     }
 
     // Ajouter le joueur
     final prefs = await SharedPreferences.getInstance();
     final avatar = prefs.getString('userAvatar') ?? '😎';
-    
+
     // Fetch profile safely from Firebase to guarantee we have the data
     UserProfile? userProfile;
     try {
       final profileSnap = await _db.ref('users/${user.uid}').get();
       if (profileSnap.exists && profileSnap.value != null) {
-        userProfile = UserProfile.fromMap(profileSnap.value as Map<dynamic, dynamic>);
+        userProfile =
+            UserProfile.fromMap(profileSnap.value as Map<dynamic, dynamic>);
       }
     } catch (_) {}
 
@@ -198,9 +203,10 @@ class OnlineGameService {
     );
 
     final updatedPlayers = List<Player>.from(state.players)..add(newPlayer);
-    final updatedPresence = Map<String, bool>.from(state.presence)..[user.uid] = true;
+    final updatedPresence = Map<String, bool>.from(state.presence)
+      ..[user.uid] = true;
     final updatedState = state.copyWith(
-      players: updatedPlayers, 
+      players: updatedPlayers,
       presence: updatedPresence,
       updatedAt: DateTime.now().millisecondsSinceEpoch,
     );
@@ -224,7 +230,8 @@ class OnlineGameService {
         final leaderboardService = LeaderboardService();
         for (final player in newState.players) {
           try {
-            await leaderboardService.savePlayerStats(player.id, player.name, player.totalSips, player.bluffsWon);
+            await leaderboardService.savePlayerStats(
+                player.id, player.name, player.totalSips, player.bluffsWon);
           } catch (e) {
             print("Erreur leaderboard: $e");
           }
@@ -232,7 +239,8 @@ class OnlineGameService {
       }
     }
 
-    final stateWithTime = newState.copyWith(updatedAt: DateTime.now().millisecondsSinceEpoch);
+    final stateWithTime =
+        newState.copyWith(updatedAt: DateTime.now().millisecondsSinceEpoch);
     final DatabaseReference roomRef = _db.ref('games/${stateWithTime.gameId}');
     await roomRef.set(stateWithTime.toJson());
   }
@@ -250,14 +258,17 @@ class OnlineGameService {
     final data = jsonDecode(jsonEncode(snapshot.value)) as Map<String, dynamic>;
     final state = GameState.fromJson(data);
 
-    final updatedPlayers = state.players.where((p) => p.id != user.uid).toList();
+    final updatedPlayers =
+        state.players.where((p) => p.id != user.uid).toList();
 
     if (updatedPlayers.isEmpty) {
       // Supprimer le salon si vide
       await roomRef.remove();
     } else {
-      final updatedPresence = Map<String, bool>.from(state.presence)..remove(user.uid);
-      final updatedState = state.copyWith(players: updatedPlayers, presence: updatedPresence);
+      final updatedPresence = Map<String, bool>.from(state.presence)
+        ..remove(user.uid);
+      final updatedState =
+          state.copyWith(players: updatedPlayers, presence: updatedPresence);
       await roomRef.set(updatedState.toJson());
       await roomRef.child('presence/${user.uid}').onDisconnect().cancel();
     }
@@ -291,7 +302,7 @@ class OnlineGameService {
   Future<void> peekCard(String roomCode, String playerId) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
+
     final player = state.players.firstWhere((p) => p.id == playerId);
     final updatedPlayers = state.players.map((p) {
       if (p.id == playerId) return p.copyWith(totalSips: p.totalSips + 1);
@@ -300,10 +311,11 @@ class OnlineGameService {
 
     final newState = state.copyWith(
       players: updatedPlayers,
-      lastEventMessage: "📢 ${player.name} a regardé une de ses cartes et prend 1 pénalité !",
+      lastEventMessage:
+          "📢 ${player.name} a regardé une de ses cartes et prend 1 pénalité !",
       lastEventTime: DateTime.now().millisecondsSinceEpoch,
     );
-    
+
     await updateGameState(newState);
   }
 
@@ -311,7 +323,7 @@ class OnlineGameService {
   Future<void> addPenalty(String roomCode, String playerId) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
+
     final player = state.players.firstWhere((p) => p.id == playerId);
     final updatedPlayers = state.players.map((p) {
       if (p.id == playerId) return p.copyWith(totalSips: p.totalSips + 2);
@@ -320,10 +332,11 @@ class OnlineGameService {
 
     final newState = state.copyWith(
       players: updatedPlayers,
-      lastEventMessage: "💥 ${player.name} s'est trompé(e) et prend 2 pénalités !",
+      lastEventMessage:
+          "💥 ${player.name} s'est trompé(e) et prend 2 pénalités !",
       lastEventTime: DateTime.now().millisecondsSinceEpoch,
     );
-    
+
     await updateGameState(newState);
   }
 
@@ -331,16 +344,18 @@ class OnlineGameService {
   Future<void> nextEndGamePlayer(String roomCode) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
-    final newState = state.copyWith(endGamePlayerIndex: state.endGamePlayerIndex + 1);
+
+    final newState =
+        state.copyWith(endGamePlayerIndex: state.endGamePlayerIndex + 1);
     await updateGameState(newState);
   }
 
   /// Assigner une pénalité
-  Future<void> assignDrink(String roomCode, String targetId, {bool isPigeon = false}) async {
+  Future<void> assignDrink(String roomCode, String targetId,
+      {bool isPigeon = false}) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
+
     final newState = GameLogic.assignDrink(
       state: state,
       fromPlayerId: _auth.currentUser!.uid,
@@ -362,7 +377,7 @@ class OnlineGameService {
   Future<void> speedRunTimeout(String roomCode) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
+
     // Ajoute un message de notification d'événement pour que tout le monde le voie
     final newState = GameLogic.speedRunTimeoutPenalty(state).copyWith(
       lastEventMessage: "⏱️ Trop lent ! 2 pénalités de pénalité !",
@@ -375,7 +390,7 @@ class OnlineGameService {
   Future<void> usePower(String roomCode, String cardId) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
+
     final newState = GameLogic.usePower(
       state: state,
       playerId: _auth.currentUser!.uid,
@@ -388,7 +403,7 @@ class OnlineGameService {
   Future<void> useJoker(String roomCode, String jokerId) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
+
     final newState = GameLogic.useJoker(
       state: state,
       playerId: _auth.currentUser!.uid,
@@ -401,7 +416,7 @@ class OnlineGameService {
   Future<void> callBluff(String roomCode) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
+
     final newState = GameLogic.callBluff(state);
     await updateGameState(newState);
   }
@@ -410,7 +425,7 @@ class OnlineGameService {
   Future<void> resolveBluff(String roomCode, String? cardId) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
+
     final newState = GameLogic.resolveBluff(
       state: state,
       fromPlayerId: _auth.currentUser!.uid,
@@ -420,24 +435,30 @@ class OnlineGameService {
   }
 
   /// Distribuer les pénalités dans le Bus
-  Future<void> distributeBusDrinks(String roomCode, String targetPlayerId) async {
+  Future<void> distributeBusDrinks(
+      String roomCode, String targetPlayerId) async {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) return;
-    
-    final newState = DistributionLogic.distributeBusDrinks(state: state, targetPlayerId: targetPlayerId);
+
+    final newState = DistributionLogic.distributeBusDrinks(
+        state: state, targetPlayerId: targetPlayerId);
     await updateGameState(newState);
   }
 
   /// Écoute en temps réel de l'état du salon
   Stream<GameState> streamGameState(String roomCode) {
-    return _db.ref('games/$roomCode').onValue
-        .where((event) => event.snapshot.value != null) // Ignorer silencieusement si le salon est supprimé
+    return _db
+        .ref('games/$roomCode')
+        .onValue
+        .where((event) =>
+            event.snapshot.value !=
+            null) // Ignorer silencieusement si le salon est supprimé
         .map((event) {
-      final data = jsonDecode(jsonEncode(event.snapshot.value)) as Map<String, dynamic>;
+      final data =
+          jsonDecode(jsonEncode(event.snapshot.value)) as Map<String, dynamic>;
       return GameState.fromJson(data);
     });
   }
-
 
   /// Remet le salon en phase de préparation avec les mêmes joueurs (Rejouer)
   Future<void> restartRoom(String roomCode) async {
@@ -461,18 +482,21 @@ class OnlineGameService {
     }
 
     // Réinitialise les joueurs (main vide, stats à zéro, mais on garde noms/emojis)
-    final resetPlayers = state.players.map((p) => Player(
-      id: p.id,
-      name: p.name,
-      emoji: p.emoji,
-      photoUrl: p.photoUrl,
-      activeCardBack: p.activeCardBack,
-      activeTitle: p.activeTitle,
-      selectedBorder: p.selectedBorder,
-      level: p.level,
-      xp: p.xp,
-      isReady: p.id == state.players.first.id, // L'hôte est prêt par défaut
-    )).toList();
+    final resetPlayers = state.players
+        .map((p) => Player(
+              id: p.id,
+              name: p.name,
+              emoji: p.emoji,
+              photoUrl: p.photoUrl,
+              activeCardBack: p.activeCardBack,
+              activeTitle: p.activeTitle,
+              selectedBorder: p.selectedBorder,
+              level: p.level,
+              xp: p.xp,
+              isReady:
+                  p.id == state.players.first.id, // L'hôte est prêt par défaut
+            ))
+        .toList();
 
     final newState = GameState(
       gameId: roomCode,
@@ -503,18 +527,19 @@ class OnlineGameService {
       final twoHoursAgo = now - (2 * 3600 * 1000); // 2 heures d'inactivité
 
       final gamesData = snapshot.value as Map<dynamic, dynamic>;
-      
+
       for (final entry in gamesData.entries) {
         final roomCode = entry.key as String;
         final roomData = entry.value;
-        
+
         if (roomData is Map) {
           final updatedAt = roomData['updatedAt'] as int?;
-          
+
           if (updatedAt == null || updatedAt < twoHoursAgo) {
             // Salon obsolète ou sans date, suppression de la base
             await gamesRef.child(roomCode).remove();
-            print("Cleanup Firebase: suppression du salon $roomCode obsolète/inactif.");
+            print(
+                "Cleanup Firebase: suppression du salon $roomCode obsolète/inactif.");
           }
         }
       }

@@ -9,7 +9,8 @@ class ParticleBackground extends StatefulWidget {
   State<ParticleBackground> createState() => _ParticleBackgroundState();
 }
 
-class _ParticleBackgroundState extends State<ParticleBackground> with SingleTickerProviderStateMixin {
+class _ParticleBackgroundState extends State<ParticleBackground>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final List<_Particle> _particles = [];
   final Random _rnd = Random();
@@ -20,9 +21,11 @@ class _ParticleBackgroundState extends State<ParticleBackground> with SingleTick
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
-    )..addListener(() {
+    )
+      ..addListener(() {
         _updateParticles();
-      })..repeat();
+      })
+      ..repeat();
 
     // Init particles
     for (int i = 0; i < 40; i++) {
@@ -33,7 +36,9 @@ class _ParticleBackgroundState extends State<ParticleBackground> with SingleTick
   _Particle _generateParticle({bool initial = false}) {
     return _Particle(
       x: _rnd.nextDouble(),
-      y: initial ? _rnd.nextDouble() : 1.1, // Si initial, réparti partout, sinon commence en bas
+      y: initial
+          ? _rnd.nextDouble()
+          : 1.1, // Si initial, réparti partout, sinon commence en bas
       size: _rnd.nextDouble() * 3 + 1,
       speed: _rnd.nextDouble() * 0.002 + 0.001,
       opacity: _rnd.nextDouble() * 0.5 + 0.1,
@@ -48,7 +53,9 @@ class _ParticleBackgroundState extends State<ParticleBackground> with SingleTick
       final p = _particles[i];
       p.y -= p.speed;
       // Wobble horizontal
-      p.x += sin(DateTime.now().millisecondsSinceEpoch * p.wobbleSpeed) * p.wobbleAmount * 0.1;
+      p.x += sin(DateTime.now().millisecondsSinceEpoch * p.wobbleSpeed) *
+          p.wobbleAmount *
+          0.1;
 
       // Si la particule sort de l'écran par le haut, on la recycle en bas
       if (p.y < -0.1) {

@@ -63,15 +63,17 @@ class _ConfettiOverlayState extends State<_ConfettiOverlay>
     );
 
     final rnd = Random();
-    _particles = List.generate(25, (i) => _ConfettiParticle(
-      x: rnd.nextDouble(),
-      startY: -0.05 - rnd.nextDouble() * 0.3,
-      size: 6 + rnd.nextDouble() * 8,
-      color: _colors[rnd.nextInt(_colors.length)],
-      rotation: rnd.nextDouble() * 2 * pi,
-      speed: 0.4 + rnd.nextDouble() * 0.6,
-      isCircle: rnd.nextBool(),
-    ));
+    _particles = List.generate(
+        25,
+        (i) => _ConfettiParticle(
+              x: rnd.nextDouble(),
+              startY: -0.05 - rnd.nextDouble() * 0.3,
+              size: 6 + rnd.nextDouble() * 8,
+              color: _colors[rnd.nextInt(_colors.length)],
+              rotation: rnd.nextDouble() * 2 * pi,
+              speed: 0.4 + rnd.nextDouble() * 0.6,
+              isCircle: rnd.nextBool(),
+            ));
 
     _controller.forward();
   }
@@ -130,7 +132,8 @@ class _ConfettiPainter extends CustomPainter {
       } else {
         canvas.drawRRect(
           RRect.fromRectAndRadius(
-            Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size / 2),
+            Rect.fromCenter(
+                center: Offset.zero, width: p.size, height: p.size / 2),
             const Radius.circular(2),
           ),
           paint,
@@ -210,7 +213,9 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          isMyTurn ? 'C\'est à toi de réciter tes cartes !' : 'Au tour de ${activePlayer.name} ${activePlayer.emoji} !',
+          isMyTurn
+              ? 'C\'est à toi de réciter tes cartes !'
+              : 'Au tour de ${activePlayer.name} ${activePlayer.emoji} !',
           style: TextStyle(
             fontSize: 22,
             color: isMyTurn ? Colors.white : PyraTheme.textSecondary,
@@ -230,7 +235,8 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
                   ? () => setState(() => _revealedCards.add(index))
                   : null,
               child: SizedBox(
-                width: 70, height: 100,
+                width: 70,
+                height: 100,
                 child: PlayingCardWidget(card: card, faceUp: isRevealed),
               ),
             );
@@ -240,7 +246,8 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
         const SizedBox(height: 32),
 
         if (isMyTurn) ...[
-          const Text('As-tu bien deviné la carte ?', style: TextStyle(color: PyraTheme.textMuted)),
+          const Text('As-tu bien deviné la carte ?',
+              style: TextStyle(color: PyraTheme.textMuted)),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -253,13 +260,17 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
               ),
               const SizedBox(width: 16),
               ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryPink),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: PyraTheme.primaryPink),
                 onPressed: () {
                   final roomCode = widget.state.gameId;
-                  ref.read(onlineGameServiceProvider).addPenalty(roomCode, widget.currentUserId);
+                  ref
+                      .read(onlineGameServiceProvider)
+                      .addPenalty(roomCode, widget.currentUserId);
                 },
                 icon: const Icon(Icons.close, color: Colors.white),
-                label: const Text('Faux (+2 pénalités)', style: TextStyle(color: Colors.white)),
+                label: const Text('Faux (+2 pénalités)',
+                    style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -273,12 +284,14 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
               final roomCode = widget.state.gameId;
               ref.read(onlineGameServiceProvider).nextEndGamePlayer(roomCode);
             },
-            child: const Text('J\'ai fini ! Au suivant', style: TextStyle(color: Colors.white, fontSize: 18)),
+            child: const Text('J\'ai fini ! Au suivant',
+                style: TextStyle(color: Colors.white, fontSize: 18)),
           ),
         ] else ...[
           const CircularProgressIndicator(color: PyraTheme.primaryPurple),
           const SizedBox(height: 16),
-          Text('${activePlayer.name} révèle ses cartes...', style: const TextStyle(color: PyraTheme.textMuted)),
+          Text('${activePlayer.name} révèle ses cartes...',
+              style: const TextStyle(color: PyraTheme.textMuted)),
         ],
 
         const Spacer(flex: 2),
@@ -287,7 +300,8 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
   }
 
   Widget _buildScoreboard(BuildContext context) {
-    final sortedPlayers = List.of(widget.state.players)..sort((a, b) => b.totalSips.compareTo(a.totalSips));
+    final sortedPlayers = List.of(widget.state.players)
+      ..sort((a, b) => b.totalSips.compareTo(a.totalSips));
     final roomCode = widget.state.gameId;
     final service = ref.read(onlineGameServiceProvider);
 
@@ -299,8 +313,14 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
             const SizedBox(height: 24),
             const Text(
               '🏆 RÉSULTATS FINAUX 🏆',
-              style: TextStyle(fontSize: 26, color: PyraTheme.primaryYellow, fontWeight: FontWeight.w900),
-            ).animate().fadeIn(duration: 400.ms).scale(curve: Curves.easeOutBack),
+              style: TextStyle(
+                  fontSize: 26,
+                  color: PyraTheme.primaryYellow,
+                  fontWeight: FontWeight.w900),
+            )
+                .animate()
+                .fadeIn(duration: 400.ms)
+                .scale(curve: Curves.easeOutBack),
             const SizedBox(height: 20),
 
             // Classement
@@ -310,29 +330,51 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
                 itemCount: sortedPlayers.length,
                 itemBuilder: (context, index) {
                   final player = sortedPlayers[index];
-                  final rankEmoji = index == 0 ? '🥇' : index == 1 ? '🥈' : index == 2 ? '🥉' : '${index + 1}.';
+                  final rankEmoji = index == 0
+                      ? '🥇'
+                      : index == 1
+                          ? '🥈'
+                          : index == 2
+                              ? '🥉'
+                              : '${index + 1}.';
                   return GlassContainer(
                     margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    color: index == 0 ? PyraTheme.primaryYellow : PyraTheme.bgCard,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    color:
+                        index == 0 ? PyraTheme.primaryYellow : PyraTheme.bgCard,
                     opacity: index == 0 ? 0.2 : 0.6,
                     border: index == 0
-                        ? Border.all(color: PyraTheme.primaryYellow.withOpacity(0.5), width: 1.5)
+                        ? Border.all(
+                            color: PyraTheme.primaryYellow.withOpacity(0.5),
+                            width: 1.5)
                         : Border.all(color: Colors.white.withOpacity(0.1)),
                     borderRadius: BorderRadius.circular(16),
                     child: Row(
                       children: [
                         Text(rankEmoji, style: const TextStyle(fontSize: 22)),
                         const SizedBox(width: 12),
-                        Text(player.emoji, style: const TextStyle(fontSize: 22)),
+                        Text(player.emoji,
+                            style: const TextStyle(fontSize: 22)),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text(player.name, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                          child: Text(player.name,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold)),
                         ),
-                        Text('${player.totalSips} 🍺', style: const TextStyle(color: PyraTheme.primaryOrange, fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text('${player.totalSips} 🍺',
+                            style: const TextStyle(
+                                color: PyraTheme.primaryOrange,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold)),
                       ],
                     ),
-                  ).animate().fadeIn(delay: Duration(milliseconds: 300 + index * 80)).slideX();
+                  )
+                      .animate()
+                      .fadeIn(delay: Duration(milliseconds: 300 + index * 80))
+                      .slideX();
                 },
               ),
             ),
@@ -357,7 +399,9 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
                     } catch (e) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Erreur : $e'), backgroundColor: Colors.red),
+                          SnackBar(
+                              content: Text('Erreur : $e'),
+                              backgroundColor: Colors.red),
                         );
                       }
                     }
@@ -379,7 +423,8 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
                 },
                 child: const Text(
                   '🏠 Retour à l\'accueil',
-                  style: TextStyle(color: PyraTheme.textSecondary, fontSize: 16),
+                  style:
+                      TextStyle(color: PyraTheme.textSecondary, fontSize: 16),
                 ),
               ),
             ),

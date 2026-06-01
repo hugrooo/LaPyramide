@@ -114,7 +114,8 @@ class _RulesScreenState extends State<RulesScreen> {
                       final rule = _rules[index];
                       return Center(
                         child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: isSmallScreen ? 600 : 800),
+                          constraints: BoxConstraints(
+                              maxWidth: isSmallScreen ? 600 : 800),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: SingleChildScrollView(

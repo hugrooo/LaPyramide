@@ -136,7 +136,8 @@ class _ConfettiPainter extends CustomPainter {
       } else {
         canvas.drawRRect(
           RRect.fromRectAndRadius(
-            Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size / 2),
+            Rect.fromCenter(
+                center: Offset.zero, width: p.size, height: p.size / 2),
             const Radius.circular(2),
           ),
           paint,
@@ -173,7 +174,8 @@ class ScoreboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final sorted = [...players]..sort((a, b) => b.totalSips.compareTo(a.totalSips));
+    final sorted = [...players]
+      ..sort((a, b) => b.totalSips.compareTo(a.totalSips));
     final service = ref.read(onlineGameServiceProvider);
 
     if (isOnline && roomCode != null) {
@@ -205,7 +207,10 @@ class ScoreboardScreen extends ConsumerWidget {
                     style: Theme.of(context).textTheme.displayMedium?.copyWith(
                           color: PyraTheme.primaryYellow,
                         ),
-                  ).animate().fadeIn(duration: 400.ms).scale(curve: Curves.easeOutBack),
+                  )
+                      .animate()
+                      .fadeIn(duration: 400.ms)
+                      .scale(curve: Curves.easeOutBack),
 
                   const SizedBox(height: 24),
 
@@ -226,27 +231,43 @@ class ScoreboardScreen extends ConsumerWidget {
                   // Révélation des missions secrètes
                   if (players.any((p) => p.secretMission != null)) ...[
                     const SizedBox(height: 16),
-                    const Text('🕵️ Missions Secrètes', style: TextStyle(color: PyraTheme.primaryOrange, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text('🕵️ Missions Secrètes',
+                        style: TextStyle(
+                            color: PyraTheme.primaryOrange,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     SizedBox(
                       height: 120,
                       child: ListView.builder(
-                        itemCount: players.where((p) => p.secretMission != null).length,
+                        itemCount: players
+                            .where((p) => p.secretMission != null)
+                            .length,
                         itemBuilder: (context, i) {
-                          final p = players.where((p) => p.secretMission != null).toList()[i];
+                          final p = players
+                              .where((p) => p.secretMission != null)
+                              .toList()[i];
                           return GlassContainer(
                             margin: const EdgeInsets.only(bottom: 8),
                             padding: const EdgeInsets.all(12),
                             child: Row(
                               children: [
-                                Text(p.emoji, style: const TextStyle(fontSize: 24)),
+                                Text(p.emoji,
+                                    style: const TextStyle(fontSize: 24)),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(p.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                                      Text(p.secretMission!, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                                      Text(p.name,
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold)),
+                                      Text(p.secretMission!,
+                                          style: const TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 12)),
                                     ],
                                   ),
                                 ),
@@ -278,7 +299,9 @@ class ScoreboardScreen extends ConsumerWidget {
                           } catch (e) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Erreur : $e'), backgroundColor: Colors.red),
+                                SnackBar(
+                                    content: Text('Erreur : $e'),
+                                    backgroundColor: Colors.red),
                               );
                             }
                           }
@@ -365,7 +388,8 @@ class ScoreboardScreen extends ConsumerWidget {
       color: rank == 0 ? PyraTheme.primaryYellow : PyraTheme.bgCard,
       opacity: rank == 0 ? 0.2 : 0.6,
       border: rank == 0
-          ? Border.all(color: PyraTheme.primaryYellow.withOpacity(0.5), width: 1.5)
+          ? Border.all(
+              color: PyraTheme.primaryYellow.withOpacity(0.5), width: 1.5)
           : Border.all(color: Colors.white.withOpacity(0.1)),
       borderRadius: BorderRadius.circular(16),
       child: Row(
@@ -392,8 +416,8 @@ class ScoreboardScreen extends ConsumerWidget {
               ),
               Text(
                 '😈 ${player.bluffsWon}w / ${player.bluffsLost}l',
-                style: const TextStyle(
-                    color: PyraTheme.textMuted, fontSize: 12),
+                style:
+                    const TextStyle(color: PyraTheme.textMuted, fontSize: 12),
               ),
             ],
           ),

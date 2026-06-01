@@ -7,11 +7,11 @@ class PyraTheme {
   static const Color primaryPurple = Color(0xFF8B5CF6);
   static const Color primaryPink = Color(0xFFE81CFF);
   static const Color primaryBlue = Color(0xFF3B82F6);
-  
+
   static const Color primaryOrange = Color(0xFFF97316);
   static const Color primaryYellow = Color(0xFFFBBF24);
   static const Color primaryGreen = Color(0xFF10B981);
-  
+
   // === Fonds (Dark Space / Glass) ===
   static const Color bgDark = Color(0xFF050814); // Ultra dark navy blue
   static const Color bgCard = Color(0xFF0F1530); // Dark tinted blue for cards
@@ -64,20 +64,25 @@ class PyraTheme {
 
   // === Ombres / Glow ===
   static List<BoxShadow> glowCyan = [
-    BoxShadow(color: primaryCyan.withOpacity(0.6), blurRadius: 24, spreadRadius: 2),
-    BoxShadow(color: primaryCyan.withOpacity(0.2), blurRadius: 48, spreadRadius: 8),
+    BoxShadow(
+        color: primaryCyan.withOpacity(0.6), blurRadius: 24, spreadRadius: 2),
+    BoxShadow(
+        color: primaryCyan.withOpacity(0.2), blurRadius: 48, spreadRadius: 8),
   ];
 
   static List<BoxShadow> glowPurple = [
-    BoxShadow(color: primaryPurple.withOpacity(0.6), blurRadius: 24, spreadRadius: 2),
+    BoxShadow(
+        color: primaryPurple.withOpacity(0.6), blurRadius: 24, spreadRadius: 2),
   ];
 
   static List<BoxShadow> glowOrange = [
-    BoxShadow(color: primaryOrange.withOpacity(0.6), blurRadius: 24, spreadRadius: 2),
+    BoxShadow(
+        color: primaryOrange.withOpacity(0.6), blurRadius: 24, spreadRadius: 2),
   ];
 
   static List<BoxShadow> glowPink = [
-    BoxShadow(color: primaryPink.withOpacity(0.6), blurRadius: 24, spreadRadius: 2),
+    BoxShadow(
+        color: primaryPink.withOpacity(0.6), blurRadius: 24, spreadRadius: 2),
   ];
 
   static BoxShadow cardShadow = BoxShadow(
@@ -126,8 +131,12 @@ class PyraTheme {
               fontSize: 18,
               fontWeight: FontWeight.w800,
             ),
-            bodyLarge: TextStyle(color: textPrimary, fontSize: 16, fontWeight: FontWeight.w700),
-            bodyMedium: TextStyle(color: textSecondary, fontSize: 14, fontWeight: FontWeight.w600),
+            bodyLarge: TextStyle(
+                color: textPrimary, fontSize: 16, fontWeight: FontWeight.w700),
+            bodyMedium: TextStyle(
+                color: textSecondary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
             labelLarge: TextStyle(
               color: textPrimary,
               fontSize: 16,

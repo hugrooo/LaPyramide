@@ -94,7 +94,9 @@ class _TotemCardAnimationState extends State<TotemCardAnimation> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: widget.isTruth ? Colors.greenAccent.withOpacity(0.4) : Colors.redAccent.withOpacity(0.4),
+                          color: widget.isTruth
+                              ? Colors.greenAccent.withOpacity(0.4)
+                              : Colors.redAccent.withOpacity(0.4),
                           blurRadius: 100,
                           spreadRadius: 20,
                         )
@@ -126,20 +128,56 @@ class _TotemCardAnimationState extends State<TotemCardAnimation> {
               )
                   .animate()
                   // 1. Arrive par le bas, de très loin, en tourbillonnant
-                  .slideY(begin: 3.5, end: 0, duration: 500.ms, curve: Curves.easeOutCubic)
-                  .scale(begin: const Offset(0.01, 0.01), end: const Offset(1.0, 1.0), duration: 500.ms, curve: Curves.easeOutCubic)
-                  .rotate(begin: -0.5, end: 0.0, duration: 600.ms, curve: Curves.easeOutBack)
+                  .slideY(
+                      begin: 3.5,
+                      end: 0,
+                      duration: 500.ms,
+                      curve: Curves.easeOutCubic)
+                  .scale(
+                      begin: const Offset(0.01, 0.01),
+                      end: const Offset(1.0, 1.0),
+                      duration: 500.ms,
+                      curve: Curves.easeOutCubic)
+                  .rotate(
+                      begin: -0.5,
+                      end: 0.0,
+                      duration: 600.ms,
+                      curve: Curves.easeOutBack)
                   // 2. Se retourne 3D (le recto s'active exactement à 600ms au milieu de la rotation)
-                  .flipH(begin: -1, end: 0, duration: 600.ms, delay: 300.ms, curve: Curves.easeInOut)
+                  .flipH(
+                      begin: -1,
+                      end: 0,
+                      duration: 600.ms,
+                      delay: 300.ms,
+                      curve: Curves.easeInOut)
                   // 3. Grossit (le pop élastique du totem)
-                  .scale(begin: const Offset(1.0, 1.0), end: const Offset(1.3, 1.3), delay: 900.ms, duration: 300.ms, curve: Curves.elasticOut)
+                  .scale(
+                      begin: const Offset(1.0, 1.0),
+                      end: const Offset(1.3, 1.3),
+                      delay: 900.ms,
+                      duration: 300.ms,
+                      curve: Curves.elasticOut)
                   // 4. Scintillement de type Shimmer
-                  .shimmer(delay: 1200.ms, duration: 1500.ms, color: Colors.white30)
+                  .shimmer(
+                      delay: 1200.ms, duration: 1500.ms, color: Colors.white30)
                   // 5. Tremblement si ce n'est pas la vérité (carte rouge/choc)
-                  .shake(delay: 1000.ms, duration: 500.ms, hz: widget.isTruth ? 0 : 8, curve: Curves.easeInOutCubic)
+                  .shake(
+                      delay: 1000.ms,
+                      duration: 500.ms,
+                      hz: widget.isTruth ? 0 : 8,
+                      curve: Curves.easeInOutCubic)
                   // 6. S'envole vers le haut et disparaît
-                  .slideY(begin: 0, end: -2.0, delay: 3500.ms, duration: 500.ms, curve: Curves.easeInBack)
-                  .scale(begin: const Offset(1.3, 1.3), end: const Offset(0.5, 0.5), delay: 3500.ms, duration: 500.ms)
+                  .slideY(
+                      begin: 0,
+                      end: -2.0,
+                      delay: 3500.ms,
+                      duration: 500.ms,
+                      curve: Curves.easeInBack)
+                  .scale(
+                      begin: const Offset(1.3, 1.3),
+                      end: const Offset(0.5, 0.5),
+                      delay: 3500.ms,
+                      duration: 500.ms)
                   .fadeOut(delay: 3700.ms, duration: 300.ms),
             ],
           ),
@@ -150,9 +188,10 @@ class _TotemCardAnimationState extends State<TotemCardAnimation> {
 }
 
 /// Helper pour afficher l'animation facilement depuis un State
-void showTotemAnimation(BuildContext context, PyraCard card, bool isTruth, {String? overrideSkin}) {
+void showTotemAnimation(BuildContext context, PyraCard card, bool isTruth,
+    {String? overrideSkin}) {
   late OverlayEntry overlayEntry;
-  
+
   overlayEntry = OverlayEntry(
     builder: (context) => TotemCardAnimation(
       card: card,
@@ -163,6 +202,6 @@ void showTotemAnimation(BuildContext context, PyraCard card, bool isTruth, {Stri
       },
     ),
   );
-  
+
   Overlay.of(context).insert(overlayEntry);
 }

@@ -12,7 +12,8 @@ final friendsProvider = StreamProvider.autoDispose<List<FriendProfile>>((ref) {
   return ref.watch(friendServiceProvider).getFriends();
 });
 
-final friendRequestsProvider = StreamProvider.autoDispose<List<FriendProfile>>((ref) {
+final friendRequestsProvider =
+    StreamProvider.autoDispose<List<FriendProfile>>((ref) {
   return ref.watch(friendServiceProvider).getPendingRequests();
 });
 
@@ -34,7 +35,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
       return;
     }
     setState(() => _isSearching = true);
-    final results = await ref.read(friendServiceProvider).searchUsers(query.trim());
+    final results =
+        await ref.read(friendServiceProvider).searchUsers(query.trim());
     if (mounted) {
       setState(() {
         _searchResults = results;
@@ -68,7 +70,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                             color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                          child: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white, size: 20),
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -83,7 +86,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                     ],
                   ),
                 ),
-                
+
                 // Barre de recherche
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -92,7 +95,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Chercher un ami...',
-                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                      hintStyle:
+                          TextStyle(color: Colors.white.withOpacity(0.5)),
                       prefixIcon: const Icon(Icons.search, color: Colors.white),
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.1),
@@ -116,28 +120,35 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                             // Requêtes en attente
                             requestsAsync.when(
                               data: (requests) {
-                                if (requests.isEmpty) return const SizedBox.shrink();
+                                if (requests.isEmpty)
+                                  return const SizedBox.shrink();
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
                                       'Demandes reçues',
-                                      style: TextStyle(color: PyraTheme.primaryPink, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          color: PyraTheme.primaryPink,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     const SizedBox(height: 8),
-                                    ...requests.map((req) => _buildRequestTile(req)),
+                                    ...requests
+                                        .map((req) => _buildRequestTile(req)),
                                     const SizedBox(height: 24),
                                   ],
                                 );
                               },
-                              loading: () => const Center(child: CircularProgressIndicator()),
+                              loading: () => const Center(
+                                  child: CircularProgressIndicator()),
                               error: (err, stack) => Text('Erreur: $err'),
                             ),
 
                             // Liste d'amis
                             const Text(
                               'Mes Amis',
-                              style: TextStyle(color: PyraTheme.primaryCyan, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  color: PyraTheme.primaryCyan,
+                                  fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             friendsAsync.when(
@@ -147,16 +158,20 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                                     padding: EdgeInsets.all(16.0),
                                     child: Text(
                                       'Aucun ami pour le moment. Recherche des pseudos pour les ajouter !',
-                                      style: TextStyle(color: PyraTheme.textMuted),
+                                      style:
+                                          TextStyle(color: PyraTheme.textMuted),
                                       textAlign: TextAlign.center,
                                     ),
                                   );
                                 }
                                 return Column(
-                                  children: friends.map((f) => _buildFriendTile(f)).toList(),
+                                  children: friends
+                                      .map((f) => _buildFriendTile(f))
+                                      .toList(),
                                 );
                               },
-                              loading: () => const Center(child: CircularProgressIndicator()),
+                              loading: () => const Center(
+                                  child: CircularProgressIndicator()),
                               error: (err, stack) => Text('Erreur: $err'),
                             ),
                           ],
@@ -172,11 +187,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
 
   Widget _buildSearchResults() {
     if (_isSearching) {
-      return const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPink));
+      return const Center(
+          child: CircularProgressIndicator(color: PyraTheme.primaryPink));
     }
     if (_searchResults.isEmpty) {
       return const Center(
-        child: Text('Aucun résultat trouvé.', style: TextStyle(color: PyraTheme.textMuted)),
+        child: Text('Aucun résultat trouvé.',
+            style: TextStyle(color: PyraTheme.textMuted)),
       );
     }
     return ListView.builder(
@@ -197,10 +214,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: Text(user.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text(user.name,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ),
               IconButton(
-                icon: const Icon(Icons.person_add, color: PyraTheme.primaryCyan),
+                icon:
+                    const Icon(Icons.person_add, color: PyraTheme.primaryCyan),
                 onPressed: () {
                   ref.read(friendServiceProvider).sendFriendRequest(user.id);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -231,10 +251,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(req.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text(req.name,
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
             IconButton(
-              icon: const Icon(Icons.check_circle, color: PyraTheme.primaryCyan),
+              icon:
+                  const Icon(Icons.check_circle, color: PyraTheme.primaryCyan),
               onPressed: () {
                 ref.read(friendServiceProvider).acceptFriendRequest(req.id);
               },
@@ -267,9 +290,10 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(friend.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text(friend.name,
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
-
           ],
         ),
       ).animate().fadeIn().slideY(begin: 0.1),

@@ -33,7 +33,9 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           final val = e.value as Map<dynamic, dynamic>;
           return {
             'id': e.key.toString(),
-            'name': val['name']?.toString() ?? val['pseudo']?.toString() ?? 'Inconnu',
+            'name': val['name']?.toString() ??
+                val['pseudo']?.toString() ??
+                'Inconnu',
             'emoji': val['emoji']?.toString() ?? '😎',
             'photoUrl': val['photoUrl']?.toString(),
             'selectedBorder': val['selectedBorder']?.toString() ?? 'classic',
@@ -89,7 +91,9 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 ),
                 Expanded(
                   child: _isLoading
-                      ? const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPink))
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                              color: PyraTheme.primaryPink))
                       : _topDrinkers.isEmpty
                           ? const Center(
                               child: Text(
@@ -102,9 +106,11 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                               children: [
                                 if (_topDrinkers.length >= 3)
                                   _buildPodium(_topDrinkers.take(3).toList()),
-                                if (_topDrinkers.length < 3 && _topDrinkers.isNotEmpty)
+                                if (_topDrinkers.length < 3 &&
+                                    _topDrinkers.isNotEmpty)
                                   Padding(
-                                    padding: const EdgeInsets.only(bottom: 24.0),
+                                    padding:
+                                        const EdgeInsets.only(bottom: 24.0),
                                     child: _buildPodium(
                                       _topDrinkers,
                                       // On complète avec des vide s'il n'y en a pas 3
@@ -112,8 +118,11 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                                   ),
                                 Expanded(
                                   child: ListView.builder(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                                    itemCount: _topDrinkers.length > 3 ? _topDrinkers.length - 3 : 0,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16),
+                                    itemCount: _topDrinkers.length > 3
+                                        ? _topDrinkers.length - 3
+                                        : 0,
                                     itemBuilder: (context, index) {
                                       final player = _topDrinkers[index + 3];
                                       final rank = index + 4;
@@ -137,7 +146,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
 
   Widget _buildPodium(List<Map<String, dynamic>> top3) {
     if (top3.isEmpty) return const SizedBox();
-    
+
     final player1 = top3.isNotEmpty ? top3[0] : null;
     final player2 = top3.length > 1 ? top3[1] : null;
     final player3 = top3.length > 2 ? top3[2] : null;
@@ -153,15 +162,14 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
               child: _buildPodiumStep(player2, 2, 120, PyraTheme.primaryCyan),
             ),
           if (player2 == null) const Expanded(child: SizedBox()),
-          
           if (player1 != null)
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: _buildPodiumStep(player1, 1, 160, PyraTheme.primaryYellow),
+                child:
+                    _buildPodiumStep(player1, 1, 160, PyraTheme.primaryYellow),
               ),
             ),
-            
           if (player3 != null)
             Expanded(
               child: _buildPodiumStep(player3, 3, 100, PyraTheme.primaryPink),
@@ -169,10 +177,14 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           if (player3 == null) const Expanded(child: SizedBox()),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, curve: Curves.easeOutBack);
+    )
+        .animate()
+        .fadeIn(duration: 600.ms)
+        .slideY(begin: 0.2, curve: Curves.easeOutBack);
   }
 
-  Widget _buildPodiumStep(Map<String, dynamic> player, int rank, double height, Color color) {
+  Widget _buildPodiumStep(
+      Map<String, dynamic> player, int rank, double height, Color color) {
     final String name = player['name'] ?? 'Inconnu';
     final String emoji = player['emoji'] ?? '😎';
     final String? photoUrl = player['photoUrl'];
@@ -190,7 +202,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           if (isFirst)
             const Padding(
               padding: EdgeInsets.only(bottom: 8),
-              child: Icon(Icons.star_rounded, color: PyraTheme.primaryYellow, size: 32),
+              child: Icon(Icons.star_rounded,
+                  color: PyraTheme.primaryYellow, size: 32),
             ),
           AvatarWithBorder(
             emoji: emoji,
@@ -206,10 +219,14 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             width: double.infinity,
             decoration: BoxDecoration(
               color: color.withOpacity(0.2),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
               border: Border.all(color: color.withOpacity(0.5), width: 2),
               boxShadow: [
-                BoxShadow(color: color.withOpacity(0.3), blurRadius: 20, spreadRadius: 2),
+                BoxShadow(
+                    color: color.withOpacity(0.3),
+                    blurRadius: 20,
+                    spreadRadius: 2),
               ],
             ),
             child: Column(
@@ -228,7 +245,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: Text(
                     name,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
@@ -240,7 +258,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                 ),
                 Text(
                   'Niv. $level',
-                  style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: color, fontSize: 10, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -298,7 +317,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                   ),
                   Text(
                     'Niv. $level',
-                    style: const TextStyle(color: PyraTheme.primaryCyan, fontSize: 12),
+                    style: const TextStyle(
+                        color: PyraTheme.primaryCyan, fontSize: 12),
                   ),
                 ],
               ),

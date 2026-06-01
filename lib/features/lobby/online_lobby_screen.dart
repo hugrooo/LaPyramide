@@ -50,7 +50,8 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
       ref.read(currentRoomCodeProvider.notifier).state = roomCode;
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -68,7 +69,8 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -124,7 +126,11 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Rejoindre', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+              const Text('Rejoindre',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               TextField(
                 controller: _codeController,
@@ -132,13 +138,23 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                 textCapitalization: TextCapitalization.characters,
                 maxLength: 4,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 32, letterSpacing: 8, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    letterSpacing: 8,
+                    fontWeight: FontWeight.bold),
                 decoration: const InputDecoration(
                   hintText: 'CODE',
-                  hintStyle: TextStyle(color: PyraTheme.textMuted, fontSize: 24, letterSpacing: 4),
+                  hintStyle: TextStyle(
+                      color: PyraTheme.textMuted,
+                      fontSize: 24,
+                      letterSpacing: 4),
                   counterText: '',
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: PyraTheme.primaryPurple)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: PyraTheme.primaryPink, width: 2)),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: PyraTheme.primaryPurple)),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide:
+                          BorderSide(color: PyraTheme.primaryPink, width: 2)),
                 ),
               ),
               const SizedBox(height: 32),
@@ -147,7 +163,8 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Annuler', style: TextStyle(color: PyraTheme.textMuted)),
+                    child: const Text('Annuler',
+                        style: TextStyle(color: PyraTheme.textMuted)),
                   ),
                   PulsarButton(
                     text: 'Rejoindre',
@@ -199,7 +216,9 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (context.mounted) context.goNamed('home');
                   });
-                  return const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPurple));
+                  return const Center(
+                      child: CircularProgressIndicator(
+                          color: PyraTheme.primaryPurple));
                 }
 
                 if (roomCode != null) {
@@ -208,11 +227,14 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
 
                 return _buildLobbyMenu(user.displayName, profile);
               },
-              loading: () => const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPurple)),
-              error: (err, _) => Center(child: Text('Erreur: $err', style: const TextStyle(color: Colors.red))),
+              loading: () => const Center(
+                  child: CircularProgressIndicator(
+                      color: PyraTheme.primaryPurple)),
+              error: (err, _) => Center(
+                  child: Text('Erreur: $err',
+                      style: const TextStyle(color: Colors.red))),
             ),
           ),
-
         ],
       ),
     );
@@ -227,13 +249,17 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
           child: Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                    color: Colors.white),
                 onPressed: () => context.pop(),
               ),
               const Expanded(
                 child: Text(
                   'Mode en Ligne',
-                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -266,10 +292,15 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Connecté en tant que', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                          const Text('Connecté en tant que',
+                              style: TextStyle(
+                                  color: Colors.white54, fontSize: 12)),
                           Text(
                             name ?? 'Invité',
-                            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w900),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -284,47 +315,49 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
 
               const Text(
                 'Choix du Mode',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
               ).animate().fadeIn(delay: 100.ms),
               const SizedBox(height: 16),
 
               if (_isLoading)
                 const Padding(
                   padding: EdgeInsets.all(40.0),
-                  child: Center(child: CircularProgressIndicator(color: PyraTheme.primaryPink)),
+                  child: Center(
+                      child: CircularProgressIndicator(
+                          color: PyraTheme.primaryPink)),
                 )
               else ...[
                 GameModeCarousel(
                   selectedMode: _settings.mode,
                   replaceCardsWithPowers: _settings.replaceCardsWithPowers,
-                  onModeChanged: (mode) => setState(() => _settings = _settings.copyWith(mode: mode)),
-                  onReplaceCardsChanged: (v) => setState(() => _settings = _settings.copyWith(replaceCardsWithPowers: v)),
+                  onModeChanged: (mode) => setState(
+                      () => _settings = _settings.copyWith(mode: mode)),
+                  onReplaceCardsChanged: (v) => setState(() => _settings =
+                      _settings.copyWith(replaceCardsWithPowers: v)),
                 ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.2),
-
                 const SizedBox(height: 32),
-
                 PulsarButton(
                   text: 'Créer un salon',
                   icon: Icons.add_circle_outline_rounded,
                   gradient: PyraTheme.purplePinkGradient,
                   onPressed: _createRoom,
                 ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.2),
-
                 const SizedBox(height: 16),
-
                 PulsarButton(
                   text: 'Rejoindre un salon',
                   icon: Icons.login_rounded,
                   gradient: PyraTheme.cyanGradient,
                   onPressed: _showJoinDialog,
                 ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
-
                 const SizedBox(height: 16),
-
                 PulsarButton(
                   text: 'Scanner un QR Code',
                   icon: Icons.qr_code_scanner_rounded,
-                  gradient: const LinearGradient(colors: [Colors.indigo, PyraTheme.primaryPurple]),
+                  gradient: const LinearGradient(
+                      colors: [Colors.indigo, PyraTheme.primaryPurple]),
                   onPressed: _showScannerDialog,
                 ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.2),
               ],
@@ -334,7 +367,6 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
       ],
     );
   }
-
 
   Widget _buildWaitingRoom(String roomCode, String currentUserId) {
     final gameStateAsync = ref.watch(onlineGameStateProvider);
@@ -366,34 +398,40 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
         // Si la partie a démarré, rediriger vers l'écran de jeu
         if (state.phase != GamePhase.setup) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-             if (context.mounted) {
-               // Redirection vers le jeu
-               context.pushReplacementNamed('onlineGame');
-             }
+            if (context.mounted) {
+              // Redirection vers le jeu
+              context.pushReplacementNamed('onlineGame');
+            }
           });
-          return const Center(child: Text('Démarrage...', style: TextStyle(color: Colors.white)));
+          return const Center(
+              child:
+                  Text('Démarrage...', style: TextStyle(color: Colors.white)));
         }
 
-        final isHost = state.players.isNotEmpty && state.players.first.id == currentUserId;
+        final isHost =
+            state.players.isNotEmpty && state.players.first.id == currentUserId;
 
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.exit_to_app, color: Colors.redAccent),
+                    icon:
+                        const Icon(Icons.exit_to_app, color: Colors.redAccent),
                     onPressed: () => _leaveRoom(roomCode),
                   ),
                   const Spacer(),
-                  const Text('SALON', style: TextStyle(color: PyraTheme.textMuted, letterSpacing: 2)),
+                  const Text('SALON',
+                      style: TextStyle(
+                          color: PyraTheme.textMuted, letterSpacing: 2)),
                   const Spacer(),
                   const SizedBox(width: 48), // Equilibre
                 ],
               ),
             ),
-            
             SizedBox(height: spaceTop),
             Text(
               roomCode,
@@ -404,7 +442,8 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                 color: PyraTheme.primaryOrange,
               ),
             ),
-            const Text('Partage ce code à tes amis', style: TextStyle(color: PyraTheme.textSecondary)),
+            const Text('Partage ce code à tes amis',
+                style: TextStyle(color: PyraTheme.textSecondary)),
             const SizedBox(height: 12),
             Center(
               child: Container(
@@ -421,7 +460,6 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
               ),
             ),
             SizedBox(height: spaceMiddle),
-
             Expanded(
               child: Center(
                 child: SizedBox(
@@ -437,23 +475,35 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           boxShadow: [
-                            BoxShadow(color: PyraTheme.primaryCyan.withOpacity(0.2), blurRadius: 40, spreadRadius: 10),
-                            BoxShadow(color: PyraTheme.primaryPink.withOpacity(0.1), blurRadius: 80, spreadRadius: 20),
+                            BoxShadow(
+                                color: PyraTheme.primaryCyan.withOpacity(0.2),
+                                blurRadius: 40,
+                                spreadRadius: 10),
+                            BoxShadow(
+                                color: PyraTheme.primaryPink.withOpacity(0.1),
+                                blurRadius: 80,
+                                spreadRadius: 20),
                           ],
                         ),
                         child: Center(
-                          child: Icon(Icons.wifi_tethering_rounded, color: Colors.white54, size: centerIconSize),
+                          child: Icon(Icons.wifi_tethering_rounded,
+                              color: Colors.white54, size: centerIconSize),
                         ),
-                      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1,1), end: const Offset(1.1,1.1), duration: 2.seconds),
+                      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+                          begin: const Offset(1, 1),
+                          end: const Offset(1.1, 1.1),
+                          duration: 2.seconds),
 
                       // Joueurs autour de la table
                       ...List.generate(state.players.length, (index) {
                         final player = state.players[index];
                         final isMe = player.id == currentUserId;
                         final isHostPlayer = index == 0;
-                        
+
                         // Calcul de la position sur le cercle
-                        final double angle = (2 * math.pi / state.players.length) * index - math.pi / 2;
+                        final double angle =
+                            (2 * math.pi / state.players.length) * index -
+                                math.pi / 2;
                         final double radius = circleRadius;
                         final double x = radius * math.cos(angle);
                         final double y = radius * math.sin(angle);
@@ -464,108 +514,150 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Stack(
-                                    alignment: Alignment.center,
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      // Anneau XP
-                                      SizedBox(
-                                        width: avatarSize + 8, height: avatarSize + 8,
-                                        child: CircularProgressIndicator(
-                                          value: (player.xp / (player.level * 100)).clamp(0.0, 1.0),
-                                          strokeWidth: isSmallScreen ? 3 : 4,
-                                          backgroundColor: Colors.white.withOpacity(0.05),
-                                          valueColor: const AlwaysStoppedAnimation<Color>(PyraTheme.primaryCyan),
-                                          strokeCap: StrokeCap.round,
-                                        ),
-                                      ),
-                                      // Avatar avec effet "Pop" à l'entrée
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: isMe ? PyraTheme.primaryPink : (isHostPlayer ? PyraTheme.primaryYellow : Colors.transparent),
-                                            width: 1.5,
-                                          ),
-                                          boxShadow: isMe || isHostPlayer ? [
-                                            BoxShadow(
-                                              color: (isMe ? PyraTheme.primaryPink : PyraTheme.primaryYellow).withOpacity(0.5),
-                                              blurRadius: 8,
-                                            )
-                                          ] : null,
-                                        ),
-                                        child: AvatarWithBorder(
-                                          emoji: player.emoji,
-                                          photoUrl: player.photoUrl,
-                                          size: avatarSize,
-                                          borderType: player.selectedBorder,
-                                        ),
-                                      ),
-                                      
-                                      // Couronne pour l'hôte
-                                      if (isHostPlayer)
-                                        Positioned(
-                                          top: isSmallScreen ? -10 : -12,
-                                          child: Text('👑', style: TextStyle(fontSize: isSmallScreen ? 16 : 20))
-                                            .animate(onPlay: (c) => c.repeat(reverse: true))
-                                            .slideY(begin: 0, end: -0.2, duration: 1.seconds),
-                                        ),
-
-                                      // Badge de niveau
-                                      Positioned(
-                                        bottom: -2, right: -8,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            gradient: PyraTheme.cyanGradient,
-                                            borderRadius: BorderRadius.circular(8),
-                                            border: Border.all(color: PyraTheme.bgDark, width: 1.5),
-                                          ),
-                                          child: Text('${player.level}',
-                                            style: const TextStyle(color: Colors.black,
-                                                fontSize: 8, fontWeight: FontWeight.w900),
-                                          ),
-                                        ),
-                                      ),
-                                      
-                                      // Dos de carte équipé
-                                      Positioned(
-                                        bottom: -8, left: -16,
-                                        child: Card3DShowcase(
-                                          skinId: player.activeCardBack,
-                                          width: 28,
-                                          height: 38,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 6),
-                                  // Titre + Nom
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      borderRadius: BorderRadius.circular(8),
+                                alignment: Alignment.center,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  // Anneau XP
+                                  SizedBox(
+                                    width: avatarSize + 8,
+                                    height: avatarSize + 8,
+                                    child: CircularProgressIndicator(
+                                      value: (player.xp / (player.level * 100))
+                                          .clamp(0.0, 1.0),
+                                      strokeWidth: isSmallScreen ? 3 : 4,
+                                      backgroundColor:
+                                          Colors.white.withOpacity(0.05),
+                                      valueColor:
+                                          const AlwaysStoppedAnimation<Color>(
+                                              PyraTheme.primaryCyan),
+                                      strokeCap: StrokeCap.round,
                                     ),
-                                    child: Column(
-                                      children: [
-                                        if (player.activeTitle.isNotEmpty)
-                                          Text(
-                                            player.activeTitle.toUpperCase(),
-                                            style: TextStyle(color: PyraTheme.primaryCyan, fontSize: isSmallScreen ? 6 : 7, fontWeight: FontWeight.bold, letterSpacing: 0.5),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        Text(
-                                          player.name.split(' ').first, // Prénom uniquement
-                                          style: TextStyle(color: Colors.white, fontSize: isSmallScreen ? 8 : 10, fontWeight: FontWeight.bold),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
+                                  ),
+                                  // Avatar avec effet "Pop" à l'entrée
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: isMe
+                                            ? PyraTheme.primaryPink
+                                            : (isHostPlayer
+                                                ? PyraTheme.primaryYellow
+                                                : Colors.transparent),
+                                        width: 1.5,
+                                      ),
+                                      boxShadow: isMe || isHostPlayer
+                                          ? [
+                                              BoxShadow(
+                                                color: (isMe
+                                                        ? PyraTheme.primaryPink
+                                                        : PyraTheme
+                                                            .primaryYellow)
+                                                    .withOpacity(0.5),
+                                                blurRadius: 8,
+                                              )
+                                            ]
+                                          : null,
+                                    ),
+                                    child: AvatarWithBorder(
+                                      emoji: player.emoji,
+                                      photoUrl: player.photoUrl,
+                                      size: avatarSize,
+                                      borderType: player.selectedBorder,
+                                    ),
+                                  ),
+
+                                  // Couronne pour l'hôte
+                                  if (isHostPlayer)
+                                    Positioned(
+                                      top: isSmallScreen ? -10 : -12,
+                                      child: Text('👑',
+                                              style: TextStyle(
+                                                  fontSize:
+                                                      isSmallScreen ? 16 : 20))
+                                          .animate(
+                                              onPlay: (c) =>
+                                                  c.repeat(reverse: true))
+                                          .slideY(
+                                              begin: 0,
+                                              end: -0.2,
+                                              duration: 1.seconds),
+                                    ),
+
+                                  // Badge de niveau
+                                  Positioned(
+                                    bottom: -2,
+                                    right: -8,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        gradient: PyraTheme.cyanGradient,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color: PyraTheme.bgDark,
+                                            width: 1.5),
+                                      ),
+                                      child: Text(
+                                        '${player.level}',
+                                        style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 8,
+                                            fontWeight: FontWeight.w900),
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Dos de carte équipé
+                                  Positioned(
+                                    bottom: -8,
+                                    left: -16,
+                                    child: Card3DShowcase(
+                                      skinId: player.activeCardBack,
+                                      width: 28,
+                                      height: 38,
                                     ),
                                   ),
                                 ],
-                              ).animate().scale(duration: 500.ms, curve: Curves.elasticOut),
+                              ),
+                              const SizedBox(height: 6),
+                              // Titre + Nom
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  children: [
+                                    if (player.activeTitle.isNotEmpty)
+                                      Text(
+                                        player.activeTitle.toUpperCase(),
+                                        style: TextStyle(
+                                            color: PyraTheme.primaryCyan,
+                                            fontSize: isSmallScreen ? 6 : 7,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.5),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    Text(
+                                      player.name
+                                          .split(' ')
+                                          .first, // Prénom uniquement
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: isSmallScreen ? 8 : 10,
+                                          fontWeight: FontWeight.bold),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ).animate().scale(
+                              duration: 500.ms, curve: Curves.elasticOut),
                         );
                       }),
                     ],
@@ -573,7 +665,6 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                 ),
               ),
             ),
-
             if (isHost)
               Padding(
                 padding: EdgeInsets.all(spaceBottom),
@@ -586,15 +677,16 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                       paddingVertical: 12,
                       fontSize: 16,
                       onPressed: () {
-                        _showInviteFriendsSheet(context, roomCode, currentUserId);
+                        _showInviteFriendsSheet(
+                            context, roomCode, currentUserId);
                       },
                     ),
                     const SizedBox(height: 16),
                     PulsarButton(
                       text: 'Démarrer la partie',
                       gradient: PyraTheme.orangeYellowGradient,
-                      onPressed: state.players.length >= 2 
-                          ? () => _startGame(state) 
+                      onPressed: state.players.length >= 2
+                          ? () => _startGame(state)
                           : null,
                     ),
                   ],
@@ -603,13 +695,17 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
             else
               Padding(
                 padding: EdgeInsets.all(spaceBottom),
-                child: const Text('En attente de l\'hôte...', style: TextStyle(color: PyraTheme.textMuted)),
+                child: const Text('En attente de l\'hôte...',
+                    style: TextStyle(color: PyraTheme.textMuted)),
               ),
           ],
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPurple)),
-      error: (err, _) => Center(child: Text('Erreur : $err', style: const TextStyle(color: Colors.red))),
+      loading: () => const Center(
+          child: CircularProgressIndicator(color: PyraTheme.primaryPurple)),
+      error: (err, _) => Center(
+          child:
+              Text('Erreur : $err', style: const TextStyle(color: Colors.red))),
     );
   }
 
@@ -618,11 +714,13 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
       width: size,
       height: size,
       color: PyraTheme.bgSurface,
-      child: Center(child: Text(emoji, style: TextStyle(fontSize: size * 0.43))),
+      child:
+          Center(child: Text(emoji, style: TextStyle(fontSize: size * 0.43))),
     );
   }
 
-  void _showInviteFriendsSheet(BuildContext context, String roomCode, String hostId) {
+  void _showInviteFriendsSheet(
+      BuildContext context, String roomCode, String hostId) {
     // On va récupérer le nom de l'hôte
     String hostName = 'Un ami';
     final user = ref.read(authStateChangesProvider).value;
@@ -644,7 +742,11 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
             children: [
               const Padding(
                 padding: EdgeInsets.all(16.0),
-                child: Text('Inviter des amis', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                child: Text('Inviter des amis',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
               ),
               Expanded(
                 child: Consumer(
@@ -653,7 +755,9 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                     return friendsAsync.when(
                       data: (friends) {
                         if (friends.isEmpty) {
-                          return const Center(child: Text('Aucun ami pour le moment.', style: TextStyle(color: Colors.white70)));
+                          return const Center(
+                              child: Text('Aucun ami pour le moment.',
+                                  style: TextStyle(color: Colors.white70)));
                         }
                         return ListView.builder(
                           itemCount: friends.length,
@@ -667,23 +771,37 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                                 size: 40,
                                 showLevel: false,
                               ),
-                              title: Text(friend.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              title: Text(friend.name,
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
                               trailing: ElevatedButton(
-                                style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryCyan),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: PyraTheme.primaryCyan),
                                 onPressed: () async {
-                                  await ref.read(friendServiceProvider).inviteToGame(friend.id, roomCode, hostName);
+                                  await ref
+                                      .read(friendServiceProvider)
+                                      .inviteToGame(
+                                          friend.id, roomCode, hostName);
                                   if (ctx.mounted) {
-                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('Invitation envoyée à ${friend.name} !')));
+                                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+                                        content: Text(
+                                            'Invitation envoyée à ${friend.name} !')));
                                   }
                                 },
-                                child: const Text('Inviter', style: TextStyle(color: Colors.white)),
+                                child: const Text('Inviter',
+                                    style: TextStyle(color: Colors.white)),
                               ),
                             );
                           },
                         );
                       },
-                      loading: () => const Center(child: CircularProgressIndicator(color: PyraTheme.primaryCyan)),
-                      error: (err, _) => Center(child: Text('Erreur: $err', style: const TextStyle(color: Colors.red))),
+                      loading: () => const Center(
+                          child: CircularProgressIndicator(
+                              color: PyraTheme.primaryCyan)),
+                      error: (err, _) => Center(
+                          child: Text('Erreur: $err',
+                              style: const TextStyle(color: Colors.red))),
                     );
                   },
                 ),
@@ -711,7 +829,11 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                const Text('Scanner un QR Code', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text('Scanner un QR Code',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 Expanded(
                   child: ClipRRect(

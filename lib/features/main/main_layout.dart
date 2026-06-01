@@ -38,7 +38,8 @@ class MainLayout extends StatelessWidget {
             begin: const Offset(0.0, 0.05),
             end: Offset.zero,
           ).animate(animation);
-          final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(animation);
+          final fadeAnimation =
+              Tween<double>(begin: 0.0, end: 1.0).animate(animation);
 
           return FadeTransition(
             opacity: fadeAnimation,
@@ -107,60 +108,63 @@ class _GlassBottomNavBar extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-        borderRadius: BorderRadius.circular(35),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _NavBarItem(
-                icon: Icons.grid_view_rounded,
-                label: 'Accueil',
-                isActive: currentIndex == 0,
-                onTap: () => onTap(0),
-              ),
-              _NavBarItem(
-                icon: Icons.menu_book_rounded,
-                label: 'Règles',
-                isActive: currentIndex == 1,
-                onTap: () => onTap(1),
-              ),
-              // Center Play Button
-              GestureDetector(
-                onTap: () {
-                  HapticFeedback.mediumImpact();
-                  onTap(2);
-                },
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: PyraTheme.cyanGradient,
-                    boxShadow: PyraTheme.glowCyan,
-                  ),
-                  child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 32),
-                ).animate(onPlay: (c) => c.repeat(reverse: true))
-                 .scale(begin: const Offset(1, 1), end: const Offset(1.05, 1.05), duration: 1500.ms),
-              ),
-              _NavBarItem(
-                icon: Icons.storefront_rounded,
-                label: 'Boutique',
-                isActive: currentIndex == 3,
-                onTap: () => onTap(3),
-              ),
-              _NavBarItem(
-                icon: Icons.settings_rounded,
-                label: 'Paramètres',
-                isActive: currentIndex == 4,
-                onTap: () => onTap(4),
-              ),
-            ],
+          borderRadius: BorderRadius.circular(35),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _NavBarItem(
+                  icon: Icons.grid_view_rounded,
+                  label: 'Accueil',
+                  isActive: currentIndex == 0,
+                  onTap: () => onTap(0),
+                ),
+                _NavBarItem(
+                  icon: Icons.menu_book_rounded,
+                  label: 'Règles',
+                  isActive: currentIndex == 1,
+                  onTap: () => onTap(1),
+                ),
+                // Center Play Button
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    onTap(2);
+                  },
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: PyraTheme.cyanGradient,
+                      boxShadow: PyraTheme.glowCyan,
+                    ),
+                    child: const Icon(Icons.play_arrow_rounded,
+                        color: Colors.white, size: 32),
+                  ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+                      begin: const Offset(1, 1),
+                      end: const Offset(1.05, 1.05),
+                      duration: 1500.ms),
+                ),
+                _NavBarItem(
+                  icon: Icons.storefront_rounded,
+                  label: 'Boutique',
+                  isActive: currentIndex == 3,
+                  onTap: () => onTap(3),
+                ),
+                _NavBarItem(
+                  icon: Icons.settings_rounded,
+                  label: 'Paramètres',
+                  isActive: currentIndex == 4,
+                  onTap: () => onTap(4),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
   }
 }
 

@@ -18,15 +18,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<Map<String, String>> _pages = [
     {
       'title': 'Bienvenue',
-      'subtitle': 'Découvre le meilleur jeu de cartes à prendre pour tes soirées entre amis.',
+      'subtitle':
+          'Découvre le meilleur jeu de cartes à prendre pour tes soirées entre amis.',
     },
     {
       'title': 'Distribue',
-      'subtitle': 'Pose des questions, distribue des pénalités et maîtrise l\'art du bluff.',
+      'subtitle':
+          'Pose des questions, distribue des pénalités et maîtrise l\'art du bluff.',
     },
     {
       'title': 'Pouvoirs',
-      'subtitle': 'Utilise des super-pouvoirs uniques pour renverser la partie !',
+      'subtitle':
+          'Utilise des super-pouvoirs uniques pour renverser la partie !',
     },
   ];
 
@@ -41,7 +44,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF6B45CC), // Violet principal de la maquette
+      backgroundColor:
+          const Color(0xFF6B45CC), // Violet principal de la maquette
       body: Stack(
         children: [
           // 1. Background Pattern (Grid/Dots)
@@ -85,7 +89,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 letterSpacing: 1.2,
                               ),
                               textAlign: TextAlign.center,
-                            ).animate(key: ValueKey(index)).fadeIn(duration: 400.ms).slideY(begin: 0.3),
+                            )
+                                .animate(key: ValueKey(index))
+                                .fadeIn(duration: 400.ms)
+                                .slideY(begin: 0.3),
                             const SizedBox(height: 16),
                             Text(
                               _pages[index]['subtitle']!,
@@ -95,7 +102,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 height: 1.5,
                               ),
                               textAlign: TextAlign.center,
-                            ).animate(key: ValueKey('sub_$index')).fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.3),
+                            )
+                                .animate(key: ValueKey('sub_$index'))
+                                .fadeIn(delay: 200.ms, duration: 400.ms)
+                                .slideY(begin: 0.3),
                           ],
                         ),
                       );
@@ -105,7 +115,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                 // 4. Page Indicators & Button
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 48, left: 24, right: 24),
+                  padding:
+                      const EdgeInsets.only(bottom: 48, left: 24, right: 24),
                   child: Column(
                     children: [
                       Row(
@@ -124,7 +135,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   foregroundColor: const Color(0xFF6B45CC),
-                                  padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 48, vertical: 16),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30),
                                   ),
@@ -132,7 +144,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 ),
                                 child: const Text(
                                   'Commencer',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ).animate().scale(curve: Curves.elasticOut)
                             : TextButton(
@@ -144,7 +158,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 },
                                 child: const Text(
                                   'Suivant',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16),
                                 ),
                               ),
                       ),
@@ -166,13 +181,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       height: 8,
       width: _currentPage == index ? 8 : 8,
       decoration: BoxDecoration(
-        color: _currentPage == index ? Colors.white : Colors.white.withOpacity(0.3),
+        color: _currentPage == index
+            ? Colors.white
+            : Colors.white.withOpacity(0.3),
         shape: BoxShape.circle,
       ),
     );
   }
 
-  Widget _buildFloatingElement(String emoji, {double? top, double? bottom, double? left, double? right, double rotation = 0}) {
+  Widget _buildFloatingElement(String emoji,
+      {double? top,
+      double? bottom,
+      double? left,
+      double? right,
+      double rotation = 0}) {
     return Positioned(
       top: top,
       bottom: bottom,
@@ -188,11 +210,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           child: Text(
             emoji,
-            style: TextStyle(fontSize: 40, color: Colors.white.withOpacity(0.9)),
+            style:
+                TextStyle(fontSize: 40, color: Colors.white.withOpacity(0.9)),
           ),
         ),
-      ).animate(onPlay: (c) => c.repeat(reverse: true))
-       .moveY(begin: -10, end: 10, duration: const Duration(seconds: 3)),
+      )
+          .animate(onPlay: (c) => c.repeat(reverse: true))
+          .moveY(begin: -10, end: 10, duration: const Duration(seconds: 3)),
     );
   }
 }
@@ -207,7 +231,7 @@ class _GridPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     const double spacing = 40.0;
-    
+
     for (double x = 0; x < size.width; x += spacing) {
       for (double y = 0; y < size.height; y += spacing) {
         canvas.drawCircle(Offset(x, y), 1.5, paint);

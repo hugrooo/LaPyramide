@@ -3,13 +3,14 @@ import 'package:firebase_database/firebase_database.dart';
 class LeaderboardService {
   final FirebaseDatabase _db = FirebaseDatabase.instance;
 
-  Future<void> savePlayerStats(String userId, String name, int sips, int bluffsWon) async {
+  Future<void> savePlayerStats(
+      String userId, String name, int sips, int bluffsWon) async {
     final ref = _db.ref('leaderboard/$userId');
     final snapshot = await ref.get();
-    
+
     int totalSips = sips;
     int totalBluffs = bluffsWon;
-    
+
     if (snapshot.exists) {
       try {
         final data = snapshot.value as Map<dynamic, dynamic>;

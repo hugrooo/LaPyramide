@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import '../auth/auth_service.dart';
 
 class UserProfile {
+  final String name;
+  final String searchName;
   final int level;
   final int xp;
   final int coins;
@@ -27,6 +29,8 @@ class UserProfile {
   final Map<String, Map<String, dynamic>> quests;
 
   UserProfile({
+    this.name = 'Utilisateur',
+    this.searchName = 'utilisateur',
     required this.level,
     required this.xp,
     required this.coins,
@@ -70,7 +74,8 @@ class UserProfile {
     if (map['cardBacks'] is List) {
       cardBacksList.addAll((map['cardBacks'] as List).map((e) => e.toString()));
     } else if (map['cardBacks'] is Map) {
-      cardBacksList.addAll((map['cardBacks'] as Map).values.map((e) => e.toString()));
+      cardBacksList
+          .addAll((map['cardBacks'] as Map).values.map((e) => e.toString()));
     }
     if (cardBacksList.isEmpty) {
       cardBacksList.add('classic');
@@ -90,9 +95,11 @@ class UserProfile {
     // Parse list of borders safely
     final List<String> bordersList = [];
     if (map['bordersOwned'] is List) {
-      bordersList.addAll((map['bordersOwned'] as List).map((e) => e.toString()));
+      bordersList
+          .addAll((map['bordersOwned'] as List).map((e) => e.toString()));
     } else if (map['bordersOwned'] is Map) {
-      bordersList.addAll((map['bordersOwned'] as Map).values.map((e) => e.toString()));
+      bordersList
+          .addAll((map['bordersOwned'] as Map).values.map((e) => e.toString()));
     }
     if (bordersList.isEmpty) {
       bordersList.add('classic'); // classic border (none)
@@ -103,7 +110,8 @@ class UserProfile {
     if (map['themesOwned'] is List) {
       themesList.addAll((map['themesOwned'] as List).map((e) => e.toString()));
     } else if (map['themesOwned'] is Map) {
-      themesList.addAll((map['themesOwned'] as Map).values.map((e) => e.toString()));
+      themesList
+          .addAll((map['themesOwned'] as Map).values.map((e) => e.toString()));
     }
     if (themesList.isEmpty) {
       themesList.add('classic'); // classic theme
@@ -124,6 +132,8 @@ class UserProfile {
     }
 
     return UserProfile(
+      name: map['name']?.toString() ?? 'Utilisateur',
+      searchName: map['searchName']?.toString() ?? 'utilisateur',
       level: (map['level'] as num? ?? 1).toInt(),
       xp: (map['xp'] as num? ?? 0).toInt(),
       coins: (map['coins'] as num? ?? 0).toInt(),
@@ -131,7 +141,8 @@ class UserProfile {
       emoji: map['emoji'] ?? '😎',
       activeCardBack: map['activeCardBack'] ?? 'classic',
       activeTitle: map['activeTitle'] ?? 'Novice 🐣',
-      lastDailyChestClaimed: (map['lastDailyChestClaimed'] as num? ?? 0).toInt(),
+      lastDailyChestClaimed:
+          (map['lastDailyChestClaimed'] as num? ?? 0).toInt(),
       drinksGiven: (map['drinksGiven'] as num? ?? 0).toInt(),
       bluffWins: (map['bluffWins'] as num? ?? 0).toInt(),
       streak: (map['streak'] as num? ?? 0).toInt(),
@@ -148,10 +159,11 @@ class UserProfile {
     );
   }
 
-  static Future<void> addGameRewards(String uid, int addedXp, int addedDrinks, int addedBluffs) async {
+  static Future<void> addGameRewards(
+      String uid, int addedXp, int addedDrinks, int addedBluffs) async {
     final dbRef = FirebaseDatabase.instance.ref('users/$uid');
     final snapshot = await dbRef.get();
-    
+
     if (snapshot.exists && snapshot.value is Map) {
       final data = snapshot.value as Map<dynamic, dynamic>;
       int currentXp = (data['xp'] as num? ?? 0).toInt();
@@ -161,7 +173,7 @@ class UserProfile {
       int currentGamesPlayed = (data['gamesPlayed'] as num? ?? 0).toInt();
 
       currentXp += addedXp;
-      
+
       // Level up logic
       while (currentXp >= currentLevel * 100) {
         currentXp -= currentLevel * 100;
@@ -181,7 +193,7 @@ class UserProfile {
   static Future<void> claimLevelReward(String uid) async {
     final dbRef = FirebaseDatabase.instance.ref('users/$uid');
     final snapshot = await dbRef.get();
-    
+
     if (snapshot.exists && snapshot.value is Map) {
       final data = snapshot.value as Map<dynamic, dynamic>;
       final int currentLevel = (data['level'] as num? ?? 1).toInt();

@@ -5,11 +5,12 @@ import 'models/player_model.dart';
 class DistributionLogic {
   static GameState processChoice({
     required GameState state,
-    required dynamic choice, // ex: CardColor, 'plus', 'moins', 'egal', 'interieur', 'exterieur', Suit
+    required dynamic
+        choice, // ex: CardColor, 'plus', 'moins', 'egal', 'interieur', 'exterieur', Suit
   }) {
     // 1. Tirer une carte du deck
     if (state.deck.isEmpty) return state; // Sécurité
-    
+
     final drawnCard = state.deck.last;
     final newDeck = List<PyraCard>.from(state.deck)..removeLast();
 
@@ -27,41 +28,39 @@ class DistributionLogic {
       final isCardRed = drawnCard.suit.isRed;
       if (colorStr == 'rouge') isCorrect = isCardRed;
       if (colorStr == 'noir') isCorrect = !isCardRed;
-    } 
-    else if (cardIndex == 1) {
+    } else if (cardIndex == 1) {
       // Plus, Moins, Égal
       final previousCard = player.hand[0];
       final option = choice as String;
       if (option == 'plus') isCorrect = drawnCard.value > previousCard.value;
       if (option == 'moins') isCorrect = drawnCard.value < previousCard.value;
       if (option == 'egal') isCorrect = drawnCard.value == previousCard.value;
-    } 
-    else if (cardIndex == 2) {
+    } else if (cardIndex == 2) {
       // Intérieur ou Extérieur
       final c1 = player.hand[0];
       final c2 = player.hand[1];
       final minVal = c1.value < c2.value ? c1.value : c2.value;
       final maxVal = c1.value > c2.value ? c1.value : c2.value;
       final option = choice as String;
-      
+
       if (option == 'interieur') {
         isCorrect = drawnCard.value > minVal && drawnCard.value < maxVal;
       } else if (option == 'exterieur') {
         isCorrect = drawnCard.value < minVal || drawnCard.value > maxVal;
       } else {
         // Variante où c'est égal à l'une des bornes (souvent on prend d'office, ou c'est faux)
-        isCorrect = false; 
+        isCorrect = false;
       }
-    } 
-    else if (cardIndex == 3) {
+    } else if (cardIndex == 3) {
       // Signe
       final suit = choice as CardSuit;
       isCorrect = drawnCard.suit == suit;
     }
 
     // 4. Mettre à jour la main du joueur
-    final updatedHand = List<PyraCard>.from(player.hand)..add(drawnCard.copyWith(isFaceUp: true));
-    
+    final updatedHand = List<PyraCard>.from(player.hand)
+      ..add(drawnCard.copyWith(isFaceUp: true));
+
     // 5. Appliquer les pénalités (si faux, le joueur prend)
     int sipsToAdd = isCorrect ? 0 : (cardIndex + 1);
     final updatedPlayer = player.copyWith(
@@ -69,7 +68,7 @@ class DistributionLogic {
       totalSips: player.totalSips + sipsToAdd,
     );
 
-    String message = isCorrect 
+    String message = isCorrect
         ? "✅ ${player.name} a juste ! Il distribue ${cardIndex + 1} pénalité(s) !"
         : "💥 ${player.name} a faux ! Il prend ${cardIndex + 1} pénalité(s) !";
 
@@ -77,7 +76,13 @@ class DistributionLogic {
     updatedPlayers[playerIndex] = updatedPlayer;
 
     if (isCorrect) {
-      final nextPending = [DrinkAssignment(fromPlayerId: player.id, toPlayerId: '', sips: cardIndex + 1, isBluff: false)];
+      final nextPending = [
+        DrinkAssignment(
+            fromPlayerId: player.id,
+            toPlayerId: '',
+            sips: cardIndex + 1,
+            isBluff: false)
+      ];
       return state.copyWith(
         deck: newDeck,
         players: updatedPlayers,
@@ -98,9 +103,11 @@ class DistributionLogic {
         if (nextCardIndex >= state.settings.cardsPerPlayer) {
           nextPhase = GamePhase.revealing;
           for (int i = 0; i < updatedPlayers.length; i++) {
-             updatedPlayers[i] = updatedPlayers[i].copyWith(
-               hand: updatedPlayers[i].hand.map((c) => c.copyWith(isFaceUp: false)).toList()
-             );
+            updatedPlayers[i] = updatedPlayers[i].copyWith(
+                hand: updatedPlayers[i]
+                    .hand
+                    .map((c) => c.copyWith(isFaceUp: false))
+                    .toList());
           }
         }
       }
@@ -113,7 +120,7 @@ class DistributionLogic {
         phase: nextPhase,
         lastEventMessage: message,
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
-        lastBluffResult: BluffResult.caught, 
+        lastBluffResult: BluffResult.caught,
       );
     }
   }
@@ -126,7 +133,7 @@ class DistributionLogic {
     if (state.pendingDrinks.isEmpty) return state;
 
     final assignment = state.pendingDrinks.first;
-    
+
     // Ajouter les pénalités à la cible
     final updatedPlayers = state.players.map((p) {
       if (p.id == targetPlayerId) {
@@ -146,14 +153,17 @@ class DistributionLogic {
       if (nextCardIndex >= state.settings.cardsPerPlayer) {
         nextPhase = GamePhase.revealing;
         for (int i = 0; i < updatedPlayers.length; i++) {
-           updatedPlayers[i] = updatedPlayers[i].copyWith(
-             hand: updatedPlayers[i].hand.map((c) => c.copyWith(isFaceUp: false)).toList()
-           );
+          updatedPlayers[i] = updatedPlayers[i].copyWith(
+              hand: updatedPlayers[i]
+                  .hand
+                  .map((c) => c.copyWith(isFaceUp: false))
+                  .toList());
         }
       }
     }
 
-    final fromPlayer = updatedPlayers.firstWhere((p) => p.id == assignment.fromPlayerId);
+    final fromPlayer =
+        updatedPlayers.firstWhere((p) => p.id == assignment.fromPlayerId);
     final toPlayer = updatedPlayers.firstWhere((p) => p.id == targetPlayerId);
 
     return state.copyWith(
@@ -162,7 +172,8 @@ class DistributionLogic {
       currentDistributionCardIndex: nextCardIndex,
       phase: nextPhase,
       pendingDrinks: [],
-      lastEventMessage: "🍻 ${fromPlayer.name} a donné ${assignment.sips} pénalité(s) à ${toPlayer.name} !",
+      lastEventMessage:
+          "🍻 ${fromPlayer.name} a donné ${assignment.sips} pénalité(s) à ${toPlayer.name} !",
       lastEventTime: DateTime.now().millisecondsSinceEpoch,
     );
   }

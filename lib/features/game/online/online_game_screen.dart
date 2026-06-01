@@ -32,23 +32,27 @@ class OnlineGameScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen<AsyncValue<GameState?>>(onlineGameStateProvider, (previous, next) {
+    ref.listen<AsyncValue<GameState?>>(onlineGameStateProvider,
+        (previous, next) {
       final oldState = previous?.value;
       final newState = next.value;
 
       if (newState != null) {
         // --- GESTION FIN DE PARTIE & RECOMPENSES ---
-        if (newState.phase == GamePhase.finished && (oldState == null || oldState.phase != GamePhase.finished)) {
+        if (newState.phase == GamePhase.finished &&
+            (oldState == null || oldState.phase != GamePhase.finished)) {
           final user = ref.read(authServiceProvider).currentUser;
           if (user != null) {
-            final me = newState.players.firstWhere((p) => p.id == user.uid, orElse: () => newState.players.first);
+            final me = newState.players.firstWhere((p) => p.id == user.uid,
+                orElse: () => newState.players.first);
             final int xpBase = 50;
             final int xpDrinks = me.drinksGiven * 5;
             final int xpBluffs = me.bluffsWon * 15;
             final int totalXp = xpBase + xpDrinks + xpBluffs;
-            
+
             // Appliquer dans Firebase
-            UserProfile.addGameRewards(user.uid, totalXp, me.drinksGiven, me.bluffsWon);
+            UserProfile.addGameRewards(
+                user.uid, totalXp, me.drinksGiven, me.bluffsWon);
 
             // Pop-up Résumé
             showDialog(
@@ -64,34 +68,50 @@ class OnlineGameScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('🏆 PARTIE TERMINÉE !', style: TextStyle(color: PyraTheme.primaryYellow, fontSize: 24, fontWeight: FontWeight.bold)),
+                      const Text('🏆 PARTIE TERMINÉE !',
+                          style: TextStyle(
+                              color: PyraTheme.primaryYellow,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold)),
                       const SizedBox(height: 16),
-                      Text('+ $totalXp XP', style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w900)),
+                      Text('+ $totalXp XP',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 40,
+                              fontWeight: FontWeight.w900)),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Column(
                             children: [
-                              const Icon(Icons.water_drop, color: PyraTheme.primaryCyan),
-                              Text('${me.drinksGiven} Pénalités', style: const TextStyle(color: Colors.white)),
+                              const Icon(Icons.water_drop,
+                                  color: PyraTheme.primaryCyan),
+                              Text('${me.drinksGiven} Pénalités',
+                                  style: const TextStyle(color: Colors.white)),
                             ],
                           ),
                           Column(
                             children: [
-                              const Icon(Icons.local_fire_department, color: PyraTheme.primaryOrange),
-                              Text('${me.bluffsWon} Bluffs', style: const TextStyle(color: Colors.white)),
+                              const Icon(Icons.local_fire_department,
+                                  color: PyraTheme.primaryOrange),
+                              Text('${me.bluffsWon} Bluffs',
+                                  style: const TextStyle(color: Colors.white)),
                             ],
                           ),
                         ],
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryPink),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: PyraTheme.primaryPink),
                         onPressed: () {
                           Navigator.pop(ctx);
                         },
-                        child: const Text('Génial !', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        child: const Text('Génial !',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
                       )
                     ],
                   ),
@@ -101,24 +121,31 @@ class OnlineGameScreen extends ConsumerWidget {
           }
         }
 
-        if (newState.lastEventTime != null && (oldState == null || oldState.lastEventTime != newState.lastEventTime)) {
-          if (newState.lastBluffResult != BluffResult.none && newState.lastPlayerRevealedCard != null) {
+        if (newState.lastEventTime != null &&
+            (oldState == null ||
+                oldState.lastEventTime != newState.lastEventTime)) {
+          if (newState.lastBluffResult != BluffResult.none &&
+              newState.lastPlayerRevealedCard != null) {
             // Afficher le résultat du bluff en grand avec l'animation Totem
             // (on utilise lastPlayerRevealedCard = la carte réelle choisie par le joueur, pas la carte de la pyramide)
             final isTruth = newState.lastBluffResult == BluffResult.success;
-            
+
             // Récupérer le skin du joueur qui a posé la carte (celui qui a initié le bluff)
             String? revealerSkin;
             if (newState.lastBlufferId != null) {
               try {
-                final revealer = newState.players.firstWhere((p) => p.id == newState.lastBlufferId);
+                final revealer = newState.players
+                    .firstWhere((p) => p.id == newState.lastBlufferId);
                 revealerSkin = revealer.activeCardBack;
               } catch (_) {}
             }
-            
-            showTotemAnimation(context, newState.lastPlayerRevealedCard!, isTruth, overrideSkin: revealerSkin);
+
+            showTotemAnimation(
+                context, newState.lastPlayerRevealedCard!, isTruth,
+                overrideSkin: revealerSkin);
           } else if (newState.lastEventMessage != null) {
-            if (newState.lastEventMessage!.startsWith('📢') || newState.lastEventMessage!.startsWith('💥')) {
+            if (newState.lastEventMessage!.startsWith('📢') ||
+                newState.lastEventMessage!.startsWith('💥')) {
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -136,18 +163,25 @@ class OnlineGameScreen extends ConsumerWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 64)
-                              .animate().shake(duration: 500.ms),
+                          const Icon(Icons.warning_amber_rounded,
+                                  color: Colors.white, size: 64)
+                              .animate()
+                              .shake(duration: 500.ms),
                           const SizedBox(height: 16),
                           Text(
                             newState.lastEventMessage!,
-                            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
                         ],
                       ),
                     ),
-                  ).animate().scale(duration: 300.ms, curve: Curves.easeOutBack);
+                  )
+                      .animate()
+                      .scale(duration: 300.ms, curve: Curves.easeOutBack);
                 },
               );
             } else {
@@ -158,10 +192,10 @@ class OnlineGameScreen extends ConsumerWidget {
                   duration: const Duration(seconds: 3),
                 ),
               );
-              }
             }
           }
         }
+      }
     });
 
     final gameStateAsync = ref.watch(onlineGameStateProvider);
@@ -183,7 +217,9 @@ class OnlineGameScreen extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Le salon a été fermé.', style: TextStyle(color: Colors.white, fontSize: 18)),
+                        const Text('Le salon a été fermé.',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 18)),
                         const SizedBox(height: 24),
                         ElevatedButton(
                           onPressed: () => context.goNamed('home'),
@@ -193,10 +229,15 @@ class OnlineGameScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                return SizedBox.expand(child: _buildGameUI(context, ref, state, user.uid));
+                return SizedBox.expand(
+                    child: _buildGameUI(context, ref, state, user.uid));
               },
-              loading: () => const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPink)),
-              error: (err, _) => Center(child: Text('Erreur: $err', style: const TextStyle(color: Colors.red))),
+              loading: () => const Center(
+                  child:
+                      CircularProgressIndicator(color: PyraTheme.primaryPink)),
+              error: (err, _) => Center(
+                  child: Text('Erreur: $err',
+                      style: const TextStyle(color: Colors.red))),
             ),
           ),
           // Bouton quitter
@@ -210,23 +251,29 @@ class OnlineGameScreen extends ConsumerWidget {
                   context: context,
                   builder: (ctx) => AlertDialog(
                     backgroundColor: PyraTheme.bgCard,
-                    title: const Text('Quitter ?', style: TextStyle(color: Colors.white)),
-                    content: const Text('Tu quitteras le salon pour de bon.', style: TextStyle(color: Colors.white70)),
+                    title: const Text('Quitter ?',
+                        style: TextStyle(color: Colors.white)),
+                    content: const Text('Tu quitteras le salon pour de bon.',
+                        style: TextStyle(color: Colors.white70)),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Annuler', style: TextStyle(color: PyraTheme.textMuted)),
+                        child: const Text('Annuler',
+                            style: TextStyle(color: PyraTheme.textMuted)),
                       ),
                       TextButton(
                         onPressed: () {
                           final roomCode = ref.read(currentRoomCodeProvider);
                           if (roomCode != null) {
-                            ref.read(onlineGameServiceProvider).leaveRoom(roomCode);
+                            ref
+                                .read(onlineGameServiceProvider)
+                                .leaveRoom(roomCode);
                           }
                           Navigator.pop(ctx);
                           context.goNamed('home');
                         },
-                        child: const Text('Quitter', style: TextStyle(color: Colors.redAccent)),
+                        child: const Text('Quitter',
+                            style: TextStyle(color: Colors.redAccent)),
                       ),
                     ],
                   ),
@@ -235,19 +282,22 @@ class OnlineGameScreen extends ConsumerWidget {
             ),
           ),
           // Bouton Taunt
-          if (gameStateAsync.value != null && gameStateAsync.value!.phase != GamePhase.setup)
+          if (gameStateAsync.value != null &&
+              gameStateAsync.value!.phase != GamePhase.setup)
             Positioned(
               bottom: 24,
               right: 24,
               child: FloatingActionButton(
                 heroTag: 'taunt_btn',
                 backgroundColor: PyraTheme.primaryPink,
-                onPressed: () => _showTauntDialog(context, ref, gameStateAsync.value!.gameId, user.uid),
+                onPressed: () => _showTauntDialog(
+                    context, ref, gameStateAsync.value!.gameId, user.uid),
                 child: const Icon(Icons.emoji_emotions, color: Colors.white),
               ),
             ),
           // Boutons Top Right (Scores & Mission)
-          if (gameStateAsync.value != null && gameStateAsync.value!.phase != GamePhase.setup)
+          if (gameStateAsync.value != null &&
+              gameStateAsync.value!.phase != GamePhase.setup)
             Positioned(
               top: 48,
               right: 16,
@@ -256,15 +306,24 @@ class OnlineGameScreen extends ConsumerWidget {
                 children: [
                   ActionChip(
                     backgroundColor: PyraTheme.bgSurface,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    avatar: const Icon(Icons.leaderboard, color: PyraTheme.primaryYellow),
-                    label: const Text('Scores', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                    avatar: const Icon(Icons.leaderboard,
+                        color: PyraTheme.primaryYellow),
+                    label: const Text('Scores',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
                     onPressed: () {
                       showScoreboard(context, gameStateAsync.value!.players);
                     },
                   ),
                   const SizedBox(width: 8),
-                  _buildSecretMissionBtn(context, gameStateAsync.value!.players.firstWhere((p) => p.id == user.uid, orElse: () => gameStateAsync.value!.players.first).secretMission),
+                  _buildSecretMissionBtn(
+                      context,
+                      gameStateAsync.value!.players
+                          .firstWhere((p) => p.id == user.uid,
+                              orElse: () => gameStateAsync.value!.players.first)
+                          .secretMission),
                 ],
               ),
             ),
@@ -273,18 +332,20 @@ class OnlineGameScreen extends ConsumerWidget {
             TauntOverlay(tauntData: gameStateAsync.value!.lastTaunt!),
 
           // Overlay Random Event
-          if (gameStateAsync.value != null && 
-              gameStateAsync.value!.currentRandomEvent != null && 
+          if (gameStateAsync.value != null &&
+              gameStateAsync.value!.currentRandomEvent != null &&
               gameStateAsync.value!.currentRandomEvent!.isNotEmpty)
             RandomEventOverlay(
               eventMap: gameStateAsync.value!.currentRandomEvent!,
-              isHost: gameStateAsync.value!.players.isNotEmpty && gameStateAsync.value!.players.first.id == user.uid,
+              isHost: gameStateAsync.value!.players.isNotEmpty &&
+                  gameStateAsync.value!.players.first.id == user.uid,
               onClose: () {
-                final hostId = gameStateAsync.value!.players.isNotEmpty ? gameStateAsync.value!.players.first.id : '';
+                final hostId = gameStateAsync.value!.players.isNotEmpty
+                    ? gameStateAsync.value!.players.first.id
+                    : '';
                 if (hostId == user.uid) {
-                   ref.read(onlineGameServiceProvider).updateGameState(
-                     gameStateAsync.value!.copyWith(currentRandomEvent: {})
-                   );
+                  ref.read(onlineGameServiceProvider).updateGameState(
+                      gameStateAsync.value!.copyWith(currentRandomEvent: {}));
                 }
               },
             ),
@@ -299,18 +360,22 @@ class OnlineGameScreen extends ConsumerWidget {
       backgroundColor: PyraTheme.bgSurface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       avatar: const Icon(Icons.security, color: PyraTheme.primaryOrange),
-      label: const Text('Mission', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      label: const Text('Mission',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       onPressed: () {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
             backgroundColor: PyraTheme.bgDark,
-            title: const Text('🕵️ Ta Mission Secrète', style: TextStyle(color: Colors.white)),
-            content: Text(mission, style: const TextStyle(color: Colors.white70, fontSize: 16)),
+            title: const Text('🕵️ Ta Mission Secrète',
+                style: TextStyle(color: Colors.white)),
+            content: Text(mission,
+                style: const TextStyle(color: Colors.white70, fontSize: 16)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Fermer', style: TextStyle(color: PyraTheme.primaryOrange)),
+                child: const Text('Fermer',
+                    style: TextStyle(color: PyraTheme.primaryOrange)),
               ),
             ],
           ),
@@ -319,7 +384,8 @@ class OnlineGameScreen extends ConsumerWidget {
     );
   }
 
-  void _showTauntDialog(BuildContext context, WidgetRef ref, String roomId, String userId) {
+  void _showTauntDialog(
+      BuildContext context, WidgetRef ref, String roomId, String userId) {
     final taunts = ['🍻', '🍅', '💩', '🤡', '💤', '🤣'];
     showModalBottomSheet(
       context: context,
@@ -331,18 +397,27 @@ class OnlineGameScreen extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Envoyer une provocation !', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+            const Text('Envoyer une provocation !',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900)),
             const SizedBox(height: 24),
             Wrap(
               spacing: 24,
               runSpacing: 24,
-              children: taunts.map((emoji) => GestureDetector(
-                onTap: () {
-                  ref.read(onlineGameServiceProvider).sendTaunt(roomId, userId, emoji);
-                  Navigator.pop(ctx);
-                },
-                child: Text(emoji, style: const TextStyle(fontSize: 48)),
-              )).toList(),
+              children: taunts
+                  .map((emoji) => GestureDetector(
+                        onTap: () {
+                          ref
+                              .read(onlineGameServiceProvider)
+                              .sendTaunt(roomId, userId, emoji);
+                          Navigator.pop(ctx);
+                        },
+                        child:
+                            Text(emoji, style: const TextStyle(fontSize: 48)),
+                      ))
+                  .toList(),
             ),
             const SizedBox(height: 24),
           ],
@@ -351,7 +426,8 @@ class OnlineGameScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildGameUI(BuildContext context, WidgetRef ref, GameState state, String currentUserId) {
+  Widget _buildGameUI(BuildContext context, WidgetRef ref, GameState state,
+      String currentUserId) {
     if (state.phase == GamePhase.distribution) {
       return DistributionScreen(state: state, currentUserId: currentUserId);
     }
@@ -360,13 +436,14 @@ class OnlineGameScreen extends ConsumerWidget {
     }
 
     final service = ref.read(onlineGameServiceProvider);
-    
+
     // Identifier l'hôte pour le contrôle du jeu (seul l'hôte révèle les cartes)
     final hostId = state.players.isNotEmpty ? state.players.first.id : '';
     final isHost = hostId == currentUserId;
-    
+
     // Identifier le joueur actuel
-    final me = state.players.firstWhere((p) => p.id == currentUserId, orElse: () => state.players.first);
+    final me = state.players.firstWhere((p) => p.id == currentUserId,
+        orElse: () => state.players.first);
 
     if (state.phase == GamePhase.miniGame) {
       return Center(
@@ -377,12 +454,20 @@ class OnlineGameScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('🎲 MINI-JEU !', style: TextStyle(color: PyraTheme.primaryYellow, fontSize: 32, fontWeight: FontWeight.bold))
-                  .animate().scale(duration: 500.ms, curve: Curves.easeOutBack),
+              const Text('🎲 MINI-JEU !',
+                      style: TextStyle(
+                          color: PyraTheme.primaryYellow,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold))
+                  .animate()
+                  .scale(duration: 500.ms, curve: Curves.easeOutBack),
               const SizedBox(height: 24),
               Text(
                 state.lastRevealedCard?.miniGameTitle ?? '',
-                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(
@@ -402,7 +487,8 @@ class OnlineGameScreen extends ConsumerWidget {
                   },
                 ),
               if (!isHost)
-                const Text('En attente de l\'hôte...', style: TextStyle(color: PyraTheme.textMuted)),
+                const Text('En attente de l\'hôte...',
+                    style: TextStyle(color: PyraTheme.textMuted)),
             ],
           ),
         ),
@@ -415,11 +501,14 @@ class OnlineGameScreen extends ConsumerWidget {
         // Phase de jeu (Titre)
         Text(
           _getPhaseTitle(state.phase),
-          style: const TextStyle(color: PyraTheme.primaryOrange, fontSize: 24, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              color: PyraTheme.primaryOrange,
+              fontSize: 24,
+              fontWeight: FontWeight.bold),
         ).animate().fadeIn().scale(),
 
         const SizedBox(height: 16),
-        
+
         // La pyramide — FittedBox garantit qu'elle tient toujours dans l'espace alloué
         // et que toutes les cartes sont cliquables (Flutter transforme les hit tests)
         Expanded(
@@ -437,40 +526,46 @@ class OnlineGameScreen extends ConsumerWidget {
                 onRevealCard: isHost && state.phase == GamePhase.revealing
                     ? () {
                         HapticFeedback.lightImpact();
-                        ref.read(randomEventProvider.notifier).tryTriggerEvent(probability: 0.2);
+                        ref
+                            .read(randomEventProvider.notifier)
+                            .tryTriggerEvent(probability: 0.2);
                         final event = ref.read(randomEventProvider);
                         ref.read(randomEventProvider.notifier).clearEvent();
                         final newState = GameLogic.revealCurrentCard(state);
                         if (event != null) {
-                           String finalDescription = event.description;
-                           List<Player> updatedPlayers = newState.players;
-                           
-                           final titleLower = event.title.toLowerCase();
-                           if ((titleLower.contains("mort") || titleLower.contains("pénalité")) && updatedPlayers.isNotEmpty) {
-                             final random = Random();
-                             final chosenPlayer = updatedPlayers[random.nextInt(updatedPlayers.length)];
-                             finalDescription = "Le jeu désigne ${chosenPlayer.emoji} ${chosenPlayer.name} au hasard qui prend 3 pénalités... Courage !";
-                             
-                             updatedPlayers = updatedPlayers.map((p) {
-                               if (p.id == chosenPlayer.id) {
-                                 return p.copyWith(totalSips: p.totalSips + 3);
-                               }
-                               return p;
-                             }).toList();
-                           }
+                          String finalDescription = event.description;
+                          List<Player> updatedPlayers = newState.players;
 
-                           service.updateGameState(newState.copyWith(
-                             players: updatedPlayers,
-                             currentRandomEvent: {
-                               'title': event.title,
-                               'description': finalDescription,
-                               'emoji': event.emoji,
-                               'type': event.type,
-                             },
-                           ));
-                         } else {
-                            service.updateGameState(newState);
-                         }
+                          final titleLower = event.title.toLowerCase();
+                          if ((titleLower.contains("mort") ||
+                                  titleLower.contains("pénalité")) &&
+                              updatedPlayers.isNotEmpty) {
+                            final random = Random();
+                            final chosenPlayer = updatedPlayers[
+                                random.nextInt(updatedPlayers.length)];
+                            finalDescription =
+                                "Le jeu désigne ${chosenPlayer.emoji} ${chosenPlayer.name} au hasard qui prend 3 pénalités... Courage !";
+
+                            updatedPlayers = updatedPlayers.map((p) {
+                              if (p.id == chosenPlayer.id) {
+                                return p.copyWith(totalSips: p.totalSips + 3);
+                              }
+                              return p;
+                            }).toList();
+                          }
+
+                          service.updateGameState(newState.copyWith(
+                            players: updatedPlayers,
+                            currentRandomEvent: {
+                              'title': event.title,
+                              'description': finalDescription,
+                              'emoji': event.emoji,
+                              'type': event.type,
+                            },
+                          ));
+                        } else {
+                          service.updateGameState(newState);
+                        }
                       }
                     : null,
               ),
@@ -489,8 +584,15 @@ class OnlineGameScreen extends ConsumerWidget {
           height: 160,
           child: PlayerHandWidget(
             player: me,
-            isInteractive: state.phase == GamePhase.bluffing && state.pendingDrinks.isNotEmpty && state.pendingDrinks.first.isBluffCalled && state.pendingDrinks.first.fromPlayerId == currentUserId, 
-            allowPeeking: state.phase != GamePhase.finished && !(state.phase == GamePhase.bluffing && state.pendingDrinks.isNotEmpty && state.pendingDrinks.first.isBluffCalled && state.pendingDrinks.first.fromPlayerId == currentUserId),
+            isInteractive: state.phase == GamePhase.bluffing &&
+                state.pendingDrinks.isNotEmpty &&
+                state.pendingDrinks.first.isBluffCalled &&
+                state.pendingDrinks.first.fromPlayerId == currentUserId,
+            allowPeeking: state.phase != GamePhase.finished &&
+                !(state.phase == GamePhase.bluffing &&
+                    state.pendingDrinks.isNotEmpty &&
+                    state.pendingDrinks.first.isBluffCalled &&
+                    state.pendingDrinks.first.fromPlayerId == currentUserId),
             onPeekCard: (index) {
               final roomCode = ref.read(currentRoomCodeProvider);
               if (roomCode != null) {
@@ -498,7 +600,11 @@ class OnlineGameScreen extends ConsumerWidget {
               }
             },
             onCardSelected: (card) {
-              if (card != null && state.phase == GamePhase.bluffing && state.pendingDrinks.isNotEmpty && state.pendingDrinks.first.isBluffCalled && state.pendingDrinks.first.fromPlayerId == currentUserId) {
+              if (card != null &&
+                  state.phase == GamePhase.bluffing &&
+                  state.pendingDrinks.isNotEmpty &&
+                  state.pendingDrinks.first.isBluffCalled &&
+                  state.pendingDrinks.first.fromPlayerId == currentUserId) {
                 // Révéler la carte pour le bluff
                 service.resolveBluff(state.gameId, card.id);
               }
@@ -510,24 +616,32 @@ class OnlineGameScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionZone(BuildContext context, WidgetRef ref, GameState state, String currentUserId, OnlineGameService service) {
+  Widget _buildActionZone(BuildContext context, WidgetRef ref, GameState state,
+      String currentUserId, OnlineGameService service) {
     final hostId = state.players.isNotEmpty ? state.players.first.id : '';
     final isHost = hostId == currentUserId;
-    final me = state.players.firstWhere((p) => p.id == currentUserId, orElse: () => state.players.first);
+    final me = state.players.firstWhere((p) => p.id == currentUserId,
+        orElse: () => state.players.first);
 
     if (state.phase == GamePhase.revealing) {
       return Center(
         child: Text(
-          isHost ? 'Appuie sur la carte à révéler !' : 'L\'hôte retourne les cartes...',
+          isHost
+              ? 'Appuie sur la carte à révéler !'
+              : 'L\'hôte retourne les cartes...',
           style: const TextStyle(color: PyraTheme.textSecondary, fontSize: 18),
-        ).animate(onPlay: (c) => c.repeat(reverse: true)).fade(duration: 1.seconds),
+        )
+            .animate(onPlay: (c) => c.repeat(reverse: true))
+            .fade(duration: 1.seconds),
       );
     }
 
     if (state.phase == GamePhase.bluffing && state.pendingDrinks.isNotEmpty) {
       final assignment = state.pendingDrinks.first;
-      final fromPlayer = state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
-      final toPlayer = state.players.firstWhere((p) => p.id == assignment.toPlayerId);
+      final fromPlayer =
+          state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
+      final toPlayer =
+          state.players.firstWhere((p) => p.id == assignment.toPlayerId);
 
       if (assignment.isBluffCalled) {
         if (assignment.fromPlayerId == currentUserId) {
@@ -537,7 +651,10 @@ class OnlineGameScreen extends ConsumerWidget {
             children: [
               Text(
                 '${toPlayer.name} a crié "Tu bluffes !" 😱\nChoisis la bonne carte dans ta main pour le prouver !',
-                style: const TextStyle(color: PyraTheme.primaryOrange, fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: PyraTheme.primaryOrange,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -553,13 +670,17 @@ class OnlineGameScreen extends ConsumerWidget {
             innerGlow: true,
             margin: const EdgeInsets.symmetric(horizontal: 24),
             padding: const EdgeInsets.all(24),
-            border: Border.all(color: PyraTheme.primaryOrange.withOpacity(0.5), width: 2),
+            border: Border.all(
+                color: PyraTheme.primaryOrange.withOpacity(0.5), width: 2),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
                   '😱 BLUFF ?!',
-                  style: TextStyle(color: PyraTheme.primaryOrange, fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: PyraTheme.primaryOrange,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
                 ).animate().shake(duration: 500.ms),
                 const SizedBox(height: 16),
                 Text(
@@ -571,7 +692,9 @@ class OnlineGameScreen extends ConsumerWidget {
                 const Text(
                   'Preuve en attente...',
                   style: TextStyle(color: Colors.white70, fontSize: 16),
-                ).animate(onPlay: (c) => c.repeat(reverse: true)).fade(duration: 1.seconds),
+                )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .fade(duration: 1.seconds),
               ],
             ),
           ).animate().fadeIn();
@@ -579,7 +702,9 @@ class OnlineGameScreen extends ConsumerWidget {
       } else {
         if (assignment.toPlayerId == currentUserId) {
           // C'est à MOI de prendre ou de refuser
-          final availablePowers = toPlayer.hand.where((c) => c.powerType != PowerType.none).toList();
+          final availablePowers = toPlayer.hand
+              .where((c) => c.powerType != PowerType.none)
+              .toList();
           return BluffDialog(
             accuser: fromPlayer,
             accused: toPlayer,
@@ -611,13 +736,17 @@ class OnlineGameScreen extends ConsumerWidget {
             innerGlow: true,
             margin: const EdgeInsets.symmetric(horizontal: 24),
             padding: const EdgeInsets.all(24),
-            border: Border.all(color: PyraTheme.primaryPink.withOpacity(0.5), width: 2),
+            border: Border.all(
+                color: PyraTheme.primaryPink.withOpacity(0.5), width: 2),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
                   '⚔️ ATTAQUE !',
-                  style: TextStyle(color: PyraTheme.primaryPink, fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: PyraTheme.primaryPink,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
                 ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack),
                 const SizedBox(height: 16),
                 Row(
@@ -633,10 +762,17 @@ class OnlineGameScreen extends ConsumerWidget {
                           borderType: fromPlayer.selectedBorder,
                         ),
                         const SizedBox(height: 4),
-                        Text(fromPlayer.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        Text(fromPlayer.name,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
                       ],
-                    ).animate().slideX(begin: -0.5, end: 0, duration: 400.ms, curve: Curves.easeOutBack),
-                    
+                    ).animate().slideX(
+                        begin: -0.5,
+                        end: 0,
+                        duration: 400.ms,
+                        curve: Curves.easeOutBack),
+
                     // Projectiles
                     Stack(
                       alignment: Alignment.center,
@@ -644,16 +780,22 @@ class OnlineGameScreen extends ConsumerWidget {
                       children: [
                         const SizedBox(width: 60, height: 40),
                         // Tir principal
-                        const Icon(Icons.flash_on_rounded, color: PyraTheme.primaryPink, size: 40)
+                        const Icon(Icons.flash_on_rounded,
+                                color: PyraTheme.primaryPink, size: 40)
                             .animate(onPlay: (c) => c.repeat())
                             .slideX(begin: -1.5, end: 1.5, duration: 600.ms)
                             .fadeIn(duration: 200.ms)
                             .fadeOut(delay: 400.ms, duration: 200.ms),
-                        
+
                         // Second tir décalé (pour l'effet de rafale)
-                        const Icon(Icons.flash_on_rounded, color: PyraTheme.primaryYellow, size: 30)
+                        const Icon(Icons.flash_on_rounded,
+                                color: PyraTheme.primaryYellow, size: 30)
                             .animate(onPlay: (c) => c.repeat())
-                            .slideX(begin: -1.5, end: 1.5, duration: 600.ms, curve: Curves.easeIn)
+                            .slideX(
+                                begin: -1.5,
+                                end: 1.5,
+                                duration: 600.ms,
+                                curve: Curves.easeIn)
                             .fadeIn(delay: 200.ms, duration: 200.ms)
                             .fadeOut(delay: 400.ms, duration: 200.ms),
                       ],
@@ -669,9 +811,14 @@ class OnlineGameScreen extends ConsumerWidget {
                           borderType: toPlayer.selectedBorder,
                         ),
                         const SizedBox(height: 4),
-                        Text(toPlayer.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        Text(toPlayer.name,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
                       ],
-                    ).animate(onPlay: (c) => c.repeat(reverse: true)).shake(hz: 8),
+                    )
+                        .animate(onPlay: (c) => c.repeat(reverse: true))
+                        .shake(hz: 8),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -691,15 +838,17 @@ class OnlineGameScreen extends ConsumerWidget {
     if (state.phase == GamePhase.finished) {
       return Center(
         child: ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryOrange),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: PyraTheme.primaryOrange),
           onPressed: () {
-             context.goNamed('scoreboard', extra: {
-                'players': state.players,
-                'isOnline': true,
-                'roomCode': state.gameId,
-             });
+            context.goNamed('scoreboard', extra: {
+              'players': state.players,
+              'isOnline': true,
+              'roomCode': state.gameId,
+            });
           },
-          child: const Text('Voir le Classement', style: TextStyle(color: Colors.white)),
+          child: const Text('Voir le Classement',
+              style: TextStyle(color: Colors.white)),
         ),
       );
     }
@@ -715,14 +864,18 @@ class OnlineGameScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                   decoration: BoxDecoration(
                     gradient: PyraTheme.orangeYellowGradient,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '🍺 ${state.currentSips} pénalité${state.currentSips > 1 ? 's' : ''}',
-                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -735,13 +888,20 @@ class OnlineGameScreen extends ConsumerWidget {
               width: double.infinity,
               child: PulsarButton(
                 paddingVertical: 11,
-                text: '🃏 Je l\'ai ! → Donner ${state.currentSips} pénalité${state.currentSips > 1 ? 's' : ''}',
+                text:
+                    '🃏 Je l\'ai ! → Donner ${state.currentSips} pénalité${state.currentSips > 1 ? 's' : ''}',
                 gradient: PyraTheme.festiveGradient,
                 onPressed: () {
-                  _showPlayerSelectionDialog(context, state, currentUserId, service);
+                  _showPlayerSelectionDialog(
+                      context, state, currentUserId, service);
                 },
               ),
-            ).animate(key: ValueKey('btn_${state.currentRow}_${state.currentCardIndex}')).slideY(begin: 0.4, end: 0, duration: 300.ms).fadeIn(),
+            )
+                .animate(
+                    key: ValueKey(
+                        'btn_${state.currentRow}_${state.currentCardIndex}'))
+                .slideY(begin: 0.4, end: 0, duration: 300.ms)
+                .fadeIn(),
 
             // Bouton Passer ce tour (disponible pour tous — invités ET hôte)
             ...[
@@ -750,7 +910,9 @@ class OnlineGameScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: PulsarButton(
                   paddingVertical: 10,
-                  text: me.hasPassedThisTurn ? '💤 Je ne joue pas ce tour ✅' : '💤 Je ne joue pas ce tour',
+                  text: me.hasPassedThisTurn
+                      ? '💤 Je ne joue pas ce tour ✅'
+                      : '💤 Je ne joue pas ce tour',
                   gradient: me.hasPassedThisTurn
                       ? const LinearGradient(
                           colors: [Color(0xFF4B5563), Color(0xFF374151)],
@@ -762,55 +924,63 @@ class OnlineGameScreen extends ConsumerWidget {
                     HapticFeedback.lightImpact();
                     final newPlayers = state.players.map((p) {
                       if (p.id == currentUserId) {
-                        return p.copyWith(hasPassedThisTurn: !p.hasPassedThisTurn);
+                        return p.copyWith(
+                            hasPassedThisTurn: !p.hasPassedThisTurn);
                       }
                       return p;
                     }).toList();
-                    
+
                     // Tous les joueurs (hôte inclus) doivent avoir coché pour passer automatiquement
-                    final allPassed = newPlayers.isNotEmpty && newPlayers.every((p) => p.hasPassedThisTurn);
-                    
+                    final allPassed = newPlayers.isNotEmpty &&
+                        newPlayers.every((p) => p.hasPassedThisTurn);
+
                     final updatedState = state.copyWith(players: newPlayers);
                     if (allPassed) {
                       HapticFeedback.mediumImpact();
                       final nextState = GameLogic.nextCard(updatedState);
-                      
+
                       if (nextState.phase == GamePhase.revealing) {
-                        ref.read(randomEventProvider.notifier).tryTriggerEvent(probability: 0.2);
+                        ref
+                            .read(randomEventProvider.notifier)
+                            .tryTriggerEvent(probability: 0.2);
                         final event = ref.read(randomEventProvider);
                         ref.read(randomEventProvider.notifier).clearEvent();
                         final newState = GameLogic.revealCurrentCard(nextState);
-                        
-                        if (event != null) {
-                           String finalDescription = event.description;
-                           List<Player> updatedPlayers = newState.players;
-                           
-                           final titleLower = event.title.toLowerCase();
-                           if ((titleLower.contains("mort") || titleLower.contains("pénalité")) && updatedPlayers.isNotEmpty) {
-                             final random = Random();
-                             final chosenPlayer = updatedPlayers[random.nextInt(updatedPlayers.length)];
-                             finalDescription = "Le jeu désigne ${chosenPlayer.emoji} ${chosenPlayer.name} au hasard qui prend 3 pénalités... Courage !";
-                             
-                             updatedPlayers = updatedPlayers.map((p) {
-                               if (p.id == chosenPlayer.id) {
-                                 return p.copyWith(totalSips: p.totalSips + 3);
-                               }
-                               return p;
-                             }).toList();
-                           }
 
-                           service.updateGameState(newState.copyWith(
-                             players: updatedPlayers,
-                             currentRandomEvent: {
-                               'title': event.title,
-                               'description': finalDescription,
-                               'emoji': event.emoji,
-                               'type': event.type,
-                             },
-                           ));
-                         } else {
-                            service.updateGameState(newState);
-                         }
+                        if (event != null) {
+                          String finalDescription = event.description;
+                          List<Player> updatedPlayers = newState.players;
+
+                          final titleLower = event.title.toLowerCase();
+                          if ((titleLower.contains("mort") ||
+                                  titleLower.contains("pénalité")) &&
+                              updatedPlayers.isNotEmpty) {
+                            final random = Random();
+                            final chosenPlayer = updatedPlayers[
+                                random.nextInt(updatedPlayers.length)];
+                            finalDescription =
+                                "Le jeu désigne ${chosenPlayer.emoji} ${chosenPlayer.name} au hasard qui prend 3 pénalités... Courage !";
+
+                            updatedPlayers = updatedPlayers.map((p) {
+                              if (p.id == chosenPlayer.id) {
+                                return p.copyWith(totalSips: p.totalSips + 3);
+                              }
+                              return p;
+                            }).toList();
+                          }
+
+                          service.updateGameState(newState.copyWith(
+                            players: updatedPlayers,
+                            currentRandomEvent: {
+                              'title': event.title,
+                              'description': finalDescription,
+                              'emoji': event.emoji,
+                              'type': event.type,
+                            },
+                          ));
+                        } else {
+                          service.updateGameState(newState);
+                        }
                       } else {
                         service.updateGameState(nextState);
                       }
@@ -819,7 +989,12 @@ class OnlineGameScreen extends ConsumerWidget {
                     }
                   },
                 ),
-              ).animate(key: ValueKey('pass_${me.hasPassedThisTurn}_${state.currentRow}_${state.currentCardIndex}')).slideY(begin: 0.4, end: 0, duration: 300.ms).fadeIn(delay: 80.ms),
+              )
+                  .animate(
+                      key: ValueKey(
+                          'pass_${me.hasPassedThisTurn}_${state.currentRow}_${state.currentCardIndex}'))
+                  .slideY(begin: 0.4, end: 0, duration: 300.ms)
+                  .fadeIn(delay: 80.ms),
             ],
 
             const SizedBox(height: 8),
@@ -836,12 +1011,17 @@ class OnlineGameScreen extends ConsumerWidget {
                   final newState = GameLogic.nextCard(state);
                   service.updateGameState(newState);
                 },
-                icon: const Icon(Icons.skip_next, color: PyraTheme.textMuted, size: 15),
+                icon: const Icon(Icons.skip_next,
+                    color: PyraTheme.textMuted, size: 15),
                 label: const Text(
                   'Personne — Tour suivant',
                   style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
                 ),
-              ).animate(key: ValueKey('next_${state.currentRow}_${state.currentCardIndex}')).fadeIn(delay: 300.ms),
+              )
+                  .animate(
+                      key: ValueKey(
+                          'next_${state.currentRow}_${state.currentCardIndex}'))
+                  .fadeIn(delay: 300.ms),
             ],
           ],
         ),
@@ -864,7 +1044,8 @@ class OnlineGameScreen extends ConsumerWidget {
         );
       } else {
         return const Center(
-          child: Text('En attente de l\'hôte pour passer au tour suivant...', style: TextStyle(color: PyraTheme.textMuted)),
+          child: Text('En attente de l\'hôte pour passer au tour suivant...',
+              style: TextStyle(color: PyraTheme.textMuted)),
         );
       }
     }
@@ -872,13 +1053,9 @@ class OnlineGameScreen extends ConsumerWidget {
     return const SizedBox();
   }
 
-  void _showPlayerSelectionDialog(
-    BuildContext context, 
-    GameState state, 
-    String myId, 
-    OnlineGameService service,
-    {bool isPigeon = false}
-  ) {
+  void _showPlayerSelectionDialog(BuildContext context, GameState state,
+      String myId, OnlineGameService service,
+      {bool isPigeon = false}) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -890,70 +1067,92 @@ class OnlineGameScreen extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'À qui donner ${isPigeon ? state.currentSips * 2 : state.currentSips} pénalités ?',
-                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  alignment: WrapAlignment.center,
-                  children: state.players.where((p) => p.id != myId).map((p) {
-                    return GestureDetector(
-                      onTap: () {
-                        HapticFeedback.lightImpact();
-                        AudioManager().playGlassClink();
-                        Navigator.pop(ctx);
-                        service.assignDrink(state.gameId, p.id, isPigeon: isPigeon);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: PyraTheme.primaryPurple.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: PyraTheme.primaryPink.withOpacity(0.5)),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'À qui donner ${isPigeon ? state.currentSips * 2 : state.currentSips} pénalités ?',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    alignment: WrapAlignment.center,
+                    children: state.players.where((p) => p.id != myId).map((p) {
+                      return GestureDetector(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          AudioManager().playGlassClink();
+                          Navigator.pop(ctx);
+                          service.assignDrink(state.gameId, p.id,
+                              isPigeon: isPigeon);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: PyraTheme.primaryPurple.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                                color: PyraTheme.primaryPink.withOpacity(0.5)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(p.emoji,
+                                  style: const TextStyle(fontSize: 24)),
+                              const SizedBox(width: 8),
+                              Text(p.name,
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(p.emoji, style: const TextStyle(fontSize: 24)),
-                            const SizedBox(width: 8),
-                            Text(p.name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
-                    ).animate().scale(curve: Curves.easeOutBack, duration: 300.ms);
-                  }).toList(),
-                ),
-              ],
+                      )
+                          .animate()
+                          .scale(curve: Curves.easeOutBack, duration: 300.ms);
+                    }).toList(),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    },
-  );
+        );
+      },
+    );
   }
 
   String _getPhaseTitle(GamePhase phase) {
     switch (phase) {
-      case GamePhase.setup: return 'Préparation...';
-      case GamePhase.distribution: return 'Le Bus 🚌';
-      case GamePhase.revealing: return 'Révélation !';
-      case GamePhase.assigning: return 'Distribution !';
-      case GamePhase.bluffing: return 'Bluff en cours...';
-      case GamePhase.transition: return 'Suivant...';
-      case GamePhase.miniGame: return 'Mini-Jeu !';
-      case GamePhase.finished: return 'Terminé !';
+      case GamePhase.setup:
+        return 'Préparation...';
+      case GamePhase.distribution:
+        return 'Le Bus 🚌';
+      case GamePhase.revealing:
+        return 'Révélation !';
+      case GamePhase.assigning:
+        return 'Distribution !';
+      case GamePhase.bluffing:
+        return 'Bluff en cours...';
+      case GamePhase.transition:
+        return 'Suivant...';
+      case GamePhase.miniGame:
+        return 'Mini-Jeu !';
+      case GamePhase.finished:
+        return 'Terminé !';
     }
   }
 
   Widget _buildPlayersPassStatus(GameState state, String currentUserId) {
     // Tous les joueurs — y compris soi-même pour visualiser son propre statut
     // On affiche tout le monde sauf soi-même (son statut est déjà visible sur le bouton)
-    final otherPlayers = state.players.where((p) => p.id != currentUserId).toList();
+    final otherPlayers =
+        state.players.where((p) => p.id != currentUserId).toList();
     if (otherPlayers.isEmpty) return const SizedBox.shrink();
 
     return Padding(
@@ -963,7 +1162,10 @@ class OnlineGameScreen extends ConsumerWidget {
         children: [
           const Text(
             'Statut des joueurs :',
-            style: TextStyle(color: PyraTheme.textMuted, fontSize: 11, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: PyraTheme.textMuted,
+                fontSize: 11,
+                fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           Wrap(
@@ -972,15 +1174,16 @@ class OnlineGameScreen extends ConsumerWidget {
             alignment: WrapAlignment.center,
             children: otherPlayers.map((p) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: p.hasPassedThisTurn 
-                      ? Colors.green.withOpacity(0.12) 
+                  color: p.hasPassedThisTurn
+                      ? Colors.green.withOpacity(0.12)
                       : Colors.white.withOpacity(0.04),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: p.hasPassedThisTurn 
-                        ? Colors.greenAccent.withOpacity(0.4) 
+                    color: p.hasPassedThisTurn
+                        ? Colors.greenAccent.withOpacity(0.4)
                         : Colors.white.withOpacity(0.08),
                     width: 1,
                   ),
@@ -991,9 +1194,11 @@ class OnlineGameScreen extends ConsumerWidget {
                     Text(p.emoji, style: const TextStyle(fontSize: 14)),
                     const SizedBox(width: 4),
                     Text(
-                      p.name, 
+                      p.name,
                       style: TextStyle(
-                        color: p.hasPassedThisTurn ? Colors.greenAccent : Colors.white70, 
+                        color: p.hasPassedThisTurn
+                            ? Colors.greenAccent
+                            : Colors.white70,
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                       ),
@@ -1090,7 +1295,10 @@ class _RandomEventOverlayState extends State<RandomEventOverlay> {
                 Text(
                   widget.eventMap['emoji'] ?? '🎲',
                   style: const TextStyle(fontSize: 80),
-                ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack).shake(delay: 500.ms),
+                )
+                    .animate()
+                    .scale(duration: 500.ms, curve: Curves.easeOutBack)
+                    .shake(delay: 500.ms),
                 const SizedBox(height: 16),
                 Text(
                   title,
@@ -1124,7 +1332,8 @@ class _RandomEventOverlayState extends State<RandomEventOverlay> {
                     ).animate().scale(duration: 300.ms)
                   else
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                       decoration: BoxDecoration(
                         color: Colors.green.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
@@ -1133,11 +1342,15 @@ class _RandomEventOverlayState extends State<RandomEventOverlay> {
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.check_circle, color: Colors.greenAccent, size: 24),
+                          Icon(Icons.check_circle,
+                              color: Colors.greenAccent, size: 24),
                           SizedBox(width: 8),
                           Text(
                             'Pouce posé ! ✅ (Sauvé !)',
-                            style: TextStyle(color: Colors.greenAccent, fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Colors.greenAccent,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -1151,11 +1364,16 @@ class _RandomEventOverlayState extends State<RandomEventOverlay> {
                     text: 'Continuer',
                     gradient: PyraTheme.festiveGradient,
                     onPressed: widget.onClose,
-                  ).animate().slideY(begin: 0.5, end: 0, duration: 300.ms, delay: 300.ms).fadeIn()
+                  )
+                      .animate()
+                      .slideY(
+                          begin: 0.5, end: 0, duration: 300.ms, delay: 300.ms)
+                      .fadeIn()
                 else if (!isThumbGame)
                   // Si ce n'est pas le jeu des pouces et qu'on n'est pas l'hôte, indicateur d'attente
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(16),
@@ -1167,12 +1385,16 @@ class _RandomEventOverlayState extends State<RandomEventOverlay> {
                         SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: PyraTheme.primaryPink),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: PyraTheme.primaryPink),
                         ),
                         SizedBox(width: 12),
                         Text(
                           "En attente de l'hôte... ⏳",
-                          style: TextStyle(color: PyraTheme.textMuted, fontSize: 15, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                              color: PyraTheme.textMuted,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),

@@ -119,7 +119,8 @@ class _PulsarButtonState extends State<PulsarButton>
                   : [
                       // Glow effect
                       BoxShadow(
-                        color: activeGradient.colors.last.withOpacity(_isPressed ? 0.8 : 0.5),
+                        color: activeGradient.colors.last
+                            .withOpacity(_isPressed ? 0.8 : 0.5),
                         blurRadius: _isPressed ? 30 : 20,
                         spreadRadius: _isPressed ? 4 : 2,
                         offset: const Offset(0, 8),
@@ -136,7 +137,8 @@ class _PulsarButtonState extends State<PulsarButton>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32),
                   gradient: isDisabled
-                      ? const LinearGradient(colors: [Color(0xFF2A2D43), Color(0xFF1E2138)])
+                      ? const LinearGradient(
+                          colors: [Color(0xFF2A2D43), Color(0xFF1E2138)])
                       : activeGradient,
                   border: Border.all(
                     color: Colors.white.withOpacity(isDisabled ? 0.05 : 0.4),
@@ -148,7 +150,8 @@ class _PulsarButtonState extends State<PulsarButton>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (widget.icon != null) ...[
-                      Icon(widget.icon, color: Colors.white, size: computedIconSize),
+                      Icon(widget.icon,
+                          color: Colors.white, size: computedIconSize),
                       const SizedBox(width: 8),
                     ],
                     Flexible(
@@ -167,16 +170,14 @@ class _PulsarButtonState extends State<PulsarButton>
                     ),
                   ],
                 ),
-              ).animate(onPlay: (c) => c.repeat(reverse: true))
-               .shimmer(
-                 duration: 3.seconds,
-                 color: Colors.white.withOpacity(0.25),
-                 angle: 45,
-                 blendMode: BlendMode.srcATop,
-               ),
+              ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(
+                    duration: 3.seconds,
+                    color: Colors.white.withOpacity(0.25),
+                    angle: 45,
+                    blendMode: BlendMode.srcATop,
+                  ),
             ),
-          ).animate(onPlay: (c) => c.repeat(reverse: true))
-              .scale(
+          ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
                 begin: const Offset(1, 1),
                 end: const Offset(1.02, 1.02),
                 duration: 2.seconds,

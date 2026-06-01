@@ -36,11 +36,11 @@ class AuthService {
       email: email,
       password: password,
     );
-    
+
     if (cred.user != null) {
       await cred.user!.updateDisplayName(pseudo);
       await cred.user!.reload();
-      
+
       await _db.ref('users/${cred.user!.uid}').update({
         'name': pseudo,
         'searchName': pseudo.toLowerCase(),
@@ -63,7 +63,7 @@ class AuthService {
       email: email,
       password: password,
     );
-    
+
     if (cred.user != null) {
       await _db.ref('users/${cred.user!.uid}').update({
         'lastLogin': ServerValue.timestamp,
@@ -83,7 +83,8 @@ class AuthService {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) return null; // L'utilisateur a annulé
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -99,7 +100,7 @@ class AuthService {
           'searchName': (cred.user!.displayName ?? 'Utilisateur').toLowerCase(),
           'lastLogin': ServerValue.timestamp,
         });
-        
+
         // Ensure default economy values exist
         final snapshot = await _db.ref('users/${cred.user!.uid}/level').get();
         if (!snapshot.exists) {
@@ -136,16 +137,17 @@ class AuthService {
         );
 
         final cred = await _auth.signInWithCredential(oauthCredential);
-        
+
         if (cred.user != null) {
           final String displayName = appleCredential.givenName != null
-              ? '${appleCredential.givenName} ${appleCredential.familyName ?? ''}'.trim()
+              ? '${appleCredential.givenName} ${appleCredential.familyName ?? ''}'
+                  .trim()
               : cred.user!.displayName ?? 'Joueur iOS';
 
           await _db.ref('users/${cred.user!.uid}').update({
             'lastLogin': ServerValue.timestamp,
           });
-          
+
           final snapshot = await _db.ref('users/${cred.user!.uid}/level').get();
           if (!snapshot.exists) {
             await _db.ref('users/${cred.user!.uid}').update({

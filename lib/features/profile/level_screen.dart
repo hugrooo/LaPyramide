@@ -22,16 +22,112 @@ class LevelScreen extends ConsumerWidget {
   const LevelScreen({super.key});
 
   // ── Firebase profile updater ────────────────────────────────────────────────
-  Future<void> _updateProfileField(String field, dynamic value, String uid) async {
+  Future<void> _updateProfileField(
+      String field, dynamic value, String uid) async {
     await FirebaseDatabase.instance.ref('users/$uid').update({field: value});
+  }
+
+  // ── Édition de pseudo ───────────────────────────────────────────────────────
+  void _showEditNameDialog(
+      BuildContext context, String uid, String currentName) {
+    HapticFeedback.mediumImpact();
+    final controller = TextEditingController(text: currentName);
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassContainer(
+          innerGlow: true,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.edit_rounded,
+                  color: PyraTheme.primaryPink, size: 48),
+              const SizedBox(height: 16),
+              const Text('Modifier le pseudo',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              GlassContainer(
+                blur: 8,
+                opacity: 0.1,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextField(
+                  controller: controller,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Nouveau pseudo',
+                    hintStyle: TextStyle(color: Colors.white54),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Annuler',
+                          style: TextStyle(color: Colors.white70)),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: PulsarButton(
+                      text: 'Valider',
+                      gradient: PyraTheme.purplePinkGradient,
+                      onPressed: () {
+                        final newName = controller.text.trim();
+                        if (newName.isNotEmpty) {
+                          FirebaseDatabase.instance.ref('users/$uid').update({
+                            'name': newName,
+                            'searchName': newName.toLowerCase(),
+                          });
+                        }
+                        Navigator.pop(ctx);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ).animate().scale(duration: 300.ms, curve: Curves.easeOutBack),
+    );
   }
 
   // ── Sélecteur d'avatar ──────────────────────────────────────────────────────
   void _showEmojiPicker(BuildContext context, String uid, String currentEmoji) {
     const emojis = [
-      '😎', '👑', '🦁', '🐱', '🐶', '🦊', '🐼', '🐸',
-      '🦄', '🍹', '🃏', '🔥', '⚡', '🎭', '💀', '🌙',
-      '🐲', '🤖', '👻', '🎯', '🍺', '🎰', '🦅', '🐯',
+      '😎',
+      '👑',
+      '🦁',
+      '🐱',
+      '🐶',
+      '🦊',
+      '🐼',
+      '🐸',
+      '🦄',
+      '🍹',
+      '🃏',
+      '🔥',
+      '⚡',
+      '🎭',
+      '💀',
+      '🌙',
+      '🐲',
+      '🤖',
+      '👻',
+      '🎯',
+      '🍺',
+      '🎰',
+      '🦅',
+      '🐯',
     ];
     HapticFeedback.mediumImpact();
     showModalBottomSheet(
@@ -71,11 +167,19 @@ class LevelScreen extends ConsumerWidget {
                     width: isSelected ? 2.5 : 1,
                   ),
                   boxShadow: isSelected
-                      ? [BoxShadow(color: PyraTheme.primaryCyan.withOpacity(0.5), blurRadius: 12)]
+                      ? [
+                          BoxShadow(
+                              color: PyraTheme.primaryCyan.withOpacity(0.5),
+                              blurRadius: 12)
+                        ]
                       : null,
                 ),
-                child: Center(child: Text(emoji, style: const TextStyle(fontSize: 26))),
-              ).animate().scale(delay: (i * 15).ms, duration: 200.ms, curve: Curves.easeOutBack),
+                child: Center(
+                    child: Text(emoji, style: const TextStyle(fontSize: 26))),
+              ).animate().scale(
+                  delay: (i * 15).ms,
+                  duration: 200.ms,
+                  curve: Curves.easeOutBack),
             );
           },
         ),
@@ -84,8 +188,8 @@ class LevelScreen extends ConsumerWidget {
   }
 
   // ── Sélecteur de titre ──────────────────────────────────────────────────────
-  void _showTitlePicker(
-      BuildContext context, String uid, String currentTitle, List<String> ownedTitles) {
+  void _showTitlePicker(BuildContext context, String uid, String currentTitle,
+      List<String> ownedTitles) {
     HapticFeedback.mediumImpact();
     showModalBottomSheet(
       context: context,
@@ -109,7 +213,8 @@ class LevelScreen extends ConsumerWidget {
               child: AnimatedContainer(
                 duration: 200.ms,
                 margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? PyraTheme.primaryPink.withOpacity(0.2)
@@ -124,7 +229,8 @@ class LevelScreen extends ConsumerWidget {
                   children: [
                     Icon(
                       Icons.military_tech_rounded,
-                      color: isSelected ? PyraTheme.primaryPink : Colors.white30,
+                      color:
+                          isSelected ? PyraTheme.primaryPink : Colors.white30,
                       size: 22,
                     ),
                     const SizedBox(width: 12),
@@ -133,7 +239,8 @@ class LevelScreen extends ConsumerWidget {
                         title,
                         style: TextStyle(
                           color: isSelected ? Colors.white : Colors.white70,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
                           fontSize: 16,
                         ),
                       ),
@@ -143,7 +250,9 @@ class LevelScreen extends ConsumerWidget {
                           color: PyraTheme.primaryPink, size: 22),
                   ],
                 ),
-              ).animate().slideX(begin: -0.2, delay: (i * 30).ms, duration: 300.ms),
+              )
+                  .animate()
+                  .slideX(begin: -0.2, delay: (i * 30).ms, duration: 300.ms),
             );
           },
         ),
@@ -152,20 +261,56 @@ class LevelScreen extends ConsumerWidget {
   }
 
   // ── Sélecteur de dos de carte ───────────────────────────────────────────────
-  void _showCardBackPicker(
-      BuildContext context, String uid, String currentBack, List<String> ownedBacks) {
+  void _showCardBackPicker(BuildContext context, String uid, String currentBack,
+      List<String> ownedBacks) {
     const backData = {
-      'classic': {'name': 'Classique Rouge', 'emoji': '🟥', 'color': Color(0xFFD72638)},
-      'neon': {'name': 'Néon Cyberpunk', 'emoji': '⚡', 'color': Color(0xFF00F5FF)},
-      'pirate': {'name': 'Pirate Doré', 'emoji': '☠️', 'color': Color(0xFFFFB703)},
-      'retro': {'name': 'Rétro Pixel', 'emoji': '👾', 'color': Color(0xFF8338EC)},
+      'classic': {
+        'name': 'Classique Rouge',
+        'emoji': '🟥',
+        'color': Color(0xFFD72638)
+      },
+      'neon': {
+        'name': 'Néon Cyberpunk',
+        'emoji': '⚡',
+        'color': Color(0xFF00F5FF)
+      },
+      'pirate': {
+        'name': 'Pirate Doré',
+        'emoji': '☠️',
+        'color': Color(0xFFFFB703)
+      },
+      'retro': {
+        'name': 'Rétro Pixel',
+        'emoji': '👾',
+        'color': Color(0xFF8338EC)
+      },
       'girl': {'name': 'Girly Rose', 'emoji': '🎀', 'color': Color(0xFFFF1493)},
-      'beta': {'name': 'Testeur Bêta', 'emoji': '🥂', 'color': Color(0xFFE040FB)},
-      'pharaoh': {'name': 'Pharaon', 'emoji': '👁️', 'color': Color(0xFFD4AF37)},
-      'casino': {'name': 'Casino Royal', 'emoji': '🎲', 'color': Color(0xFF006400)},
+      'beta': {
+        'name': 'Testeur Bêta',
+        'emoji': '🥂',
+        'color': Color(0xFFE040FB)
+      },
+      'pharaoh': {
+        'name': 'Pharaon',
+        'emoji': '👁️',
+        'color': Color(0xFFD4AF37)
+      },
+      'casino': {
+        'name': 'Casino Royal',
+        'emoji': '🎲',
+        'color': Color(0xFF006400)
+      },
       'toxic': {'name': 'Toxique', 'emoji': '🧪', 'color': Color(0xFF39FF14)},
-      'clubbing': {'name': 'Clubbing', 'emoji': '🪩', 'color': Color(0xFFFF00FF)},
-      'demon': {'name': 'Démoniaque', 'emoji': '😈', 'color': Color(0xFFFF4500)},
+      'clubbing': {
+        'name': 'Clubbing',
+        'emoji': '🪩',
+        'color': Color(0xFFFF00FF)
+      },
+      'demon': {
+        'name': 'Démoniaque',
+        'emoji': '😈',
+        'color': Color(0xFFFF4500)
+      },
       'vip': {'name': 'VIP Diamant', 'emoji': '💎', 'color': Color(0xFF80DEEA)},
     };
     HapticFeedback.mediumImpact();
@@ -195,9 +340,12 @@ class LevelScreen extends ConsumerWidget {
               child: AnimatedContainer(
                 duration: 200.ms,
                 margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(
-                  color: isSelected ? color.withOpacity(0.2) : Colors.white.withOpacity(0.05),
+                  color: isSelected
+                      ? color.withOpacity(0.2)
+                      : Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected ? color : Colors.white12,
@@ -217,7 +365,8 @@ class LevelScreen extends ConsumerWidget {
                         name,
                         style: TextStyle(
                           color: isSelected ? Colors.white : Colors.white70,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
                           fontSize: 16,
                         ),
                       ),
@@ -226,7 +375,9 @@ class LevelScreen extends ConsumerWidget {
                       Icon(Icons.check_circle_rounded, color: color, size: 22),
                   ],
                 ),
-              ).animate().slideX(begin: -0.2, delay: (i * 40).ms, duration: 300.ms),
+              )
+                  .animate()
+                  .slideX(begin: -0.2, delay: (i * 40).ms, duration: 300.ms),
             );
           },
         ),
@@ -235,8 +386,8 @@ class LevelScreen extends ConsumerWidget {
   }
 
   // ── Sélecteur de Cadre ──────────────────────────────────────────────────────
-  void _showBorderPicker(
-      BuildContext context, String uid, String currentBorder, List<String> ownedBorders) {
+  void _showBorderPicker(BuildContext context, String uid, String currentBorder,
+      List<String> ownedBorders) {
     const borderData = {
       'classic': {'name': 'Sans Cadre', 'color': Colors.grey},
       'neon': {'name': 'Néon Fluo ⚡', 'color': Color(0xFF00F5FF)},
@@ -269,9 +420,12 @@ class LevelScreen extends ConsumerWidget {
               child: AnimatedContainer(
                 duration: 200.ms,
                 margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(
-                  color: isSelected ? color.withOpacity(0.2) : Colors.white.withOpacity(0.05),
+                  color: isSelected
+                      ? color.withOpacity(0.2)
+                      : Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected ? color : Colors.white12,
@@ -280,14 +434,16 @@ class LevelScreen extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    AvatarWithBorder(emoji: '😎', size: 30, borderType: borderId),
+                    AvatarWithBorder(
+                        emoji: '😎', size: 30, borderType: borderId),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Text(
                         name,
                         style: TextStyle(
                           color: isSelected ? Colors.white : Colors.white70,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
                           fontSize: 16,
                         ),
                       ),
@@ -296,7 +452,9 @@ class LevelScreen extends ConsumerWidget {
                       Icon(Icons.check_circle_rounded, color: color, size: 22),
                   ],
                 ),
-              ).animate().slideX(begin: -0.2, delay: (i * 30).ms, duration: 300.ms),
+              )
+                  .animate()
+                  .slideX(begin: -0.2, delay: (i * 30).ms, duration: 300.ms),
             );
           },
         ),
@@ -305,13 +463,29 @@ class LevelScreen extends ConsumerWidget {
   }
 
   // ── Sélecteur de Thème Musical ──────────────────────────────────────────────
-  void _showThemePicker(
-      BuildContext context, String uid, String currentTheme, List<String> ownedThemes) {
+  void _showThemePicker(BuildContext context, String uid, String currentTheme,
+      List<String> ownedThemes) {
     const themeData = {
-      'classic': {'name': 'Musique Classique Pyramide', 'icon': Icons.music_note_rounded, 'color': Colors.grey},
-      'casino': {'name': 'Casino Royal 🎰', 'icon': Icons.casino_rounded, 'color': Color(0xFFFFB703)},
-      'clubbing': {'name': 'Clubbing 🪩', 'icon': Icons.speaker_group_rounded, 'color': Color(0xFFFF00FF)},
-      'horror': {'name': 'Tension Horrifique 🔪', 'icon': Icons.piano_rounded, 'color': Colors.redAccent},
+      'classic': {
+        'name': 'Musique Classique Pyramide',
+        'icon': Icons.music_note_rounded,
+        'color': Colors.grey
+      },
+      'casino': {
+        'name': 'Casino Royal 🎰',
+        'icon': Icons.casino_rounded,
+        'color': Color(0xFFFFB703)
+      },
+      'clubbing': {
+        'name': 'Clubbing 🪩',
+        'icon': Icons.speaker_group_rounded,
+        'color': Color(0xFFFF00FF)
+      },
+      'horror': {
+        'name': 'Tension Horrifique 🔪',
+        'icon': Icons.piano_rounded,
+        'color': Colors.redAccent
+      },
     };
     HapticFeedback.mediumImpact();
     showModalBottomSheet(
@@ -340,9 +514,12 @@ class LevelScreen extends ConsumerWidget {
               child: AnimatedContainer(
                 duration: 200.ms,
                 margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(
-                  color: isSelected ? color.withOpacity(0.2) : Colors.white.withOpacity(0.05),
+                  color: isSelected
+                      ? color.withOpacity(0.2)
+                      : Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected ? color : Colors.white12,
@@ -351,14 +528,16 @@ class LevelScreen extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(icon, color: isSelected ? color : Colors.white30, size: 22),
+                    Icon(icon,
+                        color: isSelected ? color : Colors.white30, size: 22),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Text(
                         name,
                         style: TextStyle(
                           color: isSelected ? Colors.white : Colors.white70,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
                           fontSize: 16,
                         ),
                       ),
@@ -367,7 +546,9 @@ class LevelScreen extends ConsumerWidget {
                       Icon(Icons.check_circle_rounded, color: color, size: 22),
                   ],
                 ),
-              ).animate().slideX(begin: -0.2, delay: (i * 30).ms, duration: 300.ms),
+              )
+                  .animate()
+                  .slideX(begin: -0.2, delay: (i * 30).ms, duration: 300.ms),
             );
           },
         ),
@@ -405,16 +586,32 @@ class LevelScreen extends ConsumerWidget {
           const AnimatedBackground(),
 
           // ── Néon glow coins ──────────────────────────────────────────
-          Positioned(top: -80, right: -80,
-            child: Container(width: 300, height: 300,
-              decoration: BoxDecoration(shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: PyraTheme.primaryCyan.withOpacity(0.12), blurRadius: 200, spreadRadius: 40)]),
+          Positioned(
+            top: -80,
+            right: -80,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
+                BoxShadow(
+                    color: PyraTheme.primaryCyan.withOpacity(0.12),
+                    blurRadius: 200,
+                    spreadRadius: 40)
+              ]),
             ),
           ),
-          Positioned(bottom: 100, left: -80,
-            child: Container(width: 250, height: 250,
-              decoration: BoxDecoration(shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: PyraTheme.primaryPink.withOpacity(0.10), blurRadius: 150, spreadRadius: 30)]),
+          Positioned(
+            bottom: 100,
+            left: -80,
+            child: Container(
+              width: 250,
+              height: 250,
+              decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
+                BoxShadow(
+                    color: PyraTheme.primaryPink.withOpacity(0.10),
+                    blurRadius: 150,
+                    spreadRadius: 30)
+              ]),
             ),
           ),
 
@@ -423,17 +620,22 @@ class LevelScreen extends ConsumerWidget {
               children: [
                 // ── Top Bar ─────────────────────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   child: Row(
                     children: [
                       GestureDetector(
-                        onTap: () { HapticFeedback.lightImpact(); context.pop(); },
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          context.pop();
+                        },
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.07),
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.1)),
                           ),
                           child: const Icon(Icons.arrow_back_ios_new_rounded,
                               color: Colors.white, size: 18),
@@ -441,19 +643,25 @@ class LevelScreen extends ConsumerWidget {
                       ),
                       const Expanded(
                         child: Text('Mon Profil',
-                          style: TextStyle(color: Colors.white, fontSize: 22,
-                              fontWeight: FontWeight.w900),
-                          textAlign: TextAlign.center),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900),
+                            textAlign: TextAlign.center),
                       ),
                       // Raccourci vers Paramètres
                       GestureDetector(
-                        onTap: () { HapticFeedback.lightImpact(); context.goNamed('settings'); },
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          context.goNamed('settings');
+                        },
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.07),
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.1)),
                           ),
                           child: const Icon(Icons.settings_outlined,
                               color: Colors.white70, size: 18),
@@ -469,7 +677,6 @@ class LevelScreen extends ConsumerWidget {
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
                     physics: const BouncingScrollPhysics(),
                     children: [
-
                       // ── Avatar + Halo ──────────────────────────────────
                       Center(
                         child: Stack(
@@ -477,59 +684,83 @@ class LevelScreen extends ConsumerWidget {
                           children: [
                             // Halo externe pulsant
                             Container(
-                              width: 160, height: 160,
+                              width: 160,
+                              height: 160,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 boxShadow: [
-                                  BoxShadow(color: PyraTheme.primaryCyan.withOpacity(0.25),
-                                      blurRadius: 50, spreadRadius: 15),
-                                  BoxShadow(color: PyraTheme.primaryPink.withOpacity(0.15),
-                                      blurRadius: 70, spreadRadius: 25),
+                                  BoxShadow(
+                                      color: PyraTheme.primaryCyan
+                                          .withOpacity(0.25),
+                                      blurRadius: 50,
+                                      spreadRadius: 15),
+                                  BoxShadow(
+                                      color: PyraTheme.primaryPink
+                                          .withOpacity(0.15),
+                                      blurRadius: 70,
+                                      spreadRadius: 25),
                                 ],
                               ),
-                            ).animate(onPlay: (c) => c.repeat(reverse: true))
-                             .scale(duration: 2500.ms, begin: const Offset(1, 1),
-                                end: const Offset(1.08, 1.08), curve: Curves.easeInOut),
+                            )
+                                .animate(onPlay: (c) => c.repeat(reverse: true))
+                                .scale(
+                                    duration: 2500.ms,
+                                    begin: const Offset(1, 1),
+                                    end: const Offset(1.08, 1.08),
+                                    curve: Curves.easeInOut),
 
                             // Anneau XP
                             SizedBox(
-                              width: 164, height: 164,
+                              width: 164,
+                              height: 164,
                               child: CircularProgressIndicator(
                                 value: progress,
                                 strokeWidth: 7,
                                 backgroundColor: Colors.white.withOpacity(0.05),
-                                valueColor: const AlwaysStoppedAnimation<Color>(PyraTheme.primaryCyan),
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                    PyraTheme.primaryCyan),
                                 strokeCap: StrokeCap.round,
                               ),
                             ).animate().custom(
-                              duration: 1200.ms,
-                              curve: Curves.easeOutCubic,
-                              builder: (_, v, child) => child!, // Juste pour le trigger
-                            ),
+                                  duration: 1200.ms,
+                                  curve: Curves.easeOutCubic,
+                                  builder: (_, v, child) =>
+                                      child!, // Juste pour le trigger
+                                ),
 
                             // Avatar
                             GestureDetector(
                               onTap: user != null && profile != null
-                                  ? () => _showEmojiPicker(context, user.uid, profile.emoji)
+                                  ? () => _showEmojiPicker(
+                                      context, user.uid, profile.emoji)
                                   : null,
                               child: Container(
-                                width: 136, height: 136,
+                                width: 136,
+                                height: 136,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: PyraTheme.bgSurface,
                                   border: Border.all(
-                                    color: PyraTheme.primaryCyan.withOpacity(0.3),
+                                    color:
+                                        PyraTheme.primaryCyan.withOpacity(0.3),
                                     width: 2,
                                   ),
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    AvatarWithBorder(emoji: profile?.emoji ?? '😎', size: 56, borderType: profile?.selectedBorder ?? 'classic'),
+                                    AvatarWithBorder(
+                                        emoji: profile?.emoji ?? '😎',
+                                        size: 56,
+                                        borderType: profile?.selectedBorder ??
+                                            'classic'),
                                     const SizedBox(height: 2),
-                                    const Text('Modifier',
-                                      style: TextStyle(color: PyraTheme.primaryCyan,
-                                          fontSize: 10, fontWeight: FontWeight.bold),
+                                    const Text(
+                                      'Modifier',
+                                      style: TextStyle(
+                                          color: PyraTheme.primaryCyan,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
@@ -538,37 +769,70 @@ class LevelScreen extends ConsumerWidget {
 
                             // Badge niveau
                             Positioned(
-                              bottom: 4, right: 4,
+                              bottom: 4,
+                              right: 4,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
                                 decoration: BoxDecoration(
                                   gradient: PyraTheme.cyanGradient,
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: PyraTheme.glowCyan,
                                 ),
-                                child: Text('Niv. $level',
-                                  style: const TextStyle(color: Colors.black,
-                                      fontSize: 12, fontWeight: FontWeight.w900),
+                                child: Text(
+                                  'Niv. $level',
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w900),
                                 ),
                               ),
                             ),
                           ],
                         ),
-                      ).animate().scale(duration: 700.ms, curve: Curves.easeOutBack),
+                      )
+                          .animate()
+                          .scale(duration: 700.ms, curve: Curves.easeOutBack),
 
                       const SizedBox(height: 20),
 
                       // ── Nom + Titre ────────────────────────────────────
                       Column(
                         children: [
-                          Text(
-                            user?.displayName ?? 'Joueur Inconnu',
-                            style: const TextStyle(color: Colors.white,
-                                fontSize: 26, fontWeight: FontWeight.w900),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                profile?.name ??
+                                    user?.displayName ??
+                                    'Joueur Inconnu',
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.w900),
+                              ),
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () => _showEditNameDialog(
+                                    context,
+                                    user!.uid,
+                                    profile?.name ?? user?.displayName ?? ''),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.edit_rounded,
+                                      color: Colors.white70, size: 16),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 7),
                             decoration: BoxDecoration(
                               gradient: PyraTheme.purplePinkGradient,
                               borderRadius: BorderRadius.circular(20),
@@ -576,8 +840,11 @@ class LevelScreen extends ConsumerWidget {
                             ),
                             child: Text(
                               displayTitle.toUpperCase(),
-                              style: const TextStyle(color: Colors.white,
-                                  fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.8),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.8),
                             ),
                           ),
                         ],
@@ -596,9 +863,12 @@ class LevelScreen extends ConsumerWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text('Progression',
-                                  style: TextStyle(color: Colors.white70,
-                                      fontSize: 13, fontWeight: FontWeight.bold)),
-                                NeoBadge(text: 'Niv. $level → ${level + 1}',
+                                    style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold)),
+                                NeoBadge(
+                                    text: 'Niv. $level → ${level + 1}',
                                     gradient: PyraTheme.cyanGradient),
                               ],
                             ),
@@ -607,10 +877,14 @@ class LevelScreen extends ConsumerWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('${numberFormat.format(xp)} XP',
-                                  style: const TextStyle(color: PyraTheme.primaryCyan,
-                                      fontSize: 22, fontWeight: FontWeight.w900)),
-                                Text('/ ${numberFormat.format(xpNeededForNext)} XP',
-                                  style: const TextStyle(color: Colors.white38, fontSize: 13)),
+                                    style: const TextStyle(
+                                        color: PyraTheme.primaryCyan,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w900)),
+                                Text(
+                                    '/ ${numberFormat.format(xpNeededForNext)} XP',
+                                    style: const TextStyle(
+                                        color: Colors.white38, fontSize: 13)),
                               ],
                             ),
                             const SizedBox(height: 10),
@@ -624,8 +898,9 @@ class LevelScreen extends ConsumerWidget {
                                   value: val,
                                   minHeight: 10,
                                   backgroundColor: Colors.white10,
-                                  valueColor: const AlwaysStoppedAnimation<Color>(
-                                      PyraTheme.primaryCyan),
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                          PyraTheme.primaryCyan),
                                 ),
                               ),
                             ),
@@ -641,7 +916,8 @@ class LevelScreen extends ConsumerWidget {
                           _StatCard(
                             icon: '🎮',
                             label: 'Parties',
-                            value: numberFormat.format(profile?.gamesPlayed ?? 0),
+                            value:
+                                numberFormat.format(profile?.gamesPlayed ?? 0),
                             color: PyraTheme.primaryCyan,
                             delay: 400,
                           ),
@@ -657,7 +933,8 @@ class LevelScreen extends ConsumerWidget {
                           _StatCard(
                             icon: '🍺',
                             label: 'Pénalités',
-                            value: numberFormat.format(profile?.drinksGiven ?? 0),
+                            value:
+                                numberFormat.format(profile?.drinksGiven ?? 0),
                             color: PyraTheme.primaryOrange,
                             delay: 540,
                           ),
@@ -675,7 +952,8 @@ class LevelScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
 
                       // ── Section Mon Apparence ──────────────────────────
-                      _SectionHeader(label: 'MON APPARENCE',
+                      _SectionHeader(
+                          label: 'MON APPARENCE',
                           color: PyraTheme.primaryPurple),
 
                       const SizedBox(height: 12),
@@ -689,30 +967,36 @@ class LevelScreen extends ConsumerWidget {
                               child: GestureDetector(
                                 onTap: () {
                                   HapticFeedback.selectionClick();
-                                  _showEmojiPicker(context, user.uid, profile.emoji);
+                                  _showEmojiPicker(
+                                      context, user.uid, profile.emoji);
                                 },
                                 child: GlassContainer(
                                   padding: const EdgeInsets.all(16),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                      color: PyraTheme.primaryCyan.withOpacity(0.35)),
+                                      color: PyraTheme.primaryCyan
+                                          .withOpacity(0.35)),
                                   child: Column(
                                     children: [
                                       Text(profile.emoji,
                                           style: const TextStyle(fontSize: 38)),
                                       const SizedBox(height: 8),
                                       const Text('Avatar',
-                                        style: TextStyle(color: Colors.white54,
-                                            fontSize: 11)),
+                                          style: TextStyle(
+                                              color: Colors.white54,
+                                              fontSize: 11)),
                                       const SizedBox(height: 3),
                                       const Text('Changer →',
-                                        style: TextStyle(color: PyraTheme.primaryCyan,
-                                            fontSize: 11, fontWeight: FontWeight.bold)),
+                                          style: TextStyle(
+                                              color: PyraTheme.primaryCyan,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold)),
                                     ],
                                   ),
                                 ),
                               ).animate().fadeIn(delay: 650.ms).scale(
-                                  begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack),
+                                  begin: const Offset(0.9, 0.9),
+                                  curve: Curves.easeOutBack),
                             ),
 
                             const SizedBox(width: 10),
@@ -730,33 +1014,42 @@ class LevelScreen extends ConsumerWidget {
                                   padding: const EdgeInsets.all(16),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                      color: PyraTheme.primaryPink.withOpacity(0.35)),
+                                      color: PyraTheme.primaryPink
+                                          .withOpacity(0.35)),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Icon(Icons.military_tech_rounded,
-                                          color: PyraTheme.primaryPink, size: 28),
+                                          color: PyraTheme.primaryPink,
+                                          size: 28),
                                       const SizedBox(height: 8),
                                       const Text('Titre actif',
-                                        style: TextStyle(color: Colors.white54,
-                                            fontSize: 11)),
+                                          style: TextStyle(
+                                              color: Colors.white54,
+                                              fontSize: 11)),
                                       const SizedBox(height: 4),
                                       Text(
                                         profile.activeTitle,
-                                        style: const TextStyle(color: Colors.white,
-                                            fontWeight: FontWeight.bold, fontSize: 14),
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 4),
                                       const Text('Changer →',
-                                        style: TextStyle(color: PyraTheme.primaryPink,
-                                            fontSize: 11, fontWeight: FontWeight.bold)),
+                                          style: TextStyle(
+                                              color: PyraTheme.primaryPink,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold)),
                                     ],
                                   ),
                                 ),
                               ).animate().fadeIn(delay: 700.ms).scale(
-                                  begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack),
+                                  begin: const Offset(0.9, 0.9),
+                                  curve: Curves.easeOutBack),
                             ),
                           ],
                         ),
@@ -775,7 +1068,8 @@ class LevelScreen extends ConsumerWidget {
                                 horizontal: 20, vertical: 16),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                                color: PyraTheme.primaryYellow.withOpacity(0.35)),
+                                color:
+                                    PyraTheme.primaryYellow.withOpacity(0.35)),
                             child: Row(
                               children: [
                                 Card3DShowcase(
@@ -786,16 +1080,20 @@ class LevelScreen extends ConsumerWidget {
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Text('Dos de Carte',
-                                        style: TextStyle(color: Colors.white54,
-                                            fontSize: 12)),
+                                          style: TextStyle(
+                                              color: Colors.white54,
+                                              fontSize: 12)),
                                       const SizedBox(height: 3),
                                       Text(
                                         backDisplayName,
-                                        style: const TextStyle(color: Colors.white,
-                                            fontWeight: FontWeight.bold, fontSize: 15),
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15),
                                       ),
                                     ],
                                   ),
@@ -823,20 +1121,29 @@ class LevelScreen extends ConsumerWidget {
                                 color: PyraTheme.primaryCyan.withOpacity(0.35)),
                             child: Row(
                               children: [
-                                AvatarWithBorder(emoji: '😎', size: 44, borderType: profile.selectedBorder),
+                                AvatarWithBorder(
+                                    emoji: '😎',
+                                    size: 44,
+                                    borderType: profile.selectedBorder),
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Text('Cadre d\'Avatar',
-                                        style: TextStyle(color: Colors.white54,
-                                            fontSize: 12)),
+                                          style: TextStyle(
+                                              color: Colors.white54,
+                                              fontSize: 12)),
                                       const SizedBox(height: 3),
                                       Text(
-                                        profile.selectedBorder == 'classic' ? 'Sans Cadre' : 'Spécial',
-                                        style: const TextStyle(color: Colors.white,
-                                            fontWeight: FontWeight.bold, fontSize: 15),
+                                        profile.selectedBorder == 'classic'
+                                            ? 'Sans Cadre'
+                                            : 'Spécial',
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15),
                                       ),
                                     ],
                                   ),
@@ -872,21 +1179,28 @@ class LevelScreen extends ConsumerWidget {
                                     color: Colors.white.withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.music_note_rounded, color: PyraTheme.primaryPink),
+                                  child: const Icon(Icons.music_note_rounded,
+                                      color: PyraTheme.primaryPink),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Text('Thème Musical',
-                                        style: TextStyle(color: Colors.white54,
-                                            fontSize: 12)),
+                                          style: TextStyle(
+                                              color: Colors.white54,
+                                              fontSize: 12)),
                                       const SizedBox(height: 3),
                                       Text(
-                                        profile.selectedTheme == 'classic' ? 'Classique' : 'Spécial',
-                                        style: const TextStyle(color: Colors.white,
-                                            fontWeight: FontWeight.bold, fontSize: 15),
+                                        profile.selectedTheme == 'classic'
+                                            ? 'Classique'
+                                            : 'Spécial',
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15),
                                       ),
                                     ],
                                   ),
@@ -902,7 +1216,8 @@ class LevelScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
 
                       // ── Récompense de niveau ───────────────────────────
-                      _SectionHeader(label: 'RÉCOMPENSE', color: PyraTheme.primaryYellow),
+                      _SectionHeader(
+                          label: 'RÉCOMPENSE', color: PyraTheme.primaryYellow),
                       const SizedBox(height: 12),
 
                       if (hasRewardToClaim)
@@ -939,15 +1254,22 @@ class LevelScreen extends ConsumerWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('Récompense Niv. ${level + 1}',
-                                      style: const TextStyle(color: Colors.white54,
-                                          fontSize: 13, fontWeight: FontWeight.bold)),
+                                        style: const TextStyle(
+                                            color: Colors.white54,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold)),
                                     const Text('+200 Pièces & +10 Diamants',
-                                      style: TextStyle(color: Colors.white,
-                                          fontSize: 16, fontWeight: FontWeight.w900)),
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w900)),
                                     const SizedBox(height: 4),
-                                    Text('Atteins le niveau ${level + 1} pour débloquer',
-                                      style: const TextStyle(color: PyraTheme.primaryYellow,
-                                          fontSize: 11, fontWeight: FontWeight.bold)),
+                                    Text(
+                                        'Atteins le niveau ${level + 1} pour débloquer',
+                                        style: const TextStyle(
+                                            color: PyraTheme.primaryYellow,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                               ),
@@ -965,7 +1287,8 @@ class LevelScreen extends ConsumerWidget {
     );
   }
 
-  void _showRewardDialog(BuildContext context, int coins, int diamonds, int lvl) {
+  void _showRewardDialog(
+      BuildContext context, int coins, int diamonds, int lvl) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -976,29 +1299,36 @@ class LevelScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.card_giftcard_rounded,
-                color: PyraTheme.primaryYellow, size: 52)
-                .animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+                    color: PyraTheme.primaryYellow, size: 52)
+                .animate()
+                .scale(duration: 600.ms, curve: Curves.easeOutBack),
             const SizedBox(height: 12),
             Text('Niveau $lvl Atteint !',
-              style: const TextStyle(color: Colors.white,
-                  fontWeight: FontWeight.w900, fontSize: 22),
-              textAlign: TextAlign.center),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 22),
+                textAlign: TextAlign.center),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('Récompense débloquée :',
-              style: TextStyle(color: Colors.white70),
-              textAlign: TextAlign.center),
+                style: TextStyle(color: Colors.white70),
+                textAlign: TextAlign.center),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _RewardChip(amount: '+$coins', icon: Icons.monetization_on_rounded,
+                _RewardChip(
+                    amount: '+$coins',
+                    icon: Icons.monetization_on_rounded,
                     color: PyraTheme.primaryYellow),
                 const SizedBox(width: 12),
-                _RewardChip(amount: '+$diamonds', icon: Icons.diamond_rounded,
+                _RewardChip(
+                    amount: '+$diamonds',
+                    icon: Icons.diamond_rounded,
                     color: PyraTheme.primaryCyan),
               ],
             ),
@@ -1007,12 +1337,16 @@ class LevelScreen extends ConsumerWidget {
         actionsAlignment: MainAxisAlignment.center,
         actions: [
           PulsarButton(
-            text: 'Génial !', paddingHorizontal: 32, width: 160,
+            text: 'Génial !',
+            paddingHorizontal: 32,
+            width: 160,
             gradient: PyraTheme.festiveGradient,
             onPressed: () => Navigator.pop(ctx),
           ),
         ],
-      ).animate().scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack),
+      )
+          .animate()
+          .scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack),
     );
   }
 }
@@ -1026,11 +1360,14 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(left: 4),
-    child: Text(label,
-      style: TextStyle(color: color, fontSize: 11,
-          fontWeight: FontWeight.w900, letterSpacing: 2.5)),
-  );
+        padding: const EdgeInsets.only(left: 4),
+        child: Text(label,
+            style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2.5)),
+      );
 }
 
 class _StatCard extends StatelessWidget {
@@ -1039,29 +1376,37 @@ class _StatCard extends StatelessWidget {
   final String value;
   final Color color;
   final int delay;
-  const _StatCard({required this.icon, required this.label,
-    required this.value, required this.color, required this.delay});
+  const _StatCard(
+      {required this.icon,
+      required this.label,
+      required this.value,
+      required this.color,
+      required this.delay});
 
   @override
   Widget build(BuildContext context) => Expanded(
-    child: GlassContainer(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: color.withOpacity(0.2)),
-      child: Column(
-        children: [
-          Text(icon, style: const TextStyle(fontSize: 22)),
-          const SizedBox(height: 6),
-          Text(value, style: TextStyle(color: color,
-              fontSize: 18, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 2),
-          Text(label, style: const TextStyle(color: Colors.white38,
-              fontSize: 9), textAlign: TextAlign.center),
-        ],
-      ),
-    ).animate().fadeIn(delay: Duration(milliseconds: delay)).scale(
-        begin: const Offset(0.8, 0.8), curve: Curves.easeOutBack),
-  );
+        child: GlassContainer(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: color.withOpacity(0.2)),
+          child: Column(
+            children: [
+              Text(icon, style: const TextStyle(fontSize: 22)),
+              const SizedBox(height: 6),
+              Text(value,
+                  style: TextStyle(
+                      color: color, fontSize: 18, fontWeight: FontWeight.w900)),
+              const SizedBox(height: 2),
+              Text(label,
+                  style: const TextStyle(color: Colors.white38, fontSize: 9),
+                  textAlign: TextAlign.center),
+            ],
+          ),
+        )
+            .animate()
+            .fadeIn(delay: Duration(milliseconds: delay))
+            .scale(begin: const Offset(0.8, 0.8), curve: Curves.easeOutBack),
+      );
 }
 
 class _RewardCard extends StatelessWidget {
@@ -1071,79 +1416,106 @@ class _RewardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-    onTap: onClaim,
-    child: Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFB703), Color(0xFFFB8500)],
-          begin: Alignment.topLeft, end: Alignment.bottomRight,
-        ),
-        boxShadow: [BoxShadow(
-          color: const Color(0xFFFB8500).withOpacity(0.4),
-          blurRadius: 24, spreadRadius: 2, offset: const Offset(0, 8),
-        )],
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          const Icon(Icons.card_giftcard_rounded, color: Colors.white, size: 40)
-              .animate(onPlay: (c) => c.repeat(reverse: true))
-              .scale(begin: const Offset(1, 1), end: const Offset(1.12, 1.12),
-                  duration: 800.ms),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Niv. $rewardLevel Disponible !',
-                  style: const TextStyle(color: Colors.white,
-                      fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                const SizedBox(height: 4),
-                const Text('+200 Pièces & +10 Diamants',
-                  style: TextStyle(color: Colors.white,
-                      fontSize: 18, fontWeight: FontWeight.w900)),
-                const SizedBox(height: 6),
-                const Text('🎁 TOUCHER POUR RÉCUPÉRER',
-                  style: TextStyle(color: Colors.white70,
-                      fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
-              ],
+        onTap: onClaim,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFFB703), Color(0xFFFB8500)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFFB8500).withOpacity(0.4),
+                blurRadius: 24,
+                spreadRadius: 2,
+                offset: const Offset(0, 8),
+              )
+            ],
           ),
-        ],
-      ),
-    ).animate(onPlay: (c) => c.repeat(reverse: true))
-     .shimmer(duration: 3.seconds, color: Colors.white.withOpacity(0.3),
-         angle: 45, blendMode: BlendMode.srcATop)
-     .animate(onPlay: (c) => c.repeat(reverse: true))
-     .scale(begin: const Offset(1, 1), end: const Offset(1.02, 1.02),
-         duration: 2.seconds, curve: Curves.easeInOut),
-  );
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              const Icon(Icons.card_giftcard_rounded,
+                      color: Colors.white, size: 40)
+                  .animate(onPlay: (c) => c.repeat(reverse: true))
+                  .scale(
+                      begin: const Offset(1, 1),
+                      end: const Offset(1.12, 1.12),
+                      duration: 800.ms),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Niv. $rewardLevel Disponible !',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5)),
+                    const SizedBox(height: 4),
+                    const Text('+200 Pièces & +10 Diamants',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900)),
+                    const SizedBox(height: 6),
+                    const Text('🎁 TOUCHER POUR RÉCUPÉRER',
+                        style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
+            .animate(onPlay: (c) => c.repeat(reverse: true))
+            .shimmer(
+                duration: 3.seconds,
+                color: Colors.white.withOpacity(0.3),
+                angle: 45,
+                blendMode: BlendMode.srcATop)
+            .animate(onPlay: (c) => c.repeat(reverse: true))
+            .scale(
+                begin: const Offset(1, 1),
+                end: const Offset(1.02, 1.02),
+                duration: 2.seconds,
+                curve: Curves.easeInOut),
+      );
 }
 
 class _RewardChip extends StatelessWidget {
   final String amount;
   final IconData icon;
   final Color color;
-  const _RewardChip({required this.amount, required this.icon, required this.color});
+  const _RewardChip(
+      {required this.amount, required this.icon, required this.color});
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-    decoration: BoxDecoration(
-      color: color.withOpacity(0.15),
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: color.withOpacity(0.4)),
-    ),
-    child: Row(
-      children: [
-        Text(amount, style: const TextStyle(color: Colors.white,
-            fontWeight: FontWeight.bold, fontSize: 18)),
-        const SizedBox(width: 6),
-        Icon(icon, color: color, size: 20),
-      ],
-    ),
-  );
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withOpacity(0.4)),
+        ),
+        child: Row(
+          children: [
+            Text(amount,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18)),
+            const SizedBox(width: 6),
+            Icon(icon, color: color, size: 20),
+          ],
+        ),
+      );
 }
 
 // ── Bottom Sheet générique pour les pickers ─────────────────────────────────
@@ -1154,25 +1526,31 @@ class _AppearanceSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    decoration: BoxDecoration(
-      color: PyraTheme.bgCard.withOpacity(0.95),
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-      border: Border.all(color: Colors.white.withOpacity(0.08)),
-    ),
-    padding: EdgeInsets.fromLTRB(
-        24, 16, 24, MediaQuery.of(context).viewInsets.bottom + 32),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(width: 40, height: 4,
-          decoration: BoxDecoration(color: Colors.white24,
-              borderRadius: BorderRadius.circular(2))),
-        const SizedBox(height: 20),
-        Text(title, style: const TextStyle(color: Colors.white,
-            fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 20),
-        child,
-      ],
-    ),
-  );
+        decoration: BoxDecoration(
+          color: PyraTheme.bgCard.withOpacity(0.95),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          border: Border.all(color: Colors.white.withOpacity(0.08)),
+        ),
+        padding: EdgeInsets.fromLTRB(
+            24, 16, 24, MediaQuery.of(context).viewInsets.bottom + 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 20),
+            Text(title,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            child,
+          ],
+        ),
+      );
 }

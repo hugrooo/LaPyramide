@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import '../../app/theme.dart';
 import '../../shared/widgets/glass_container.dart';
 import '../../shared/widgets/pulsar_button.dart';
@@ -41,7 +42,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   Future<void> _submit() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) return;
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty)
+      return;
     if (!_isLogin && _nameController.text.isEmpty) return;
 
     setState(() => _isLoading = true);
@@ -88,12 +90,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   String _translateAuthError(dynamic error) {
     if (error is FirebaseAuthException) {
       switch (error.code) {
-        case 'user-not-found': return 'Aucun utilisateur trouvé avec cet email.';
-        case 'wrong-password': return 'Mot de passe incorrect.';
-        case 'email-already-in-use': return 'Cet email est déjà utilisé par un autre compte.';
-        case 'weak-password': return 'Le mot de passe doit contenir au moins 6 caractères.';
-        case 'invalid-email': return 'L\'adresse email n\'est pas valide.';
-        default: return 'Une erreur est survenue lors de l\'authentification.';
+        case 'user-not-found':
+          return 'Aucun utilisateur trouvé avec cet email.';
+        case 'wrong-password':
+          return 'Mot de passe incorrect.';
+        case 'email-already-in-use':
+          return 'Cet email est déjà utilisé par un autre compte.';
+        case 'weak-password':
+          return 'Le mot de passe doit contenir au moins 6 caractères.';
+        case 'invalid-email':
+          return 'L\'adresse email n\'est pas valide.';
+        default:
+          return 'Une erreur est survenue lors de l\'authentification.';
       }
     }
     return 'Erreur inattendue. Veuillez réessayer.';
@@ -108,14 +116,20 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         child: GlassContainer(
           innerGlow: true,
           padding: const EdgeInsets.all(24),
-          border: Border.all(color: Colors.redAccent.withOpacity(0.5), width: 2),
+          border:
+              Border.all(color: Colors.redAccent.withOpacity(0.5), width: 2),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.error_rounded, color: Colors.redAccent, size: 48)
-                .animate().shake(duration: 400.ms),
+                  .animate()
+                  .shake(duration: 400.ms),
               const SizedBox(height: 16),
-              const Text('Erreur', style: TextStyle(color: Colors.redAccent, fontSize: 24, fontWeight: FontWeight.bold)),
+              const Text('Erreur',
+                  style: TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Text(
                 message,
@@ -125,7 +139,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               const SizedBox(height: 24),
               PulsarButton(
                 text: 'OK',
-                gradient: const LinearGradient(colors: [Colors.red, Colors.redAccent]),
+                gradient: const LinearGradient(
+                    colors: [Colors.red, Colors.redAccent]),
                 onPressed: () => Navigator.pop(ctx),
               ),
             ],
@@ -140,9 +155,24 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     final authState = ref.watch(authStateChangesProvider);
 
     // Auto-redirect
-    ref.listen(authStateChangesProvider, (previous, next) {
+    ref.listen(authStateChangesProvider, (previous, next) async {
       if (next.value != null) {
-        context.goNamed('home');
+        final uid = next.value!.uid;
+        try {
+          final snapshot =
+              await FirebaseDatabase.instance.ref('users/$uid/name').get();
+          final name = snapshot.value as String?;
+          if (!context.mounted) return;
+
+          if (name == null || name == 'Utilisateur' || name == 'Joueur iOS') {
+            context.goNamed('profileSetup');
+          } else {
+            context.goNamed('home');
+          }
+        } catch (e) {
+          if (!context.mounted) return;
+          context.goNamed('home');
+        }
       }
     });
 
@@ -194,7 +224,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
                     shadows: [
-                      Shadow(color: PyraTheme.primaryPink.withOpacity(0.5), blurRadius: 20),
+                      Shadow(
+                          color: PyraTheme.primaryPink.withOpacity(0.5),
+                          blurRadius: 20),
                     ],
                   ),
                 ).animate().fadeIn(duration: 800.ms).slideY(begin: -0.2),
@@ -221,136 +253,164 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                        // Titre
-                        Text(
-                          _isLogin ? 'Bon retour !' : 'Créer un compte',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _isLogin ? 'Heureux de te revoir parmi nous' : 'Crée ton compte et rejoins la partie',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 32),
+                    // Titre
+                    Text(
+                      _isLogin ? 'Bon retour !' : 'Créer un compte',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _isLogin
+                          ? 'Heureux de te revoir parmi nous'
+                          : 'Crée ton compte et rejoins la partie',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.6),
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
 
-                        // Formulaire
-                        if (!_isLogin) ...[
-                          _buildInputLabel('Pseudo'),
-                          _buildTextField(
-                            controller: _nameController,
-                            icon: Icons.person_outline,
-                            hint: '@tonpseudo',
-                          ),
-                          const SizedBox(height: 16),
-                        ],
+                    // Formulaire
+                    if (!_isLogin) ...[
+                      _buildInputLabel('Pseudo'),
+                      _buildTextField(
+                        controller: _nameController,
+                        icon: Icons.person_outline,
+                        hint: '@tonpseudo',
+                      ),
+                      const SizedBox(height: 16),
+                    ],
 
-                        _buildInputLabel('Email'),
-                        _buildTextField(
-                          controller: _emailController,
-                          icon: Icons.mail_outline,
-                          hint: 'tonemail@gmail.com',
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        const SizedBox(height: 16),
+                    _buildInputLabel('Email'),
+                    _buildTextField(
+                      controller: _emailController,
+                      icon: Icons.mail_outline,
+                      hint: 'tonemail@gmail.com',
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 16),
 
-                        _buildInputLabel('Mot de passe'),
-                        _buildTextField(
-                          controller: _passwordController,
-                          icon: Icons.key_outlined,
-                          hint: '••••••••',
-                          isPassword: true,
-                          obscureText: _obscurePassword,
-                          onToggleObscure: () {
-                            setState(() => _obscurePassword = !_obscurePassword);
-                          },
+                    _buildInputLabel('Mot de passe'),
+                    _buildTextField(
+                      controller: _passwordController,
+                      icon: Icons.key_outlined,
+                      hint: '••••••••',
+                      isPassword: true,
+                      obscureText: _obscurePassword,
+                      onToggleObscure: () {
+                        setState(() => _obscurePassword = !_obscurePassword);
+                      },
+                    ),
+
+                    if (_isLogin)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {},
+                          child: const Text('Mot de passe oublié ?',
+                              style: TextStyle(
+                                  color: PyraTheme.textMuted, fontSize: 12)),
                         ),
-                        
-                        if (_isLogin)
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: const Text('Mot de passe oublié ?', style: TextStyle(color: PyraTheme.textMuted, fontSize: 12)),
+                      )
+                    else
+                      const SizedBox(height: 24),
+
+                    // Bouton principal
+                    SizedBox(
+                      width: double.infinity,
+                      child: _isLoading
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                  color: PyraTheme.primaryPink))
+                          : PulsarButton(
+                              text: _isLogin ? 'Se connecter' : 'S\'inscrire',
+                              gradient: PyraTheme.purplePinkGradient,
+                              onPressed: _submit,
                             ),
-                          )
-                        else
-                          const SizedBox(height: 24),
+                    ),
 
-                        // Bouton principal
-                        SizedBox(
-                          width: double.infinity,
-                          child: _isLoading
-                              ? const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPink))
-                              : PulsarButton(
-                                  text: _isLogin ? 'Se connecter' : 'S\'inscrire',
-                                  gradient: PyraTheme.purplePinkGradient,
-                                  onPressed: _submit,
-                                ),
-                        ),
+                    const SizedBox(height: 24),
 
-                        const SizedBox(height: 24),
-                        
-                        // Toggle state
-                        Center(
-                          child: GestureDetector(
-                            onTap: _toggleMode,
-                            child: RichText(
-                              text: TextSpan(
-                                text: _isLogin ? 'Pas encore de compte ? ' : 'Déjà un compte ? ',
-                                style: TextStyle(color: Colors.white.withOpacity(0.6)),
-                                children: [
-                                  TextSpan(
-                                    text: _isLogin ? 'S\'inscrire' : 'Se connecter',
-                                    style: const TextStyle(color: PyraTheme.primaryPink, fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                    // Toggle state
+                    Center(
+                      child: GestureDetector(
+                        onTap: _toggleMode,
+                        child: RichText(
+                          text: TextSpan(
+                            text: _isLogin
+                                ? 'Pas encore de compte ? '
+                                : 'Déjà un compte ? ',
+                            style:
+                                TextStyle(color: Colors.white.withOpacity(0.6)),
+                            children: [
+                              TextSpan(
+                                text: _isLogin ? 'S\'inscrire' : 'Se connecter',
+                                style: const TextStyle(
+                                    color: PyraTheme.primaryPink,
+                                    fontWeight: FontWeight.bold),
                               ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Ou continuer avec
-                        Row(
-                          children: [
-                            Expanded(child: Divider(color: Colors.white.withOpacity(0.1))),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(
-                                _isLogin ? 'Ou se connecter avec' : 'Ou s\'inscrire avec',
-                                style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
-                              ),
-                            ),
-                            Expanded(child: Divider(color: Colors.white.withOpacity(0.1))),
-                          ],
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Boutons sociaux
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildSocialButton('assets/images/google_logo.png', Icons.g_mobiledata, Colors.white, onPressed: _signInWithGoogle),
-                            if (Theme.of(context).platform == TargetPlatform.iOS || Theme.of(context).platform == TargetPlatform.macOS) ...[
-                              const SizedBox(width: 16),
-                              _buildSocialButton('assets/images/apple_logo.png', Icons.apple, Colors.black, backgroundColor: Colors.white, onPressed: _signInWithApple),
                             ],
-                          ],
+                          ),
                         ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Ou continuer avec
+                    Row(
+                      children: [
+                        Expanded(
+                            child:
+                                Divider(color: Colors.white.withOpacity(0.1))),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            _isLogin
+                                ? 'Ou se connecter avec'
+                                : 'Ou s\'inscrire avec',
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.4),
+                                fontSize: 12),
+                          ),
+                        ),
+                        Expanded(
+                            child:
+                                Divider(color: Colors.white.withOpacity(0.1))),
                       ],
                     ),
-                  ),
+
+                    const SizedBox(height: 24),
+
+                    // Boutons sociaux
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildSocialButton('assets/images/google_logo.png',
+                            Icons.g_mobiledata, Colors.white,
+                            onPressed: _signInWithGoogle),
+                        if (Theme.of(context).platform == TargetPlatform.iOS ||
+                            Theme.of(context).platform ==
+                                TargetPlatform.macOS) ...[
+                          const SizedBox(width: 16),
+                          _buildSocialButton('assets/images/apple_logo.png',
+                              Icons.apple, Colors.black,
+                              backgroundColor: Colors.white,
+                              onPressed: _signInWithApple),
+                        ],
+                      ],
+                    ),
+                  ],
                 ),
-            ).animate().slideY(begin: 0.2, duration: 600.ms, curve: Curves.easeOutCubic),
+              ),
+            ),
+          )
+              .animate()
+              .slideY(begin: 0.2, duration: 600.ms, curve: Curves.easeOutCubic),
         ],
       ),
     );
@@ -396,7 +456,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       padding: const EdgeInsets.only(bottom: 8.0, left: 4.0),
       child: Text(
         label,
-        style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13, fontWeight: FontWeight.w600),
+        style: TextStyle(
+            color: Colors.white.withOpacity(0.8),
+            fontSize: 13,
+            fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -425,18 +488,23 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.5)),
           suffixIcon: isPassword
               ? IconButton(
-                  icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility, color: Colors.white.withOpacity(0.5)),
+                  icon: Icon(
+                      obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.white.withOpacity(0.5)),
                   onPressed: onToggleObscure,
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         ),
       ),
     );
   }
 
-  Widget _buildSocialButton(String assetPath, IconData fallbackIcon, Color iconColor, {Color? backgroundColor, required VoidCallback onPressed}) {
+  Widget _buildSocialButton(
+      String assetPath, IconData fallbackIcon, Color iconColor,
+      {Color? backgroundColor, required VoidCallback onPressed}) {
     return GestureDetector(
       onTap: onPressed,
       child: GlassContainer(

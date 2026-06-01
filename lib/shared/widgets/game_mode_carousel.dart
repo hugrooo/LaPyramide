@@ -25,7 +25,8 @@ class GameModeCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text('Mode de jeu', style: Theme.of(context).textTheme.headlineMedium),
+          child: Text('Mode de jeu',
+              style: Theme.of(context).textTheme.headlineMedium),
         ),
         const SizedBox(height: 16),
         SizedBox(
@@ -38,7 +39,8 @@ class GameModeCarousel extends StatelessWidget {
                 context,
                 mode: GameMode.classic,
                 title: 'Classique',
-                description: 'Le jeu Pyra original. Du bluff, de la stratégie, et beaucoup de pénalités.',
+                description:
+                    'Le jeu Pyra original. Du bluff, de la stratégie, et beaucoup de pénalités.',
                 icon: '🃏',
                 color: PyraTheme.primaryPurple,
               ),
@@ -47,7 +49,8 @@ class GameModeCarousel extends StatelessWidget {
                 context,
                 mode: GameMode.powers,
                 title: 'Pouvoirs Spéciaux',
-                description: 'Des cartes uniques (Bouclier, Miroir...) pour retourner la partie !',
+                description:
+                    'Des cartes uniques (Bouclier, Miroir...) pour retourner la partie !',
                 icon: '⚡',
                 color: PyraTheme.primaryPink,
               ),
@@ -56,7 +59,8 @@ class GameModeCarousel extends StatelessWidget {
                 context,
                 mode: GameMode.secretMissions,
                 title: 'Missions Secrètes',
-                description: 'Accomplis ton objectif caché sans te faire repérer par les autres !',
+                description:
+                    'Accomplis ton objectif caché sans te faire repérer par les autres !',
                 icon: '🕵️',
                 color: PyraTheme.primaryOrange,
               ),
@@ -65,7 +69,8 @@ class GameModeCarousel extends StatelessWidget {
                 context,
                 mode: GameMode.miniGames,
                 title: 'Mini-Jeux',
-                description: 'Des cartes spéciales déclenchent des mini-jeux délirants pendant la partie.',
+                description:
+                    'Des cartes spéciales déclenchent des mini-jeux délirants pendant la partie.',
                 icon: '🎲',
                 color: PyraTheme.primaryYellow,
               ),
@@ -74,7 +79,8 @@ class GameModeCarousel extends StatelessWidget {
                 context,
                 mode: GameMode.truthOrSip,
                 title: 'Vérité ou Pénalité 🎭',
-                description: 'Les têtes révélées forcent le joueur à répondre à une question ou prendre !',
+                description:
+                    'Les têtes révélées forcent le joueur à répondre à une question ou prendre !',
                 icon: '🤫',
                 color: PyraTheme.primaryCyan,
               ),
@@ -83,7 +89,8 @@ class GameModeCarousel extends StatelessWidget {
                 context,
                 mode: GameMode.speedRun,
                 title: 'Speed-Run ⏱️',
-                description: 'Pas le temps de réfléchir ! Décision en 5s max sinon punition de 2 pénalités !',
+                description:
+                    'Pas le temps de réfléchir ! Décision en 5s max sinon punition de 2 pénalités !',
                 icon: '🚀',
                 color: Colors.redAccent,
               ),

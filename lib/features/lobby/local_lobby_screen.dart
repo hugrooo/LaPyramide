@@ -104,19 +104,24 @@ class _LocalLobbyScreenState extends ConsumerState<LocalLobbyScreen> {
                         ),
                         const SizedBox(height: 12),
                         ..._players.asMap().entries.map(
-                          (e) => _buildPlayerTile(e.key, e.value).animate()
-                              .fadeIn(delay: Duration(milliseconds: e.key * 80))
-                              .slideX(begin: 0.3),
-                        ),
+                              (e) => _buildPlayerTile(e.key, e.value)
+                                  .animate()
+                                  .fadeIn(
+                                      delay: Duration(milliseconds: e.key * 80))
+                                  .slideX(begin: 0.3),
+                            ),
                         const SizedBox(height: 24),
                       ],
 
                       // Modes de Jeu
                       GameModeCarousel(
                         selectedMode: _settings.mode,
-                        replaceCardsWithPowers: _settings.replaceCardsWithPowers,
-                        onModeChanged: (mode) => setState(() => _settings = _settings.copyWith(mode: mode)),
-                        onReplaceCardsChanged: (v) => setState(() => _settings = _settings.copyWith(replaceCardsWithPowers: v)),
+                        replaceCardsWithPowers:
+                            _settings.replaceCardsWithPowers,
+                        onModeChanged: (mode) => setState(
+                            () => _settings = _settings.copyWith(mode: mode)),
+                        onReplaceCardsChanged: (v) => setState(() => _settings =
+                            _settings.copyWith(replaceCardsWithPowers: v)),
                       ),
                       const SizedBox(height: 24),
 
@@ -164,7 +169,8 @@ class _LocalLobbyScreenState extends ConsumerState<LocalLobbyScreen> {
               scrollDirection: Axis.horizontal,
               itemCount: kDefaultEmojis.length,
               itemBuilder: (context, i) {
-                final isSelected = i == (_selectedEmojiIndex % kDefaultEmojis.length);
+                final isSelected =
+                    i == (_selectedEmojiIndex % kDefaultEmojis.length);
                 return GestureDetector(
                   onTap: () => setState(() => _selectedEmojiIndex = i),
                   child: AnimatedContainer(

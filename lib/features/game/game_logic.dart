@@ -25,9 +25,8 @@ class GameLogic {
       final missions = _getSecretMissions();
       missions.shuffle();
       for (int i = 0; i < tempPlayers.length; i++) {
-        tempPlayers[i] = tempPlayers[i].copyWith(
-          secretMission: missions[i % missions.length]
-        );
+        tempPlayers[i] = tempPlayers[i]
+            .copyWith(secretMission: missions[i % missions.length]);
       }
     }
 
@@ -48,7 +47,8 @@ class GameLogic {
     // on construit la pyramide avec la base en bas (ligne pyramidRows - 1)
     final pyramid = <List<PyraCard>>[];
     for (int row = 0; row < settings.pyramidRows; row++) {
-      final rowSize = row + 1; // Rangée 0 = 1 carte (sommet), dernière rangée = settings.pyramidRows (base)
+      final rowSize = row +
+          1; // Rangée 0 = 1 carte (sommet), dernière rangée = settings.pyramidRows (base)
       final rowCards = <PyraCard>[];
       for (int i = 0; i < rowSize; i++) {
         rowCards.add(deck[deckIndex++].copyWith(isFaceUp: false));
@@ -74,12 +74,14 @@ class GameLogic {
     if (state.currentCard == null) return state;
 
     final newPyramid = state.pyramid.map((row) => row.toList()).toList();
-    final revealedCard = state.currentCard!.copyWith(isFaceUp: true, isRevealed: true);
+    final revealedCard =
+        state.currentCard!.copyWith(isFaceUp: true, isRevealed: true);
     newPyramid[state.currentRow][state.currentCardIndex] = revealedCard;
 
     String? eventMessage;
     int? eventTime;
-    if (state.settings.mode == GameMode.truthOrSip && (revealedCard.value == 1 || revealedCard.value >= 11)) {
+    if (state.settings.mode == GameMode.truthOrSip &&
+        (revealedCard.value == 1 || revealedCard.value >= 11)) {
       eventMessage = "🎭 Vérité ou Pénalité ! " + _getRandomTruthOrSip();
       eventTime = DateTime.now().millisecondsSinceEpoch;
     }
@@ -158,23 +160,31 @@ class GameLogic {
     if (state.pendingDrinks.isEmpty) return state;
 
     final assignment = state.pendingDrinks.last;
-    GameState newState = state.copyWith(pendingDrinks: []); // On résout l'action
+    GameState newState =
+        state.copyWith(pendingDrinks: []); // On résout l'action
 
     // Trouver la carte si fournie
     PyraCard? revealedCard;
     if (cardId != null) {
       final player = state.players.firstWhere((p) => p.id == fromPlayerId);
       revealedCard = player.hand.firstWhere((c) => c.id == cardId);
-      
+
       // On la marque comme révélée pour qu'elle soit retournée face visible
-      final updatedHand = player.hand.map((c) => c.id == cardId ? c.copyWith(isFaceUp: true) : c).toList();
+      final updatedHand = player.hand
+          .map((c) => c.id == cardId ? c.copyWith(isFaceUp: true) : c)
+          .toList();
       newState = newState.copyWith(
-        players: newState.players.map((p) => p.id == fromPlayerId ? p.copyWith(hand: updatedHand) : p).toList(),
+        players: newState.players
+            .map(
+                (p) => p.id == fromPlayerId ? p.copyWith(hand: updatedHand) : p)
+            .toList(),
       );
     }
 
     final targetCard = state.lastRevealedCard ?? state.currentCard;
-    final isActuallyBluff = revealedCard == null || targetCard == null || revealedCard.value != targetCard.value;
+    final isActuallyBluff = revealedCard == null ||
+        targetCard == null ||
+        revealedCard.value != targetCard.value;
 
     if (isActuallyBluff) {
       // Le bluffeur a menti (ou s'est trompé) -> il prend le double
@@ -184,7 +194,8 @@ class GameLogic {
         sips: assignment.sips * (state.settings.doubleBluff ? 3 : 2),
       );
       final fromPlayer = state.players.firstWhere((p) => p.id == fromPlayerId);
-      final toPlayer = state.players.firstWhere((p) => p.id == assignment.toPlayerId);
+      final toPlayer =
+          state.players.firstWhere((p) => p.id == assignment.toPlayerId);
 
       newState = _applyDrink(newState, penalty);
       return newState.copyWith(
@@ -192,7 +203,8 @@ class GameLogic {
         lastBluffResult: BluffResult.caught,
         lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
         lastBlufferId: assignment.fromPlayerId,
-        lastEventMessage: "💥 Bluff démasqué ! ${fromPlayer.name} prend ${penalty.sips} pénalités !",
+        lastEventMessage:
+            "💥 Bluff démasqué ! ${fromPlayer.name} prend ${penalty.sips} pénalités !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else {
@@ -203,7 +215,8 @@ class GameLogic {
         sips: assignment.sips * (state.settings.doubleBluff ? 3 : 2),
       );
       final fromPlayer = state.players.firstWhere((p) => p.id == fromPlayerId);
-      final toPlayer = state.players.firstWhere((p) => p.id == assignment.toPlayerId);
+      final toPlayer =
+          state.players.firstWhere((p) => p.id == assignment.toPlayerId);
 
       newState = _applyDrink(newState, penalty);
       return newState.copyWith(
@@ -211,7 +224,8 @@ class GameLogic {
         lastBluffResult: BluffResult.success,
         lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
         lastBlufferId: assignment.fromPlayerId,
-        lastEventMessage: "✅ Pas de bluff ! ${toPlayer.name} prend ${penalty.sips} pénalités !",
+        lastEventMessage:
+            "✅ Pas de bluff ! ${toPlayer.name} prend ${penalty.sips} pénalités !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     }
@@ -232,14 +246,14 @@ class GameLogic {
 
     final assignment = state.pendingDrinks.last;
     GameState newState = state.copyWith(pendingDrinks: []);
-    
+
     // On ajoute 2 pénalités de pénalité pour trop de temps
     final penaltyAssignment = DrinkAssignment(
       fromPlayerId: assignment.fromPlayerId,
       toPlayerId: assignment.toPlayerId,
       sips: assignment.sips + 2,
     );
-    
+
     return _applyDrink(newState, penaltyAssignment);
   }
 
@@ -256,7 +270,7 @@ class GameLogic {
 
     final playerIndex = state.players.indexWhere((p) => p.id == playerId);
     if (playerIndex == -1) return state;
-    
+
     final player = state.players[playerIndex];
     final cardIndex = player.hand.indexWhere((c) => c.id == cardId);
     if (cardIndex == -1) return state;
@@ -267,7 +281,7 @@ class GameLogic {
     // Retirer la carte de la main (le pouvoir est consommé)
     final newHand = List<PyraCard>.from(player.hand)..removeAt(cardIndex);
     final updatedPlayer = player.copyWith(hand: newHand);
-    
+
     final updatedPlayers = List<Player>.from(state.players);
     updatedPlayers[playerIndex] = updatedPlayer;
 
@@ -281,7 +295,8 @@ class GameLogic {
       // Bouclier : annule les pénalités
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "🛡️ ${player.name} utilise un Bouclier ! Pénalités annulées.",
+        lastEventMessage:
+            "🛡️ ${player.name} utilise un Bouclier ! Pénalités annulées.",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (card.powerType == PowerType.mirror) {
@@ -291,13 +306,15 @@ class GameLogic {
         toPlayerId: assignment.fromPlayerId,
         sips: assignment.sips,
       );
-      
-      final attacker = state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
+
+      final attacker =
+          state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
       newState = _applyDrink(newState, reflection);
 
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "🪞 ${player.name} sort le Miroir ! ${attacker.name} prend le retour de flamme : ${reflection.sips} pénalités !",
+        lastEventMessage:
+            "🪞 ${player.name} sort le Miroir ! ${attacker.name} prend le retour de flamme : ${reflection.sips} pénalités !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (card.powerType == PowerType.multiplier) {
@@ -307,13 +324,15 @@ class GameLogic {
         toPlayerId: assignment.fromPlayerId,
         sips: assignment.sips * 2,
       );
-      
-      final attacker = state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
+
+      final attacker =
+          state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
       newState = _applyDrink(newState, reflection);
 
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "⚡ ${player.name} utilise un Multiplicateur ! ${attacker.name} prend ${reflection.sips} pénalités (x2) !",
+        lastEventMessage:
+            "⚡ ${player.name} utilise un Multiplicateur ! ${attacker.name} prend ${reflection.sips} pénalités (x2) !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     }
@@ -325,7 +344,8 @@ class GameLogic {
   static GameState nextCard(GameState state) {
     final currentRow = state.pyramid[state.currentRow];
     final nextCardIndex = state.currentCardIndex + 1;
-    final newPlayers = state.players.map((p) => p.copyWith(hasPassedThisTurn: false)).toList();
+    final newPlayers =
+        state.players.map((p) => p.copyWith(hasPassedThisTurn: false)).toList();
 
     if (nextCardIndex < currentRow.length) {
       // Carte suivante dans la même rangée
@@ -361,7 +381,8 @@ class GameLogic {
 
   // === Helpers privés ===
 
-  static List<PyraCard> _injectPowers(List<PyraCard> originalDeck, GameSettings settings) {
+  static List<PyraCard> _injectPowers(
+      List<PyraCard> originalDeck, GameSettings settings) {
     final powers = [
       PyraCard(powerType: PowerType.shield),
       PyraCard(powerType: PowerType.shield),
@@ -435,13 +456,29 @@ class GameLogic {
 
   static List<PyraCard> _injectMiniGames(List<PyraCard> originalDeck) {
     final miniGames = [
-      PyraCard(isMiniGame: true, miniGameTitle: 'Dans ma valise', miniGameDescription: 'Tour à tour, chacun répète les objets précédents et en ajoute un nouveau. Le premier qui se trompe prend 2 pénalités !'),
-      PyraCard(isMiniGame: true, miniGameTitle: 'Le jeu des Rimes', miniGameDescription: 'L\'hôte choisit un mot. Chacun doit trouver une rime. Le premier qui bloque prend 2 pénalités !'),
-      PyraCard(isMiniGame: true, miniGameTitle: 'Thème', miniGameDescription: 'L\'hôte choisit un thème (ex: Marques de voitures). Chacun donne un exemple. Le premier qui bloque prend 2 pénalités !'),
-      PyraCard(isMiniGame: true, miniGameTitle: 'Action ou Vérité', miniGameDescription: 'Le joueur qui a retourné la carte choisit quelqu\'un. Action ou Vérité ? S\'il refuse, il prend 3 pénalités !'),
+      PyraCard(
+          isMiniGame: true,
+          miniGameTitle: 'Dans ma valise',
+          miniGameDescription:
+              'Tour à tour, chacun répète les objets précédents et en ajoute un nouveau. Le premier qui se trompe prend 2 pénalités !'),
+      PyraCard(
+          isMiniGame: true,
+          miniGameTitle: 'Le jeu des Rimes',
+          miniGameDescription:
+              'L\'hôte choisit un mot. Chacun doit trouver une rime. Le premier qui bloque prend 2 pénalités !'),
+      PyraCard(
+          isMiniGame: true,
+          miniGameTitle: 'Thème',
+          miniGameDescription:
+              'L\'hôte choisit un thème (ex: Marques de voitures). Chacun donne un exemple. Le premier qui bloque prend 2 pénalités !'),
+      PyraCard(
+          isMiniGame: true,
+          miniGameTitle: 'Action ou Vérité',
+          miniGameDescription:
+              'Le joueur qui a retourné la carte choisit quelqu\'un. Action ou Vérité ? S\'il refuse, il prend 3 pénalités !'),
     ];
     miniGames.shuffle();
-    
+
     // Remplacer 3 cartes aléatoires du deck
     final newDeck = List<PyraCard>.from(originalDeck);
     newDeck.shuffle();
@@ -485,43 +522,47 @@ class GameLogic {
     if (state.pendingDrinks.isEmpty) return state;
 
     final assignment = state.pendingDrinks.last;
-    
+
     if (jokerId == 'miroir' && assignment.toPlayerId == playerId) {
       final reflection = DrinkAssignment(
         fromPlayerId: assignment.toPlayerId,
         toPlayerId: assignment.fromPlayerId,
         sips: assignment.sips,
       );
-      final attacker = state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
+      final attacker =
+          state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
       final defender = state.players.firstWhere((p) => p.id == playerId);
-      
+
       GameState newState = state.copyWith(pendingDrinks: []);
       newState = _applyDrink(newState, reflection);
-      
+
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "🪞 Joker Miroir ! Les ${reflection.sips} pénalités de ${attacker.name} se retournent contre lui !",
+        lastEventMessage:
+            "🪞 Joker Miroir ! Les ${reflection.sips} pénalités de ${attacker.name} se retournent contre lui !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (jokerId == 'bouclier' && assignment.toPlayerId == playerId) {
       final defender = state.players.firstWhere((p) => p.id == playerId);
       final reducedSips = (assignment.sips / 2).ceil();
-      
+
       final shielded = DrinkAssignment(
         fromPlayerId: assignment.fromPlayerId,
         toPlayerId: assignment.toPlayerId,
         sips: reducedSips,
       );
-      
+
       GameState newState = state.copyWith(pendingDrinks: []);
       newState = _applyDrink(newState, shielded);
-      
+
       return newState.copyWith(
         phase: GamePhase.transition,
-        lastEventMessage: "🛡️ Joker Bouclier ! ${defender.name} réduit ses pénalités à $reducedSips (au lieu de ${assignment.sips}) !",
+        lastEventMessage:
+            "🛡️ Joker Bouclier ! ${defender.name} réduit ses pénalités à $reducedSips (au lieu de ${assignment.sips}) !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
-    } else if (jokerId == 'double_dose' && assignment.fromPlayerId == playerId) {
+    } else if (jokerId == 'double_dose' &&
+        assignment.fromPlayerId == playerId) {
       final newSips = assignment.sips * 2;
       final doubledAssignment = DrinkAssignment(
         fromPlayerId: assignment.fromPlayerId,
@@ -530,19 +571,20 @@ class GameLogic {
         isBluff: assignment.isBluff,
         isBluffCalled: assignment.isBluffCalled,
       );
-      
+
       final newPending = List<DrinkAssignment>.from(state.pendingDrinks);
       newPending[newPending.length - 1] = doubledAssignment;
-      
+
       final fromPlayer = state.players.firstWhere((p) => p.id == playerId);
-      
+
       return state.copyWith(
         pendingDrinks: newPending,
-        lastEventMessage: "🧪 Joker Double Dose ! ${fromPlayer.name} double la punition : $newSips pénalités !",
+        lastEventMessage:
+            "🧪 Joker Double Dose ! ${fromPlayer.name} double la punition : $newSips pénalités !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     }
-    
+
     return state;
   }
 }

@@ -5,10 +5,14 @@ enum CardSuit { hearts, diamonds, clubs, spades }
 extension CardSuitEmoji on CardSuit {
   String get emoji {
     switch (this) {
-      case CardSuit.hearts:   return '♥️';
-      case CardSuit.diamonds: return '♦️';
-      case CardSuit.clubs:    return '♣️';
-      case CardSuit.spades:   return '♠️';
+      case CardSuit.hearts:
+        return '♥️';
+      case CardSuit.diamonds:
+        return '♦️';
+      case CardSuit.clubs:
+        return '♣️';
+      case CardSuit.spades:
+        return '♠️';
     }
   }
 
@@ -20,19 +24,27 @@ enum PowerType { none, shield, mirror, multiplier }
 extension PowerTypeEmoji on PowerType {
   String get emoji {
     switch (this) {
-      case PowerType.none: return '';
-      case PowerType.shield: return '🛡️';
-      case PowerType.mirror: return '🪞';
-      case PowerType.multiplier: return '⚡';
+      case PowerType.none:
+        return '';
+      case PowerType.shield:
+        return '🛡️';
+      case PowerType.mirror:
+        return '🪞';
+      case PowerType.multiplier:
+        return '⚡';
     }
   }
 
   String get name {
     switch (this) {
-      case PowerType.none: return '';
-      case PowerType.shield: return 'Bouclier';
-      case PowerType.mirror: return 'Miroir';
-      case PowerType.multiplier: return 'Multiplicateur (x2)';
+      case PowerType.none:
+        return '';
+      case PowerType.shield:
+        return 'Bouclier';
+      case PowerType.mirror:
+        return 'Miroir';
+      case PowerType.multiplier:
+        return 'Multiplicateur (x2)';
     }
   }
 }
@@ -66,11 +78,16 @@ class PyraCard {
   String get displayValue {
     if (powerType != PowerType.none) return powerType.emoji;
     switch (value) {
-      case 1:  return 'A';
-      case 11: return 'V';
-      case 12: return 'D';
-      case 13: return 'R';
-      default: return value.toString();
+      case 1:
+        return 'A';
+      case 11:
+        return 'V';
+      case 12:
+        return 'D';
+      case 13:
+        return 'R';
+      default:
+        return value.toString();
     }
   }
 
@@ -87,20 +104,23 @@ class PyraCard {
         deck.add(PyraCard(suit: suit, value: v));
       }
     }
-    
+
     if (withPowers) {
       // On remplace 6 cartes (par exemple les valets et dames rouges) par des pouvoirs
       for (int i = 0; i < deck.length; i++) {
         if (deck[i].value == 11 && deck[i].suit.isRed) {
-          deck[i] = PyraCard(suit: deck[i].suit, value: 11, powerType: PowerType.shield);
+          deck[i] = PyraCard(
+              suit: deck[i].suit, value: 11, powerType: PowerType.shield);
         } else if (deck[i].value == 12 && deck[i].suit.isRed) {
-          deck[i] = PyraCard(suit: deck[i].suit, value: 12, powerType: PowerType.mirror);
+          deck[i] = PyraCard(
+              suit: deck[i].suit, value: 12, powerType: PowerType.mirror);
         } else if (deck[i].value == 13 && deck[i].suit.isRed) {
-          deck[i] = PyraCard(suit: deck[i].suit, value: 13, powerType: PowerType.multiplier);
+          deck[i] = PyraCard(
+              suit: deck[i].suit, value: 13, powerType: PowerType.multiplier);
         }
       }
     }
-    
+
     deck.shuffle();
     return deck;
   }
@@ -117,26 +137,28 @@ class PyraCard {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'suit': suit.index,
-    'value': value,
-    'powerType': powerType.index,
-    'isFaceUp': isFaceUp,
-    'isRevealed': isRevealed,
-    'isMiniGame': isMiniGame,
-    'miniGameTitle': miniGameTitle,
-    'miniGameDescription': miniGameDescription,
-  };
+        'id': id,
+        'suit': suit.index,
+        'value': value,
+        'powerType': powerType.index,
+        'isFaceUp': isFaceUp,
+        'isRevealed': isRevealed,
+        'isMiniGame': isMiniGame,
+        'miniGameTitle': miniGameTitle,
+        'miniGameDescription': miniGameDescription,
+      };
 
   factory PyraCard.fromJson(Map<String, dynamic> json) => PyraCard(
-    id: json['id'],
-    suit: CardSuit.values[json['suit']],
-    value: json['value'],
-    powerType: json['powerType'] != null ? PowerType.values[json['powerType']] : PowerType.none,
-    isFaceUp: json['isFaceUp'] ?? false,
-    isRevealed: json['isRevealed'] ?? false,
-    isMiniGame: json['isMiniGame'] ?? false,
-    miniGameTitle: json['miniGameTitle'],
-    miniGameDescription: json['miniGameDescription'],
-  );
+        id: json['id'],
+        suit: CardSuit.values[json['suit']],
+        value: json['value'],
+        powerType: json['powerType'] != null
+            ? PowerType.values[json['powerType']]
+            : PowerType.none,
+        isFaceUp: json['isFaceUp'] ?? false,
+        isRevealed: json['isRevealed'] ?? false,
+        isMiniGame: json['isMiniGame'] ?? false,
+        miniGameTitle: json['miniGameTitle'],
+        miniGameDescription: json['miniGameDescription'],
+      );
 }

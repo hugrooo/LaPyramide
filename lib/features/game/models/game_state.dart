@@ -2,14 +2,14 @@ import 'card_model.dart';
 import 'player_model.dart';
 
 enum GamePhase {
-  setup,         // Configuration
-  distribution,  // Le Bus (distribution)
-  revealing,     // Révélation des cartes
-  assigning,     // Attribution des pénalités
-  bluffing,      // Phase de bluff en cours
-  transition,    // Passage au joueur suivant
-  miniGame,      // Phase d'un mini-jeu
-  finished,      // Partie terminée
+  setup, // Configuration
+  distribution, // Le Bus (distribution)
+  revealing, // Révélation des cartes
+  assigning, // Attribution des pénalités
+  bluffing, // Phase de bluff en cours
+  transition, // Passage au joueur suivant
+  miniGame, // Phase d'un mini-jeu
+  finished, // Partie terminée
 }
 
 enum GameMode {
@@ -24,11 +24,11 @@ enum GameMode {
 enum BluffResult { none, caught, success }
 
 class DrinkAssignment {
-  final String fromPlayerId;  // Celui qui assigne
-  final String toPlayerId;    // Celui qui doit prendre
+  final String fromPlayerId; // Celui qui assigne
+  final String toPlayerId; // Celui qui doit prendre
   final int sips;
-  final bool isBluff;         // Vrai si la carte posée est un bluff
-  final bool isBluffCalled;   // Vrai si la cible a crié au bluff
+  final bool isBluff; // Vrai si la carte posée est un bluff
+  final bool isBluffCalled; // Vrai si la cible a crié au bluff
 
   DrinkAssignment({
     required this.fromPlayerId,
@@ -39,30 +39,32 @@ class DrinkAssignment {
   });
 
   Map<String, dynamic> toJson() => {
-    'fromPlayerId': fromPlayerId,
-    'toPlayerId': toPlayerId,
-    'sips': sips,
-    'isBluff': isBluff,
-    'isBluffCalled': isBluffCalled,
-  };
+        'fromPlayerId': fromPlayerId,
+        'toPlayerId': toPlayerId,
+        'sips': sips,
+        'isBluff': isBluff,
+        'isBluffCalled': isBluffCalled,
+      };
 
-  factory DrinkAssignment.fromJson(Map<String, dynamic> json) => DrinkAssignment(
-    fromPlayerId: json['fromPlayerId'],
-    toPlayerId: json['toPlayerId'],
-    sips: json['sips'],
-    isBluff: json['isBluff'] ?? false,
-    isBluffCalled: json['isBluffCalled'] ?? false,
-  );
+  factory DrinkAssignment.fromJson(Map<String, dynamic> json) =>
+      DrinkAssignment(
+        fromPlayerId: json['fromPlayerId'],
+        toPlayerId: json['toPlayerId'],
+        sips: json['sips'],
+        isBluff: json['isBluff'] ?? false,
+        isBluffCalled: json['isBluffCalled'] ?? false,
+      );
 }
 
 class GameSettings {
-  final GameMode mode;         // Mode de jeu actuel
-  final bool replaceCardsWithPowers; // Si le joueur a choisi de remplacer des cartes classiques par les pouvoirs
-  final int pyramidRows;       // Nombre de rangées (3, 4 ou 5)
-  final bool bluffEnabled;     // Bluff activé
-  final bool doubleBluff;      // Double mise sur bluff
-  final bool superChallenge;   // Super challenge (triple mise)
-  final int cardsPerPlayer;    // Cartes par joueur (défaut 4)
+  final GameMode mode; // Mode de jeu actuel
+  final bool
+      replaceCardsWithPowers; // Si le joueur a choisi de remplacer des cartes classiques par les pouvoirs
+  final int pyramidRows; // Nombre de rangées (3, 4 ou 5)
+  final bool bluffEnabled; // Bluff activé
+  final bool doubleBluff; // Double mise sur bluff
+  final bool superChallenge; // Super challenge (triple mise)
+  final int cardsPerPlayer; // Cartes par joueur (défaut 4)
 
   const GameSettings({
     this.mode = GameMode.classic,
@@ -85,7 +87,8 @@ class GameSettings {
   }) {
     return GameSettings(
       mode: mode ?? this.mode,
-      replaceCardsWithPowers: replaceCardsWithPowers ?? this.replaceCardsWithPowers,
+      replaceCardsWithPowers:
+          replaceCardsWithPowers ?? this.replaceCardsWithPowers,
       pyramidRows: pyramidRows ?? this.pyramidRows,
       bluffEnabled: bluffEnabled ?? this.bluffEnabled,
       doubleBluff: doubleBluff ?? this.doubleBluff,
@@ -98,24 +101,26 @@ class GameSettings {
   int sipsForRow(int rowIndex) => rowIndex + 1;
 
   Map<String, dynamic> toJson() => {
-    'mode': mode.index,
-    'replaceCardsWithPowers': replaceCardsWithPowers,
-    'pyramidRows': pyramidRows,
-    'bluffEnabled': bluffEnabled,
-    'doubleBluff': doubleBluff,
-    'superChallenge': superChallenge,
-    'cardsPerPlayer': cardsPerPlayer,
-  };
+        'mode': mode.index,
+        'replaceCardsWithPowers': replaceCardsWithPowers,
+        'pyramidRows': pyramidRows,
+        'bluffEnabled': bluffEnabled,
+        'doubleBluff': doubleBluff,
+        'superChallenge': superChallenge,
+        'cardsPerPlayer': cardsPerPlayer,
+      };
 
   factory GameSettings.fromJson(Map<String, dynamic> json) => GameSettings(
-    mode: json['mode'] != null ? GameMode.values[json['mode']] : GameMode.classic,
-    replaceCardsWithPowers: json['replaceCardsWithPowers'] ?? false,
-    pyramidRows: json['pyramidRows'] ?? 5,
-    bluffEnabled: json['bluffEnabled'] ?? true,
-    doubleBluff: json['doubleBluff'] ?? false,
-    superChallenge: json['superChallenge'] ?? false,
-    cardsPerPlayer: json['cardsPerPlayer'] ?? 4,
-  );
+        mode: json['mode'] != null
+            ? GameMode.values[json['mode']]
+            : GameMode.classic,
+        replaceCardsWithPowers: json['replaceCardsWithPowers'] ?? false,
+        pyramidRows: json['pyramidRows'] ?? 5,
+        bluffEnabled: json['bluffEnabled'] ?? true,
+        doubleBluff: json['doubleBluff'] ?? false,
+        superChallenge: json['superChallenge'] ?? false,
+        cardsPerPlayer: json['cardsPerPlayer'] ?? 4,
+      );
 }
 
 class GameState {
@@ -124,8 +129,8 @@ class GameState {
   final List<Player> players;
   final List<PyraCard> deck;
   final GamePhase phase;
-  final int currentRow;               // Rangée en cours de révélation (0 = sommet)
-  final int currentCardIndex;         // Index dans la rangée en cours
+  final int currentRow; // Rangée en cours de révélation (0 = sommet)
+  final int currentCardIndex; // Index dans la rangée en cours
   final int currentDistributionPlayerIndex;
   final int currentDistributionCardIndex;
   final int endGamePlayerIndex;
@@ -135,9 +140,10 @@ class GameState {
   final GameSettings settings;
   final BluffResult lastBluffResult;
   final PyraCard? lastRevealedCard;
-  final PyraCard? lastPlayerRevealedCard; // Carte réelle révélée par le joueur lors du bluff (pour animation Totem)
+  final PyraCard?
+      lastPlayerRevealedCard; // Carte réelle révélée par le joueur lors du bluff (pour animation Totem)
   final String? lastBlufferId; // ID du joueur qui a posé la carte lors du bluff
-  final Map<String, bool> presence;   // Map playerId -> isOnline
+  final Map<String, bool> presence; // Map playerId -> isOnline
   final Map<String, dynamic>? lastTaunt;
   final Map<String, dynamic>? currentRandomEvent;
   final int? updatedAt;
@@ -209,8 +215,10 @@ class GameState {
       phase: phase ?? this.phase,
       currentRow: currentRow ?? this.currentRow,
       currentCardIndex: currentCardIndex ?? this.currentCardIndex,
-      currentDistributionPlayerIndex: currentDistributionPlayerIndex ?? this.currentDistributionPlayerIndex,
-      currentDistributionCardIndex: currentDistributionCardIndex ?? this.currentDistributionCardIndex,
+      currentDistributionPlayerIndex:
+          currentDistributionPlayerIndex ?? this.currentDistributionPlayerIndex,
+      currentDistributionCardIndex:
+          currentDistributionCardIndex ?? this.currentDistributionCardIndex,
       endGamePlayerIndex: endGamePlayerIndex ?? this.endGamePlayerIndex,
       lastEventMessage: lastEventMessage ?? this.lastEventMessage,
       lastEventTime: lastEventTime ?? this.lastEventTime,
@@ -218,7 +226,9 @@ class GameState {
       settings: settings,
       lastBluffResult: lastBluffResult ?? this.lastBluffResult,
       lastRevealedCard: lastRevealedCard ?? this.lastRevealedCard,
-      lastPlayerRevealedCard: clearLastPlayerRevealedCard ? null : (lastPlayerRevealedCard ?? this.lastPlayerRevealedCard),
+      lastPlayerRevealedCard: clearLastPlayerRevealedCard
+          ? null
+          : (lastPlayerRevealedCard ?? this.lastPlayerRevealedCard),
       lastBlufferId: lastBlufferId ?? this.lastBlufferId,
       presence: presence ?? this.presence,
       lastTaunt: lastTaunt ?? this.lastTaunt,
@@ -228,66 +238,78 @@ class GameState {
   }
 
   Map<String, dynamic> toJson() => {
-    'gameId': gameId,
-    'pyramid': pyramid.map((row) => row.map((c) => c.toJson()).toList()).toList(),
-    'players': players.map((p) => p.toJson()).toList(),
-    'deck': deck.map((c) => c.toJson()).toList(),
-    'phase': phase.index,
-    'currentRow': currentRow,
-    'currentCardIndex': currentCardIndex,
-    'currentDistributionPlayerIndex': currentDistributionPlayerIndex,
-    'currentDistributionCardIndex': currentDistributionCardIndex,
-    'endGamePlayerIndex': endGamePlayerIndex,
-    'lastEventMessage': lastEventMessage,
-    'lastEventTime': lastEventTime,
-    'pendingDrinks': pendingDrinks.map((d) => d.toJson()).toList(),
-    'settings': settings.toJson(),
-    'lastBluffResult': lastBluffResult.index,
-    'lastRevealedCard': lastRevealedCard?.toJson(),
-    'lastPlayerRevealedCard': lastPlayerRevealedCard?.toJson(),
-    'lastBlufferId': lastBlufferId,
-    'presence': presence,
-    'lastTaunt': lastTaunt,
-    'currentRandomEvent': currentRandomEvent,
-    'updatedAt': updatedAt,
-  };
+        'gameId': gameId,
+        'pyramid':
+            pyramid.map((row) => row.map((c) => c.toJson()).toList()).toList(),
+        'players': players.map((p) => p.toJson()).toList(),
+        'deck': deck.map((c) => c.toJson()).toList(),
+        'phase': phase.index,
+        'currentRow': currentRow,
+        'currentCardIndex': currentCardIndex,
+        'currentDistributionPlayerIndex': currentDistributionPlayerIndex,
+        'currentDistributionCardIndex': currentDistributionCardIndex,
+        'endGamePlayerIndex': endGamePlayerIndex,
+        'lastEventMessage': lastEventMessage,
+        'lastEventTime': lastEventTime,
+        'pendingDrinks': pendingDrinks.map((d) => d.toJson()).toList(),
+        'settings': settings.toJson(),
+        'lastBluffResult': lastBluffResult.index,
+        'lastRevealedCard': lastRevealedCard?.toJson(),
+        'lastPlayerRevealedCard': lastPlayerRevealedCard?.toJson(),
+        'lastBlufferId': lastBlufferId,
+        'presence': presence,
+        'lastTaunt': lastTaunt,
+        'currentRandomEvent': currentRandomEvent,
+        'updatedAt': updatedAt,
+      };
 
   factory GameState.fromJson(Map<String, dynamic> json) => GameState(
-    gameId: json['gameId'],
-    pyramid: (json['pyramid'] as List)
-        .map((row) => (row as List).map((c) => PyraCard.fromJson(c)).toList())
-        .toList(),
-    players: (json['players'] as List).map((p) => Player.fromJson(p)).toList(),
-    deck: json['deck'] != null 
-        ? (json['deck'] as List).map((c) => PyraCard.fromJson(c)).toList()
-        : [],
-    phase: GamePhase.values[json['phase']],
-    currentRow: json['currentRow'],
-    currentCardIndex: json['currentCardIndex'],
-    currentDistributionPlayerIndex: json['currentDistributionPlayerIndex'] ?? 0,
-    currentDistributionCardIndex: json['currentDistributionCardIndex'] ?? 0,
-    endGamePlayerIndex: json['endGamePlayerIndex'] ?? 0,
-    lastEventMessage: json['lastEventMessage'],
-    lastEventTime: json['lastEventTime'],
-    pendingDrinks: json['pendingDrinks'] != null 
-        ? (json['pendingDrinks'] as List)
-            .map((d) => DrinkAssignment.fromJson(d))
-            .toList()
-        : [],
-    settings: json['settings'] != null ? GameSettings.fromJson(json['settings']) : const GameSettings(),
-    lastBluffResult: json['lastBluffResult'] != null 
-        ? BluffResult.values[json['lastBluffResult']]
-        : BluffResult.none,
-    lastRevealedCard: json['lastRevealedCard'] != null 
-        ? PyraCard.fromJson(json['lastRevealedCard'])
-        : null,
-    lastPlayerRevealedCard: json['lastPlayerRevealedCard'] != null 
-        ? PyraCard.fromJson(json['lastPlayerRevealedCard'])
-        : null,
-    lastBlufferId: json['lastBlufferId'],
-    presence: json['presence'] != null ? Map<String, bool>.from(json['presence']) : {},
-    lastTaunt: json['lastTaunt'] != null ? Map<String, dynamic>.from(json['lastTaunt']) : null,
-    currentRandomEvent: json['currentRandomEvent'] != null ? Map<String, dynamic>.from(json['currentRandomEvent']) : null,
-    updatedAt: json['updatedAt'],
-  );
+        gameId: json['gameId'],
+        pyramid: (json['pyramid'] as List)
+            .map((row) =>
+                (row as List).map((c) => PyraCard.fromJson(c)).toList())
+            .toList(),
+        players:
+            (json['players'] as List).map((p) => Player.fromJson(p)).toList(),
+        deck: json['deck'] != null
+            ? (json['deck'] as List).map((c) => PyraCard.fromJson(c)).toList()
+            : [],
+        phase: GamePhase.values[json['phase']],
+        currentRow: json['currentRow'],
+        currentCardIndex: json['currentCardIndex'],
+        currentDistributionPlayerIndex:
+            json['currentDistributionPlayerIndex'] ?? 0,
+        currentDistributionCardIndex: json['currentDistributionCardIndex'] ?? 0,
+        endGamePlayerIndex: json['endGamePlayerIndex'] ?? 0,
+        lastEventMessage: json['lastEventMessage'],
+        lastEventTime: json['lastEventTime'],
+        pendingDrinks: json['pendingDrinks'] != null
+            ? (json['pendingDrinks'] as List)
+                .map((d) => DrinkAssignment.fromJson(d))
+                .toList()
+            : [],
+        settings: json['settings'] != null
+            ? GameSettings.fromJson(json['settings'])
+            : const GameSettings(),
+        lastBluffResult: json['lastBluffResult'] != null
+            ? BluffResult.values[json['lastBluffResult']]
+            : BluffResult.none,
+        lastRevealedCard: json['lastRevealedCard'] != null
+            ? PyraCard.fromJson(json['lastRevealedCard'])
+            : null,
+        lastPlayerRevealedCard: json['lastPlayerRevealedCard'] != null
+            ? PyraCard.fromJson(json['lastPlayerRevealedCard'])
+            : null,
+        lastBlufferId: json['lastBlufferId'],
+        presence: json['presence'] != null
+            ? Map<String, bool>.from(json['presence'])
+            : {},
+        lastTaunt: json['lastTaunt'] != null
+            ? Map<String, dynamic>.from(json['lastTaunt'])
+            : null,
+        currentRandomEvent: json['currentRandomEvent'] != null
+            ? Map<String, dynamic>.from(json['currentRandomEvent'])
+            : null,
+        updatedAt: json['updatedAt'],
+      );
 }

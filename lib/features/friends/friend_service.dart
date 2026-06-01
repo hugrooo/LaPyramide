@@ -16,8 +16,8 @@ class FriendProfile {
   final String selectedBorder;
 
   FriendProfile({
-    required this.id, 
-    required this.name, 
+    required this.id,
+    required this.name,
     this.emoji,
     this.photoUrl,
     this.selectedBorder = 'classic',
@@ -58,7 +58,8 @@ class FriendService {
     final user = _auth.currentUser;
     final q = query.toLowerCase();
 
-    final snapshot = await _db.ref('users')
+    final snapshot = await _db
+        .ref('users')
         .orderByChild('searchName')
         .startAt(q)
         .endAt('$q\uf8ff')
@@ -69,7 +70,7 @@ class FriendService {
 
     final Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
     final List<FriendProfile> results = [];
-    
+
     data.forEach((key, value) {
       if (user != null && key == user.uid) return; // Ignorer soi-même
       results.add(FriendProfile.fromJson(key, value as Map<dynamic, dynamic>));
@@ -107,12 +108,12 @@ class FriendService {
     await _db.ref('friend_requests/${user.uid}/$fromUid').remove();
     await _db.ref('sent_requests/$fromUid/${user.uid}').remove();
   }
-  
+
   /// Refuser une demande
   Future<void> declineFriendRequest(String fromUid) async {
     final user = _auth.currentUser;
     if (user == null) return;
-    
+
     await _db.ref('friend_requests/${user.uid}/$fromUid').remove();
     await _db.ref('sent_requests/$fromUid/${user.uid}').remove();
   }
@@ -124,37 +125,44 @@ class FriendService {
 
     return _db.ref('friends/${user.uid}').onValue.asyncMap((event) async {
       if (!event.snapshot.exists || event.snapshot.value == null) return [];
-      
-      final Map<dynamic, dynamic> friendsMap = event.snapshot.value as Map<dynamic, dynamic>;
+
+      final Map<dynamic, dynamic> friendsMap =
+          event.snapshot.value as Map<dynamic, dynamic>;
       final friendIds = friendsMap.keys.cast<String>().toList();
-      
+
       final List<FriendProfile> friendsList = [];
       for (final fid in friendIds) {
         final profileSnap = await _db.ref('users/$fid').get();
         if (profileSnap.exists && profileSnap.value != null) {
-          friendsList.add(FriendProfile.fromJson(fid, profileSnap.value as Map<dynamic, dynamic>));
+          friendsList.add(FriendProfile.fromJson(
+              fid, profileSnap.value as Map<dynamic, dynamic>));
         }
       }
       return friendsList;
     });
   }
-  
+
   /// Récupérer les requêtes reçues
   Stream<List<FriendProfile>> getPendingRequests() {
     final user = _auth.currentUser;
     if (user == null) return Stream.value([]);
 
-    return _db.ref('friend_requests/${user.uid}').onValue.asyncMap((event) async {
+    return _db
+        .ref('friend_requests/${user.uid}')
+        .onValue
+        .asyncMap((event) async {
       if (!event.snapshot.exists || event.snapshot.value == null) return [];
-      
-      final Map<dynamic, dynamic> reqMap = event.snapshot.value as Map<dynamic, dynamic>;
+
+      final Map<dynamic, dynamic> reqMap =
+          event.snapshot.value as Map<dynamic, dynamic>;
       final reqIds = reqMap.keys.cast<String>().toList();
-      
+
       final List<FriendProfile> reqList = [];
       for (final rid in reqIds) {
         final profileSnap = await _db.ref('users/$rid').get();
         if (profileSnap.exists && profileSnap.value != null) {
-          reqList.add(FriendProfile.fromJson(rid, profileSnap.value as Map<dynamic, dynamic>));
+          reqList.add(FriendProfile.fromJson(
+              rid, profileSnap.value as Map<dynamic, dynamic>));
         }
       }
       return reqList;
@@ -162,10 +170,11 @@ class FriendService {
   }
 
   /// Envoyer une invitation de jeu
-  Future<void> inviteToGame(String friendUid, String roomCode, String hostName) async {
+  Future<void> inviteToGame(
+      String friendUid, String roomCode, String hostName) async {
     final user = _auth.currentUser;
     if (user == null) return;
-    
+
     // On écrit dans /users/{friendUid}/invites avec un ID unique
     final inviteRef = _db.ref('users/$friendUid/invites').push();
     await inviteRef.set({

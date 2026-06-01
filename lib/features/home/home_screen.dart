@@ -36,7 +36,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final userProfileAsync = ref.watch(userProfileProvider);
     final profile = userProfileAsync.value;
-    
+
     final level = profile?.level ?? 1;
     final xp = profile?.xp ?? 0;
     final coins = profile?.coins ?? 0;
@@ -47,7 +47,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // ── Calcul de l'état des quêtes ──────────────────────────────────────────
     final int now = DateTime.now().millisecondsSinceEpoch;
-    final int nextClaim = (profile?.lastDailyChestClaimed ?? 0) + 24 * 60 * 60 * 1000;
+    final int nextClaim =
+        (profile?.lastDailyChestClaimed ?? 0) + 24 * 60 * 60 * 1000;
     final bool isChestAvailable = now >= nextClaim;
     final hasClaimedBetaGift = profile?.cardBacks.contains('beta') ?? false;
 
@@ -70,7 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       questSubtitle = 'Reviens demain pour ton prochain cadeau';
       questBadge = null;
     }
-    
+
     return Scaffold(
       backgroundColor: PyraTheme.bgDark,
       body: Stack(
@@ -93,14 +94,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Positioned(
             top: -50,
             left: -100,
-            child: _GlowOrb(color: PyraTheme.primaryCyan.withOpacity(0.15), size: 400),
-          ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(duration: 4.seconds, begin: const Offset(1,1), end: const Offset(1.1,1.1)),
-          
+            child: _GlowOrb(
+                color: PyraTheme.primaryCyan.withOpacity(0.15), size: 400),
+          ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+              duration: 4.seconds,
+              begin: const Offset(1, 1),
+              end: const Offset(1.1, 1.1)),
+
           Positioned(
             bottom: 50,
             right: -100,
-            child: _GlowOrb(color: PyraTheme.primaryPurple.withOpacity(0.15), size: 500),
-          ).animate(onPlay: (c) => c.repeat(reverse: true)).slideY(duration: 5.seconds, begin: 0, end: -0.1),
+            child: _GlowOrb(
+                color: PyraTheme.primaryPurple.withOpacity(0.15), size: 500),
+          )
+              .animate(onPlay: (c) => c.repeat(reverse: true))
+              .slideY(duration: 5.seconds, begin: 0, end: -0.1),
 
           // ── Contenu principal ─────────────────────────────────────────
           SafeArea(
@@ -113,9 +121,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     context.pushNamed('level');
                   },
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     child: GlassContainer(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: Colors.white.withOpacity(0.15)),
                       child: Column(
@@ -129,16 +139,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   AvatarWithBorder(
                                     emoji: profile?.emoji ?? '😎',
                                     size: 40,
-                                    borderType: profile?.selectedBorder ?? 'classic',
+                                    borderType:
+                                        profile?.selectedBorder ?? 'classic',
                                     showLevel: true,
                                     level: level,
                                   ),
                                   const SizedBox(width: 12),
                                   Row(
                                     children: [
-                                      const Text('🎮', style: TextStyle(fontSize: 16)),
+                                      const Text('🎮',
+                                          style: TextStyle(fontSize: 16)),
                                       const SizedBox(width: 4),
-                                      Text('$gamesPlayed', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                                      Text('$gamesPlayed',
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14)),
                                     ],
                                   ),
                                 ],
@@ -153,32 +169,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       context.pushNamed('store');
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 6),
                                       decoration: BoxDecoration(
                                         color: Colors.white.withOpacity(0.08),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Row(
                                         children: [
-                                          Text(numberFormat.format(coins), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
+                                          Text(numberFormat.format(coins),
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 14)),
                                           const SizedBox(width: 6),
-                                          const Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 18),
+                                          const Icon(
+                                              Icons.monetization_on_rounded,
+                                              color: PyraTheme.primaryYellow,
+                                              size: 18),
                                         ],
                                       ),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 6),
                                     decoration: BoxDecoration(
                                       color: Colors.white.withOpacity(0.08),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Row(
                                       children: [
-                                        Text(numberFormat.format(diamonds), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14)),
+                                        Text(numberFormat.format(diamonds),
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w900,
+                                                fontSize: 14)),
                                         const SizedBox(width: 6),
-                                        const Icon(Icons.diamond_rounded, color: PyraTheme.primaryPurple, size: 18),
+                                        const Icon(Icons.diamond_rounded,
+                                            color: PyraTheme.primaryPurple,
+                                            size: 18),
                                       ],
                                     ),
                                   ),
@@ -190,7 +221,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           // Barre XP
                           Row(
                             children: [
-                              const Text('XP', style: TextStyle(color: PyraTheme.primaryCyan, fontSize: 10, fontWeight: FontWeight.w900)),
+                              const Text('XP',
+                                  style: TextStyle(
+                                      color: PyraTheme.primaryCyan,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w900)),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: ClipRRect(
@@ -198,13 +233,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   child: LinearProgressIndicator(
                                     value: (xp % 100) / 100,
                                     minHeight: 8,
-                                    backgroundColor: Colors.white.withOpacity(0.1),
-                                    valueColor: const AlwaysStoppedAnimation<Color>(PyraTheme.primaryCyan),
+                                    backgroundColor:
+                                        Colors.white.withOpacity(0.1),
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                            PyraTheme.primaryCyan),
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text('${xp % 100} / 100', style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
+                              Text('${xp % 100} / 100',
+                                  style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ],
@@ -215,14 +257,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                 // ── Panneau Quêtes Dynamique ──────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: GestureDetector(
                     onTap: () {
                       HapticFeedback.lightImpact();
                       context.pushNamed('quests');
                     },
                     child: GlassContainer(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isChestAvailable
@@ -242,14 +286,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             child: Icon(
                               Icons.card_giftcard_rounded,
-                              color: isChestAvailable ? PyraTheme.primaryPink : Colors.white54,
+                              color: isChestAvailable
+                                  ? PyraTheme.primaryPink
+                                  : Colors.white54,
                               size: 20,
                             ),
                           ).animate(
                             onPlay: (c) {
                               if (isChestAvailable) c.repeat(reverse: true);
                             },
-                          ).scale(begin: const Offset(1,1), end: const Offset(1.1,1.1), duration: 1.seconds),
+                          ).scale(
+                              begin: const Offset(1, 1),
+                              end: const Offset(1.1, 1.1),
+                              duration: 1.seconds),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -278,14 +327,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   const SizedBox(height: 2),
                                   Text(
                                     questSubtitle,
-                                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                                    style: const TextStyle(
+                                        color: Colors.white54, fontSize: 11),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ],
                             ),
                           ),
-                          const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 14),
+                          const Icon(Icons.arrow_forward_ios_rounded,
+                              color: Colors.white30, size: 14),
                         ],
                       ),
                     ),
@@ -295,16 +346,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 // ── Annonce Cadeau Bêta ──────────────────────────────
                 if (!hasClaimedBetaGift)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: GestureDetector(
                       onTap: () {
                         HapticFeedback.mediumImpact();
                         context.pushNamed('store');
                       },
                       child: GlassContainer(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: PyraTheme.primaryYellow.withOpacity(0.5)),
+                        border: Border.all(
+                            color: PyraTheme.primaryYellow.withOpacity(0.5)),
                         innerGlow: true,
                         child: Row(
                           children: [
@@ -314,8 +368,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 color: PyraTheme.primaryYellow.withOpacity(0.2),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.star_rounded, color: PyraTheme.primaryYellow, size: 20),
-                            ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1,1), end: const Offset(1.1,1.1), duration: 1.seconds),
+                              child: const Icon(Icons.star_rounded,
+                                  color: PyraTheme.primaryYellow, size: 20),
+                            )
+                                .animate(onPlay: (c) => c.repeat(reverse: true))
+                                .scale(
+                                    begin: const Offset(1, 1),
+                                    end: const Offset(1.1, 1.1),
+                                    duration: 1.seconds),
                             const SizedBox(width: 12),
                             const Expanded(
                               child: Column(
@@ -323,17 +383,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 children: [
                                   Text(
                                     'Cadeaux de Bêta Testeur 🎁',
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13),
                                   ),
                                   SizedBox(height: 2),
                                   Text(
                                     'Récupère tes récompenses gratuites !',
-                                    style: TextStyle(color: Colors.white54, fontSize: 11),
+                                    style: TextStyle(
+                                        color: Colors.white54, fontSize: 11),
                                   ),
                                 ],
                               ),
                             ),
-                            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 14),
+                            const Icon(Icons.arrow_forward_ios_rounded,
+                                color: Colors.white30, size: 14),
                           ],
                         ),
                       ),
@@ -347,7 +412,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   onTap: () {
                     context.pushNamed('onlineLobby');
                   },
-                ).animate().fadeIn(duration: 800.ms, curve: Curves.easeOutBack).scale(begin: const Offset(0.8, 0.8)),
+                )
+                    .animate()
+                    .fadeIn(duration: 800.ms, curve: Curves.easeOutBack)
+                    .scale(begin: const Offset(0.8, 0.8)),
 
                 const Spacer(),
                 Row(
@@ -357,7 +425,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.all(8),
                       borderRadius: BorderRadius.circular(20),
                       child: IconButton(
-                        icon: const Icon(Icons.people_alt_rounded, color: PyraTheme.primaryCyan, size: 32),
+                        icon: const Icon(Icons.people_alt_rounded,
+                            color: PyraTheme.primaryCyan, size: 32),
                         onPressed: () {
                           HapticFeedback.lightImpact();
                           context.pushNamed('friends');
@@ -369,7 +438,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.all(8),
                       borderRadius: BorderRadius.circular(20),
                       child: IconButton(
-                        icon: const Icon(Icons.leaderboard_rounded, color: PyraTheme.primaryYellow, size: 32),
+                        icon: const Icon(Icons.leaderboard_rounded,
+                            color: PyraTheme.primaryYellow, size: 32),
                         onPressed: () {
                           HapticFeedback.lightImpact();
                           context.pushNamed('leaderboard');

@@ -22,8 +22,6 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
@@ -44,8 +42,11 @@ class SettingsScreen extends ConsumerWidget {
                   sliver: SliverToBoxAdapter(
                     child: const Text(
                       '⚙️ Paramètres',
-                      style: TextStyle(color: Colors.white, fontSize: 28,
-                          fontWeight: FontWeight.w900, letterSpacing: 1.2),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2),
                     ),
                   ),
                 ),
@@ -53,7 +54,6 @@ class SettingsScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(20),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-
                       // ── Carte Profil (raccourci) ─────────────────────
                       if (profile != null && user != null)
                         GestureDetector(
@@ -64,33 +64,45 @@ class SettingsScreen extends ConsumerWidget {
                           child: GlassContainer(
                             padding: const EdgeInsets.all(16),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: PyraTheme.primaryCyan.withOpacity(0.25)),
+                            border: Border.all(
+                                color: PyraTheme.primaryCyan.withOpacity(0.25)),
                             child: Row(
                               children: [
                                 // Avatar
                                 Container(
-                                  width: 56, height: 56,
+                                  width: 56,
+                                  height: 56,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: PyraTheme.bgSurface,
                                     border: Border.all(
-                                        color: PyraTheme.primaryCyan.withOpacity(0.4), width: 2),
-                                    boxShadow: [BoxShadow(
-                                        color: PyraTheme.primaryCyan.withOpacity(0.2),
-                                        blurRadius: 12)],
+                                        color: PyraTheme.primaryCyan
+                                            .withOpacity(0.4),
+                                        width: 2),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: PyraTheme.primaryCyan
+                                              .withOpacity(0.2),
+                                          blurRadius: 12)
+                                    ],
                                   ),
-                                  child: Center(child: Text(profile.emoji,
-                                      style: const TextStyle(fontSize: 26))),
+                                  child: Center(
+                                      child: Text(profile.emoji,
+                                          style:
+                                              const TextStyle(fontSize: 26))),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         user.displayName ?? 'Mon Profil',
-                                        style: const TextStyle(color: Colors.white,
-                                            fontWeight: FontWeight.w900, fontSize: 16),
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 16),
                                       ),
                                       const SizedBox(height: 4),
                                       Row(
@@ -99,21 +111,26 @@ class SettingsScreen extends ConsumerWidget {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8, vertical: 3),
                                             decoration: BoxDecoration(
-                                              gradient: PyraTheme.purplePinkGradient,
-                                              borderRadius: BorderRadius.circular(10),
+                                              gradient:
+                                                  PyraTheme.purplePinkGradient,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
                                             child: Text(
                                               profile.activeTitle.toUpperCase(),
-                                              style: const TextStyle(color: Colors.white,
-                                                  fontSize: 9, fontWeight: FontWeight.w900,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.w900,
                                                   letterSpacing: 1.2),
                                             ),
                                           ),
                                           const SizedBox(width: 8),
                                           Text('Niv. ${profile.level}',
-                                            style: const TextStyle(
-                                                color: PyraTheme.primaryCyan,
-                                                fontSize: 12, fontWeight: FontWeight.bold)),
+                                              style: const TextStyle(
+                                                  color: PyraTheme.primaryCyan,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold)),
                                         ],
                                       ),
                                     ],
@@ -124,8 +141,10 @@ class SettingsScreen extends ConsumerWidget {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     const Text('Voir le profil',
-                                      style: TextStyle(color: PyraTheme.primaryCyan,
-                                          fontSize: 11, fontWeight: FontWeight.bold)),
+                                        style: TextStyle(
+                                            color: PyraTheme.primaryCyan,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold)),
                                     const SizedBox(height: 2),
                                     const Icon(Icons.arrow_forward_ios_rounded,
                                         color: PyraTheme.primaryCyan, size: 13),
@@ -144,21 +163,24 @@ class SettingsScreen extends ConsumerWidget {
                             icon: Icons.music_note_rounded,
                             label: 'Musique',
                             value: settings.musicVolume,
-                            onChanged: (v) => settingsNotifier.updateMusicVolume(v),
+                            onChanged: (v) =>
+                                settingsNotifier.updateMusicVolume(v),
                           ),
                           const Divider(color: Colors.white10, height: 1),
                           _VolumeSliderTile(
                             icon: Icons.volume_up_rounded,
                             label: 'Bruitages (SFX)',
                             value: settings.sfxVolume,
-                            onChanged: (v) => settingsNotifier.updateSfxVolume(v),
+                            onChanged: (v) =>
+                                settingsNotifier.updateSfxVolume(v),
                           ),
                           const Divider(color: Colors.white10, height: 1),
                           _SettingTile(
                             icon: Icons.vibration_rounded,
                             label: 'Vibrations',
                             value: settings.vibrationEnabled,
-                            onChanged: (v) => settingsNotifier.toggleVibration(v),
+                            onChanged: (v) =>
+                                settingsNotifier.toggleVibration(v),
                           ),
                         ],
                       ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
@@ -171,12 +193,14 @@ class SettingsScreen extends ConsumerWidget {
                             icon: Icons.visibility_rounded,
                             label: 'Mode daltonien',
                             value: settings.colorBlindMode,
-                            onChanged: (v) => settingsNotifier.toggleColorBlindMode(v),
+                            onChanged: (v) =>
+                                settingsNotifier.toggleColorBlindMode(v),
                           ),
                           const Divider(color: Colors.white10, height: 1),
                           _LanguageTile(
                             selected: settings.language,
-                            onChanged: (lang) => settingsNotifier.setLanguage(lang),
+                            onChanged: (lang) =>
+                                settingsNotifier.setLanguage(lang),
                           ),
                         ],
                       ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
@@ -186,105 +210,145 @@ class SettingsScreen extends ConsumerWidget {
                         title: 'SUPPORT & INFOS',
                         children: [
                           ListTile(
-                            leading: const Icon(Icons.help_outline_rounded, color: PyraTheme.primaryYellow),
-                            title: const Text('Revoir le tutoriel', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 16),
+                            leading: const Icon(Icons.help_outline_rounded,
+                                color: PyraTheme.primaryYellow),
+                            title: const Text('Revoir le tutoriel',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                            trailing: const Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: Colors.white30,
+                                size: 16),
                             onTap: () {
                               settingsNotifier.resetTutorial();
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Le tutoriel sera relancé à votre prochaine partie !')),
+                                const SnackBar(
+                                    content: Text(
+                                        'Le tutoriel sera relancé à votre prochaine partie !')),
                               );
                             },
                           ),
                           const Divider(color: Colors.white10, height: 1),
                           ListTile(
-                            leading: const Icon(Icons.bug_report_rounded, color: PyraTheme.primaryPink),
-                            title: const Text('Signaler un bug / Support', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
-                            onTap: () => _launchUrl('mailto:support@lapyramide.app?subject=Support%20Pyramide%20Party'),
+                            leading: const Icon(Icons.bug_report_rounded,
+                                color: PyraTheme.primaryPink),
+                            title: const Text('Signaler un bug / Support',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                            trailing: const Icon(Icons.open_in_new_rounded,
+                                color: Colors.white30, size: 16),
+                            onTap: () => _launchUrl(
+                                'mailto:support@lapyramide.app?subject=Support%20Pyramide%20Party'),
                           ),
                           const Divider(color: Colors.white10, height: 1),
                           ListTile(
-                            leading: const Icon(Icons.privacy_tip_rounded, color: PyraTheme.primaryCyan),
-                            title: const Text('Politique de confidentialité', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
-                            onTap: () => _launchUrl('https://lapyramide.app/privacy'),
+                            leading: const Icon(Icons.privacy_tip_rounded,
+                                color: PyraTheme.primaryCyan),
+                            title: const Text('Politique de confidentialité',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                            trailing: const Icon(Icons.open_in_new_rounded,
+                                color: Colors.white30, size: 16),
+                            onTap: () =>
+                                _launchUrl('https://lapyramide.app/privacy'),
                           ),
                           const Divider(color: Colors.white10, height: 1),
                           ListTile(
-                            leading: const Icon(Icons.description_rounded, color: Colors.white70),
-                            title: const Text('Conditions d\'utilisation', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
-                            onTap: () => _launchUrl('https://lapyramide.app/terms'),
+                            leading: const Icon(Icons.description_rounded,
+                                color: Colors.white70),
+                            title: const Text('Conditions d\'utilisation',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                            trailing: const Icon(Icons.open_in_new_rounded,
+                                color: Colors.white30, size: 16),
+                            onTap: () =>
+                                _launchUrl('https://lapyramide.app/terms'),
                           ),
                         ],
                       ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
                       const SizedBox(height: 32),
 
-                      Consumer(
-                        builder: (context, ref, child) {
-                          return Center(
-                            child: PulsarButton(
-                              text: 'Se déconnecter',
-                              paddingHorizontal: 32,
-                              gradient: const LinearGradient(colors: [Colors.grey, Colors.blueGrey]),
-                              onPressed: () async {
-                                await ref.read(authServiceProvider).signOut();
-                                if (context.mounted) {
-                                  context.goNamed('auth');
-                                }
-                              },
-                            ),
-                          );
-                        }
-                      ),
+                      Consumer(builder: (context, ref, child) {
+                        return Center(
+                          child: PulsarButton(
+                            text: 'Se déconnecter',
+                            paddingHorizontal: 32,
+                            gradient: const LinearGradient(
+                                colors: [Colors.grey, Colors.blueGrey]),
+                            onPressed: () async {
+                              await ref.read(authServiceProvider).signOut();
+                              if (context.mounted) {
+                                context.goNamed('auth');
+                              }
+                            },
+                          ),
+                        );
+                      }),
                       const SizedBox(height: 16),
-                      Consumer(
-                        builder: (context, ref, child) {
-                          return Center(
-                            child: TextButton.icon(
-                              icon: const Icon(Icons.warning_rounded, color: Colors.redAccent, size: 16),
-                              label: const Text('Supprimer mon compte', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    backgroundColor: PyraTheme.bgCard,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                    title: const Text('⚠️ Attention', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                                    content: const Text(
-                                      'Cette action est irréversible. Toutes vos statistiques, XP, jokers et cosmétiques seront définitivement perdus. Êtes-vous sûr de vouloir continuer ?',
-                                      style: TextStyle(color: Colors.white70),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text('Annuler', style: TextStyle(color: Colors.white)),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                          await ref.read(authServiceProvider).signOut();
-                                          if (context.mounted) {
-                                            context.goNamed('auth');
-                                          }
-                                        },
-                                        child: const Text('Supprimer', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-                                      ),
-                                    ],
+                      Consumer(builder: (context, ref, child) {
+                        return Center(
+                          child: TextButton.icon(
+                            icon: const Icon(Icons.warning_rounded,
+                                color: Colors.redAccent, size: 16),
+                            label: const Text('Supprimer mon compte',
+                                style: TextStyle(
+                                    color: Colors.redAccent,
+                                    fontWeight: FontWeight.bold)),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  backgroundColor: PyraTheme.bgCard,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  title: const Text('⚠️ Attention',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold)),
+                                  content: const Text(
+                                    'Cette action est irréversible. Toutes vos statistiques, XP, jokers et cosmétiques seront définitivement perdus. Êtes-vous sûr de vouloir continuer ?',
+                                    style: TextStyle(color: Colors.white70),
                                   ),
-                                );
-                              },
-                            ),
-                          );
-                        }
-                      ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Annuler',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        Navigator.pop(context);
+                                        await ref
+                                            .read(authServiceProvider)
+                                            .signOut();
+                                        if (context.mounted) {
+                                          context.goNamed('auth');
+                                        }
+                                      },
+                                      child: const Text('Supprimer',
+                                          style: TextStyle(
+                                              color: Colors.redAccent,
+                                              fontWeight: FontWeight.bold)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }),
                       const SizedBox(height: 24),
                       Center(
                         child: Text(
                           'Pyramide Party v1.0.2\nApp Store Review Build',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: PyraTheme.textMuted, fontSize: 12),
+                          style: TextStyle(
+                              color: PyraTheme.textMuted, fontSize: 12),
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -353,7 +417,12 @@ class _SettingTile extends StatelessWidget {
         children: [
           Icon(icon, color: Colors.white, size: 24),
           const SizedBox(width: 16),
-          Expanded(child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
+          Expanded(
+              child: Text(label,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold))),
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
@@ -390,9 +459,14 @@ class _VolumeSliderTile extends StatelessWidget {
             children: [
               Icon(icon, color: Colors.white, size: 24),
               const SizedBox(width: 16),
-              Text(label, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(label,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold)),
               const Spacer(),
-              Text('${(value * 100).toInt()}%', style: const TextStyle(color: Colors.white54, fontSize: 14)),
+              Text('${(value * 100).toInt()}%',
+                  style: const TextStyle(color: Colors.white54, fontSize: 14)),
             ],
           ),
           const SizedBox(height: 8),
@@ -427,10 +501,7 @@ class _LanguageTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Row(
         children: [
-          for (final lang in [
-            ('fr', '🇫🇷 Français'),
-            ('en', '🇬🇧 English')
-          ])
+          for (final lang in [('fr', '🇫🇷 Français'), ('en', '🇬🇧 English')])
             Expanded(
               child: GestureDetector(
                 onTap: () => onChanged(lang.$1),
@@ -439,18 +510,25 @@ class _LanguageTile extends StatelessWidget {
                   margin: EdgeInsets.only(right: lang.$1 == 'fr' ? 8 : 0),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    gradient: selected == lang.$1 ? PyraTheme.purplePinkGradient : null,
-                    color: selected == lang.$1 ? null : Colors.white.withOpacity(0.05),
+                    gradient: selected == lang.$1
+                        ? PyraTheme.purplePinkGradient
+                        : null,
+                    color: selected == lang.$1
+                        ? null
+                        : Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: selected == lang.$1 ? Colors.transparent : Colors.white12),
+                    border: Border.all(
+                        color: selected == lang.$1
+                            ? Colors.transparent
+                            : Colors.white12),
                   ),
                   child: Text(
                     lang.$2,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: selected == lang.$1 ? Colors.white : Colors.white54, 
-                      fontWeight: FontWeight.bold
-                    ),
+                        color:
+                            selected == lang.$1 ? Colors.white : Colors.white54,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),

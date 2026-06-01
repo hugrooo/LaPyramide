@@ -41,7 +41,8 @@ class GlassContainer extends StatelessWidget {
               color: color.withOpacity(opacity),
               borderRadius: effectiveBorderRadius,
               // Light border on top-left, dark on bottom-right for 3D glass effect
-              border: border ?? Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
+              border: border ??
+                  Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
               gradient: innerGlow
                   ? LinearGradient(
                       begin: Alignment.topLeft,

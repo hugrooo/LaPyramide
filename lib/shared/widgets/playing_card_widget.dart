@@ -31,7 +31,9 @@ class PlayingCardWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activeCardBack = overrideSkin ?? ref.watch(userProfileProvider).value?.activeCardBack ?? 'classic';
+    final activeCardBack = overrideSkin ??
+        ref.watch(userProfileProvider).value?.activeCardBack ??
+        'classic';
 
     return GestureDetector(
       onTap: onTap != null
@@ -72,7 +74,9 @@ class PlayingCardWidget extends ConsumerWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(9),
-          child: faceUp && card != null ? _buildFront(card!) : _buildBack(activeCardBack),
+          child: faceUp && card != null
+              ? _buildFront(card!)
+              : _buildBack(activeCardBack),
         ),
       ),
     );
@@ -203,7 +207,10 @@ class PlayingCardWidget extends ConsumerWidget {
         bgGradient = const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFFFB6C1), Color(0xFFFF1493)], // Light pink to Deep pink
+          colors: [
+            Color(0xFFFFB6C1),
+            Color(0xFFFF1493)
+          ], // Light pink to Deep pink
         );
         borderColor = Colors.white;
         centerGlowColor = Colors.white;
@@ -330,7 +337,8 @@ class PlayingCardWidget extends ConsumerWidget {
             child: Container(
               margin: EdgeInsets.all(width * 0.1),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(style == 'retro' ? 0 : width * 0.1),
+                borderRadius:
+                    BorderRadius.circular(style == 'retro' ? 0 : width * 0.1),
                 border: Border.all(
                   color: borderColor.withOpacity(0.5),
                   width: width * 0.025 > 1.0 ? width * 0.025 : 1.0,
@@ -344,15 +352,14 @@ class PlayingCardWidget extends ConsumerWidget {
                 ),
               ),
               child: Center(
-                child: Text(
-                  centerSymbol, 
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: style == 'beta' ? width * 0.23 : width * 0.36,
-                    fontWeight: style == 'beta' ? FontWeight.bold : FontWeight.normal,
-                    color: style == 'beta' ? const Color(0xFFE040FB) : null,
-                  )
-                ),
+                child: Text(centerSymbol,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: style == 'beta' ? width * 0.23 : width * 0.36,
+                      fontWeight:
+                          style == 'beta' ? FontWeight.bold : FontWeight.normal,
+                      color: style == 'beta' ? const Color(0xFFE040FB) : null,
+                    )),
               ),
             ),
           ),
@@ -363,8 +370,14 @@ class PlayingCardWidget extends ConsumerWidget {
     if (style == 'vip') {
       cardBack = cardBack
           .animate(onPlay: (controller) => controller.repeat(reverse: true))
-          .shimmer(duration: 2500.ms, color: Colors.white.withOpacity(0.6), angle: 0.8)
-          .elevation(end: 10, duration: 1250.ms, color: Colors.cyanAccent.withOpacity(0.3));
+          .shimmer(
+              duration: 2500.ms,
+              color: Colors.white.withOpacity(0.6),
+              angle: 0.8)
+          .elevation(
+              end: 10,
+              duration: 1250.ms,
+              color: Colors.cyanAccent.withOpacity(0.3));
     }
 
     return cardBack;

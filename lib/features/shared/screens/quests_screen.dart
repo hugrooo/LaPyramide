@@ -43,7 +43,8 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
       final profile = ref.read(userProfileProvider).value;
       if (profile == null) return;
 
-      final int nextClaimAvailable = profile.lastDailyChestClaimed + 24 * 60 * 60 * 1000;
+      final int nextClaimAvailable =
+          profile.lastDailyChestClaimed + 24 * 60 * 60 * 1000;
       final int now = DateTime.now().millisecondsSinceEpoch;
       final int diff = nextClaimAvailable - now;
 
@@ -104,13 +105,17 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: PyraTheme.bgCard,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           title: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.card_giftcard_rounded, color: PyraTheme.primaryPink, size: 28),
+              Icon(Icons.card_giftcard_rounded,
+                  color: PyraTheme.primaryPink, size: 28),
               SizedBox(width: 8),
-              Text('Récompense !', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              Text('Récompense !',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ],
           ),
           content: Column(
@@ -126,33 +131,47 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: PyraTheme.primaryYellow.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: PyraTheme.primaryYellow.withOpacity(0.4)),
+                      border: Border.all(
+                          color: PyraTheme.primaryYellow.withOpacity(0.4)),
                     ),
                     child: Row(
                       children: [
-                        Text('+$coinsReward', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                        Text('+$coinsReward',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18)),
                         const SizedBox(width: 6),
-                        const Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 20),
+                        const Icon(Icons.monetization_on_rounded,
+                            color: PyraTheme.primaryYellow, size: 20),
                       ],
                     ),
                   ),
                   const SizedBox(width: 16),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: PyraTheme.primaryPurple.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: PyraTheme.primaryPurple.withOpacity(0.4)),
+                      border: Border.all(
+                          color: PyraTheme.primaryPurple.withOpacity(0.4)),
                     ),
                     child: Row(
                       children: [
-                        Text('+$diamondsReward', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                        Text('+$diamondsReward',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18)),
                         const SizedBox(width: 6),
-                        const Icon(Icons.diamond_rounded, color: PyraTheme.primaryPurple, size: 20),
+                        const Icon(Icons.diamond_rounded,
+                            color: PyraTheme.primaryPurple, size: 20),
                       ],
                     ),
                   ),
@@ -175,8 +194,6 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final userProfileAsync = ref.watch(userProfileProvider);
@@ -186,7 +203,8 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
     final quests = profile?.quests ?? {};
 
     // Détermination de l'état du coffre
-    final int nextClaimAvailable = (profile?.lastDailyChestClaimed ?? 0) + 24 * 60 * 60 * 1000;
+    final int nextClaimAvailable =
+        (profile?.lastDailyChestClaimed ?? 0) + 24 * 60 * 60 * 1000;
     final int now = DateTime.now().millisecondsSinceEpoch;
     final bool isChestAvailable = now >= nextClaimAvailable;
 
@@ -200,42 +218,59 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
               children: [
                 // Top Bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                            color: Colors.white),
                         onPressed: () => context.pop(),
                       ),
                       const Expanded(
                         child: Text(
                           'Quêtes & Coffre',
-                          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900),
                           textAlign: TextAlign.center,
                         ),
                       ),
                       Row(
                         children: [
                           GlassContainer(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
                             borderRadius: BorderRadius.circular(16),
                             child: Row(
                               children: [
-                                Text('$currentCoins', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                Text('$currentCoins',
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13)),
                                 const SizedBox(width: 4),
-                                const Icon(Icons.monetization_on_rounded, color: PyraTheme.primaryYellow, size: 14),
+                                const Icon(Icons.monetization_on_rounded,
+                                    color: PyraTheme.primaryYellow, size: 14),
                               ],
                             ),
                           ),
                           const SizedBox(width: 8),
                           GlassContainer(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
                             borderRadius: BorderRadius.circular(16),
                             child: Row(
                               children: [
-                                Text('$currentDiamonds', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                Text('$currentDiamonds',
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13)),
                                 const SizedBox(width: 4),
-                                const Icon(Icons.diamond_rounded, color: PyraTheme.primaryPurple, size: 14),
+                                const Icon(Icons.diamond_rounded,
+                                    color: PyraTheme.primaryPurple, size: 14),
                               ],
                             ),
                           ),
@@ -253,14 +288,20 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                       Center(
                         child: Text(
                           'COFFRE MYSTÈRE QUOTIDIEN',
-                          style: TextStyle(color: PyraTheme.primaryCyan, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+                          style: TextStyle(
+                              color: PyraTheme.primaryCyan,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.5),
                         ),
                       ),
                       const SizedBox(height: 16),
                       Center(
                         child: GestureDetector(
                           onTap: () {
-                            if (isChestAvailable && !_isChestOpening && profile != null) {
+                            if (isChestAvailable &&
+                                !_isChestOpening &&
+                                profile != null) {
                               _claimDailyChest(profile);
                             }
                           },
@@ -272,24 +313,50 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                                 height: 180,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: (isChestAvailable ? PyraTheme.primaryPink : Colors.grey).withOpacity(0.08),
+                                  color: (isChestAvailable
+                                          ? PyraTheme.primaryPink
+                                          : Colors.grey)
+                                      .withOpacity(0.08),
                                   boxShadow: isChestAvailable
-                                      ? [BoxShadow(color: PyraTheme.primaryPink.withOpacity(0.3), blurRadius: 40, spreadRadius: 5)]
+                                      ? [
+                                          BoxShadow(
+                                              color: PyraTheme.primaryPink
+                                                  .withOpacity(0.3),
+                                              blurRadius: 40,
+                                              spreadRadius: 5)
+                                        ]
                                       : null,
                                 ),
                               ),
                               // Icône ou Texte Animé du Coffre
                               _isChestOpening
-                                  ? const Text('🎁', style: TextStyle(fontSize: 90))
+                                  ? const Text('🎁',
+                                          style: TextStyle(fontSize: 90))
                                       .animate(onPlay: (c) => c.repeat())
                                       .shake(duration: 300.ms, hz: 6)
-                                      .scale(end: const Offset(1.3, 1.3), duration: 1500.ms, curve: Curves.easeIn)
+                                      .scale(
+                                          end: const Offset(1.3, 1.3),
+                                          duration: 1500.ms,
+                                          curve: Curves.easeIn)
                                   : (isChestAvailable
-                                      ? const Text('🎁', style: TextStyle(fontSize: 85))
-                                          .animate(onPlay: (c) => c.repeat(reverse: true))
-                                          .scale(begin: const Offset(1.0, 1.0), end: const Offset(1.08, 1.08), duration: 1200.ms, curve: Curves.easeInOut)
-                                          .shake(delay: 2000.ms, duration: 400.ms, hz: 3)
-                                      : const Text('📦', style: TextStyle(fontSize: 80, color: Colors.grey))),
+                                      ? const Text('🎁',
+                                              style: TextStyle(fontSize: 85))
+                                          .animate(
+                                              onPlay: (c) =>
+                                                  c.repeat(reverse: true))
+                                          .scale(
+                                              begin: const Offset(1.0, 1.0),
+                                              end: const Offset(1.08, 1.08),
+                                              duration: 1200.ms,
+                                              curve: Curves.easeInOut)
+                                          .shake(
+                                              delay: 2000.ms,
+                                              duration: 400.ms,
+                                              hz: 3)
+                                      : const Text('📦',
+                                          style: TextStyle(
+                                              fontSize: 80,
+                                              color: Colors.grey))),
                             ],
                           ),
                         ),
@@ -299,24 +366,32 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                         child: isChestAvailable
                             ? const Text(
                                 'CLIQUEZ SUR LE CADEAU POUR L\'OUVRIR !',
-                                style: TextStyle(color: Colors.greenAccent, fontSize: 13, fontWeight: FontWeight.w900),
+                                style: TextStyle(
+                                    color: Colors.greenAccent,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w900),
                               )
                             : Column(
                                 children: [
                                   Text(
                                     'Prochain coffre disponible dans :',
-                                    style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 13),
+                                    style: TextStyle(
+                                        color: Colors.white.withOpacity(0.55),
+                                        fontSize: 13),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    _timeLeft != Duration.zero ? _formatDuration(_timeLeft) : '24:00:00',
-                                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
+                                    _timeLeft != Duration.zero
+                                        ? _formatDuration(_timeLeft)
+                                        : '24:00:00',
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w900),
                                   ),
                                 ],
                               ),
                       ),
-
-
                     ],
                   ),
                 ),

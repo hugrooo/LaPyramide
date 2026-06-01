@@ -51,7 +51,8 @@ class LocalGameNotifier extends StateNotifier<GameState?> {
 
   void resolveBluff(String fromId, String? cardId) {
     if (state == null) return;
-    state = GameLogic.resolveBluff(state: state!, fromPlayerId: fromId, cardId: cardId);
+    state = GameLogic.resolveBluff(
+        state: state!, fromPlayerId: fromId, cardId: cardId);
   }
 
   void acceptDrink() {
@@ -61,12 +62,14 @@ class LocalGameNotifier extends StateNotifier<GameState?> {
 
   void usePower(String playerId, String cardId) {
     if (state == null) return;
-    state = GameLogic.usePower(state: state!, playerId: playerId, cardId: cardId);
+    state =
+        GameLogic.usePower(state: state!, playerId: playerId, cardId: cardId);
   }
 
   void useJoker(String jokerId, String playerId) {
     if (state == null) return;
-    state = GameLogic.useJoker(state: state!, playerId: playerId, jokerId: jokerId);
+    state =
+        GameLogic.useJoker(state: state!, playerId: playerId, jokerId: jokerId);
   }
 
   void nextCard() {
@@ -99,7 +102,9 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(localGameProvider.notifier).initGame(widget.players, widget.settings);
+      ref
+          .read(localGameProvider.notifier)
+          .initGame(widget.players, widget.settings);
     });
   }
 
@@ -115,7 +120,9 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
 
     // Écouter le changement d'état pour incrémenter le nombre de parties jouées à la fin de la partie locale
     ref.listen<GameState?>(localGameProvider, (previous, next) {
-      if (next != null && next.phase == GamePhase.finished && (previous == null || previous.phase != GamePhase.finished)) {
+      if (next != null &&
+          next.phase == GamePhase.finished &&
+          (previous == null || previous.phase != GamePhase.finished)) {
         final user = ref.read(authServiceProvider).currentUser;
         if (user != null) {
           UserProfile.addGameRewards(user.uid, 0, 0, 0);
@@ -149,8 +156,7 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
             _buildBluffDialog(gameState),
 
           // Écran de passage de téléphone
-          if (_showPassPhone)
-            _buildPassPhoneScreen(gameState),
+          if (_showPassPhone) _buildPassPhoneScreen(gameState),
         ],
       ),
     );
@@ -260,16 +266,23 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
                     gradient: PyraTheme.purplePinkGradient,
                     onPressed: () async {
                       HapticFeedback.mediumImpact();
-                      
+
                       final user = ref.read(authStateChangesProvider).value;
                       if (user != null) {
-                        await FirebaseDatabase.instance.ref('users/${user.uid}/jokers/double_dose').set(doubleDoseCount - 1);
+                        await FirebaseDatabase.instance
+                            .ref('users/${user.uid}/jokers/double_dose')
+                            .set(doubleDoseCount - 1);
                       }
-                      
+
                       if (mounted) {
-                        ref.read(localGameProvider.notifier).useJoker('double_dose', currentPlayer.id);
+                        ref
+                            .read(localGameProvider.notifier)
+                            .useJoker('double_dose', currentPlayer.id);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Double Dose activé ! Vos pénalités sont doublées pour ce tour !'), backgroundColor: Colors.purpleAccent),
+                          const SnackBar(
+                              content: Text(
+                                  'Double Dose activé ! Vos pénalités sont doublées pour ce tour !'),
+                              backgroundColor: Colors.purpleAccent),
                         );
                       }
                     },
@@ -285,8 +298,8 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
   }
 
   Widget _buildAssignButton(GameState gameState) {
-    final target = gameState.players
-        .firstWhere((p) => p.id == _assignToPlayerId);
+    final target =
+        gameState.players.firstWhere((p) => p.id == _assignToPlayerId);
 
     return GestureDetector(
       onTap: () {
@@ -323,8 +336,8 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
 
   Widget _buildDrinkOverlay(GameState gameState) {
     // Trouver le joueur qui doit prendre (le dernier qui a reçu des pénalités)
-    final player = gameState.players.reduce(
-        (a, b) => a.totalSips > b.totalSips ? a : b);
+    final player =
+        gameState.players.reduce((a, b) => a.totalSips > b.totalSips ? a : b);
 
     return DrinkOverlay(
       player: player,
@@ -344,13 +357,14 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
 
   Widget _buildBluffDialog(GameState gameState) {
     final assignment = gameState.pendingDrinks.last;
-    final accuser = gameState.players.firstWhere(
-        (p) => p.id == assignment.fromPlayerId);
-    final accused = gameState.players.firstWhere(
-        (p) => p.id == assignment.toPlayerId);
-        
+    final accuser =
+        gameState.players.firstWhere((p) => p.id == assignment.fromPlayerId);
+    final accused =
+        gameState.players.firstWhere((p) => p.id == assignment.toPlayerId);
+
     // Récupérer les pouvoirs du joueur ciblé
-    final availablePowers = accused.hand.where((c) => c.powerType != PowerType.none).toList();
+    final availablePowers =
+        accused.hand.where((c) => c.powerType != PowerType.none).toList();
 
     return Material(
       color: Colors.transparent,
@@ -361,14 +375,17 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
         availablePowers: availablePowers,
         onChallenge: () => ref.read(localGameProvider.notifier).callBluff(),
         onAccept: () => ref.read(localGameProvider.notifier).acceptDrink(),
-        onUsePower: (cardId) => ref.read(localGameProvider.notifier).usePower(accused.id, cardId),
+        onUsePower: (cardId) =>
+            ref.read(localGameProvider.notifier).usePower(accused.id, cardId),
         onUseJoker: (jokerId) {
           ref.read(localGameProvider.notifier).useJoker(jokerId, accused.id);
         },
         isBluffCalled: assignment.isBluffCalled,
         cardsToProve: accuser.hand,
         onResolveBluff: (cardId) {
-          ref.read(localGameProvider.notifier).resolveBluff(assignment.fromPlayerId, cardId);
+          ref
+              .read(localGameProvider.notifier)
+              .resolveBluff(assignment.fromPlayerId, cardId);
         },
       ),
     );
