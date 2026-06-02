@@ -426,11 +426,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 ),
               ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     ),
-  )
+  );
+},
+              ),
+            ),
+          )
               .animate()
               .slideY(begin: 0.2, duration: 600.ms, curve: Curves.easeOutCubic),
         ],
