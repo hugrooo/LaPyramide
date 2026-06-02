@@ -243,13 +243,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           ),
 
           // 3. Panneau Glassmorphism du bas
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SingleChildScrollView(
-              child: GlassContainer(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(32),
-                innerGlow: true,
+          Positioned.fill(
+            child: SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      child: IntrinsicHeight(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: GlassContainer(
+                                padding: const EdgeInsets.all(32),
+                                innerGlow: true,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -387,20 +396,29 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     const SizedBox(height: 24),
 
                     // Boutons sociaux
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Column(
                       children: [
-                        _buildSocialButton('assets/images/google_logo.png',
-                            Icons.g_mobiledata, Colors.white,
-                            onPressed: _signInWithGoogle),
+                        _buildSocialButton(
+                          icon: Icons.g_mobiledata,
+                          text: 'Continuer avec Google',
+                          iconColor: Colors.white,
+                          textColor: Colors.white,
+                          backgroundColor: Colors.white.withOpacity(0.1),
+                          borderColor: Colors.white.withOpacity(0.2),
+                          onPressed: _signInWithGoogle,
+                        ),
                         if (Theme.of(context).platform == TargetPlatform.iOS ||
-                            Theme.of(context).platform ==
-                                TargetPlatform.macOS) ...[
-                          const SizedBox(width: 16),
-                          _buildSocialButton('assets/images/apple_logo.png',
-                              Icons.apple, Colors.black,
-                              backgroundColor: Colors.white,
-                              onPressed: _signInWithApple),
+                            Theme.of(context).platform == TargetPlatform.macOS) ...[
+                          const SizedBox(height: 12),
+                          _buildSocialButton(
+                            icon: Icons.apple,
+                            text: 'Continuer avec Apple',
+                            iconColor: Colors.black,
+                            textColor: Colors.black,
+                            backgroundColor: Colors.white,
+                            borderColor: Colors.white,
+                            onPressed: _signInWithApple,
+                          ),
                         ],
                       ],
                     ),
@@ -409,6 +427,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               ),
             ),
           )
+        ],
+      ),
+    ),
+  )
               .animate()
               .slideY(begin: 0.2, duration: 600.ms, curve: Curves.easeOutCubic),
         ],
@@ -502,16 +524,40 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
   }
 
-  Widget _buildSocialButton(
-      String assetPath, IconData fallbackIcon, Color iconColor,
-      {Color? backgroundColor, required VoidCallback onPressed}) {
+  Widget _buildSocialButton({
+    required IconData icon,
+    required String text,
+    required Color iconColor,
+    required Color textColor,
+    required Color backgroundColor,
+    required Color borderColor,
+    required VoidCallback onPressed,
+  }) {
     return GestureDetector(
       onTap: onPressed,
-      child: GlassContainer(
-        padding: const EdgeInsets.all(12),
-        borderRadius: BorderRadius.circular(20),
-        innerGlow: true,
-        child: Icon(fallbackIcon, color: iconColor, size: 32),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: iconColor, size: 28),
+            const SizedBox(width: 8),
+            Text(
+              text,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

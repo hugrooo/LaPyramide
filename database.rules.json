@@ -1,6 +1,14 @@
 {
   "rules": {
-    ".read": true,
-    ".write": true
+    ".read": "auth != null",
+    ".write": "auth != null",
+    "users": {
+      ".read": true,
+      ".indexOn": ["searchName", "xp"]
+    },
+    "leaderboard": {
+      ".read": true,
+      ".indexOn": ["totalSips"]
+    }
   }
 }
