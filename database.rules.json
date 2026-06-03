@@ -1,14 +1,29 @@
 {
   "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null",
     "users": {
-      ".read": true,
-      ".indexOn": ["searchName", "xp"]
+      ".read": "auth != null",
+      ".indexOn": ["searchName", "xp", "squadId"],
+      "$uid": {
+        ".write": "$uid === auth.uid || auth != null" 
+      }
+    },
+    "squads": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["xp"]
     },
     "leaderboard": {
-      ".read": true,
+      ".read": "auth != null",
+      ".write": "auth != null",
       ".indexOn": ["totalSips"]
+    },
+    "rooms": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "promo_codes": {
+      ".read": "auth != null",
+      ".write": "auth != null"
     }
   }
 }
