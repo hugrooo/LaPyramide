@@ -201,127 +201,123 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     required String title,
     required String description,
   }) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: IntrinsicHeight(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: color.withOpacity(0.1),
-                      border: Border.all(color: color.withOpacity(0.5), width: 2),
-                      boxShadow: [
-                        BoxShadow(color: color.withOpacity(0.3), blurRadius: 30)
-                      ],
-                    ),
-                    child: Icon(icon, size: 80, color: color),
-                  ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack),
-                  const SizedBox(height: 48),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
-                  const SizedBox(height: 16),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 16,
-                      height: 1.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
-                ],
-              ),
+    return CustomScrollView(
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: color.withOpacity(0.1),
+                    border: Border.all(color: color.withOpacity(0.5), width: 2),
+                    boxShadow: [
+                      BoxShadow(color: color.withOpacity(0.3), blurRadius: 30)
+                    ],
+                  ),
+                  child: Icon(icon, size: 80, color: color),
+                ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack),
+                const SizedBox(height: 48),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
+                const SizedBox(height: 16),
+                Text(
+                  description,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 16,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
+              ],
             ),
           ),
         ),
-      );
-    });
+      ],
+    );
   }
 
   Widget _buildProfileSetupSlide() {
-    return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: IntrinsicHeight(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: PyraTheme.primaryYellow.withOpacity(0.1),
-                      border: Border.all(
-                          color: PyraTheme.primaryYellow.withOpacity(0.5), width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                            color: PyraTheme.primaryYellow.withOpacity(0.3),
-                            blurRadius: 30)
-                      ],
-                    ),
-                    child: const Icon(Icons.person_outline_rounded,
-                        size: 80, color: PyraTheme.primaryYellow),
-                  ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack),
-                  const SizedBox(height: 48),
-                  const Text(
-                    'Choisis ton pseudo',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+    return CustomScrollView(
+      slivers: [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: PyraTheme.primaryYellow.withOpacity(0.1),
+                    border: Border.all(
+                        color: PyraTheme.primaryYellow.withOpacity(0.5), width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                          color: PyraTheme.primaryYellow.withOpacity(0.3),
+                          blurRadius: 30)
+                    ],
+                  ),
+                  child: const Icon(Icons.person_outline_rounded,
+                      size: 80, color: PyraTheme.primaryYellow),
+                ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack),
+                const SizedBox(height: 48),
+                const Text(
+                  'Choisis ton pseudo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
+                const SizedBox(height: 16),
+                Text(
+                  'Ce sera ton nom dans les classements et lors de tes parties.',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 16,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
+                const SizedBox(height: 32),
+                GlassContainer(
+                  blur: 10,
+                  opacity: 0.1,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    controller: _nameController,
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
                     textAlign: TextAlign.center,
-                  ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Ce sera ton nom dans les classements et lors de tes parties.',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 16,
-                      height: 1.5,
+                    decoration: InputDecoration(
+                      hintText: '@Pseudo',
+                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                      border: InputBorder.none,
                     ),
-                    textAlign: TextAlign.center,
-                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
-                  const SizedBox(height: 32),
-                  GlassContainer(
-                    blur: 10,
-                    opacity: 0.1,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: TextField(
-                      controller: _nameController,
-                      style: const TextStyle(color: Colors.white, fontSize: 18),
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        hintText: '@Pseudo',
-                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                        border: InputBorder.none,
-                      ),
-                      onSubmitted: (_) => _submitProfile(),
-                    ),
-                  ).animate().fadeIn(delay: 600.ms).scale(),
-                ],
-              ),
+                    onSubmitted: (_) => _submitProfile(),
+                  ),
+                ).animate().fadeIn(delay: 600.ms).scale(),
+              ],
             ),
           ),
         ),
-      );
-    });
+      ],
+    );
   }
 }

@@ -245,193 +245,205 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           // 3. Panneau Glassmorphism du bas
           Positioned.fill(
             child: SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                      child: IntrinsicHeight(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: GlassContainer(
-                                padding: const EdgeInsets.all(32),
-                                innerGlow: true,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Titre
-                    Text(
-                      _isLogin ? 'Bon retour !' : 'Créer un compte',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _isLogin
-                          ? 'Heureux de te revoir parmi nous'
-                          : 'Crée ton compte et rejoins la partie',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Formulaire
-                    if (!_isLogin) ...[
-                      _buildInputLabel('Pseudo'),
-                      _buildTextField(
-                        controller: _nameController,
-                        icon: Icons.person_outline,
-                        hint: '@tonpseudo',
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    _buildInputLabel('Email'),
-                    _buildTextField(
-                      controller: _emailController,
-                      icon: Icons.mail_outline,
-                      hint: 'tonemail@gmail.com',
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 16),
-
-                    _buildInputLabel('Mot de passe'),
-                    _buildTextField(
-                      controller: _passwordController,
-                      icon: Icons.key_outlined,
-                      hint: '••••••••',
-                      isPassword: true,
-                      obscureText: _obscurePassword,
-                      onToggleObscure: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      },
-                    ),
-
-                    if (_isLogin)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text('Mot de passe oublié ?',
-                              style: TextStyle(
-                                  color: PyraTheme.textMuted, fontSize: 12)),
-                        ),
-                      )
-                    else
-                      const SizedBox(height: 24),
-
-                    // Bouton principal
-                    SizedBox(
-                      width: double.infinity,
-                      child: _isLoading
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                  color: PyraTheme.primaryPink))
-                          : PulsarButton(
-                              text: _isLogin ? 'Se connecter' : 'S\'inscrire',
-                              gradient: PyraTheme.purplePinkGradient,
-                              onPressed: _submit,
-                            ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Toggle state
-                    Center(
-                      child: GestureDetector(
-                        onTap: _toggleMode,
-                        child: RichText(
-                          text: TextSpan(
-                            text: _isLogin
-                                ? 'Pas encore de compte ? '
-                                : 'Déjà un compte ? ',
-                            style:
-                                TextStyle(color: Colors.white.withOpacity(0.6)),
-                            children: [
-                              TextSpan(
-                                text: _isLogin ? 'S\'inscrire' : 'Se connecter',
-                                style: const TextStyle(
-                                    color: PyraTheme.primaryPink,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Ou continuer avec
-                    Row(
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Expanded(
-                            child:
-                                Divider(color: Colors.white.withOpacity(0.1))),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            _isLogin
-                                ? 'Ou se connecter avec'
-                                : 'Ou s\'inscrire avec',
-                            style: TextStyle(
-                                color: Colors.white.withOpacity(0.4),
-                                fontSize: 12),
+                          padding: const EdgeInsets.all(16.0),
+                          child: GlassContainer(
+                            padding: const EdgeInsets.all(32),
+                            innerGlow: true,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Titre
+                                Text(
+                                  _isLogin ? 'Bon retour !' : 'Créer un compte',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  _isLogin
+                                      ? 'Heureux de te revoir parmi nous'
+                                      : 'Crée ton compte et rejoins la partie',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.6),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 32),
+
+                                // Formulaire
+                                if (!_isLogin) ...[
+                                  _buildInputLabel('Pseudo'),
+                                  _buildTextField(
+                                    controller: _nameController,
+                                    icon: Icons.person_outline,
+                                    hint: '@tonpseudo',
+                                  ),
+                                  const SizedBox(height: 16),
+                                ],
+
+                                _buildInputLabel('Email'),
+                                _buildTextField(
+                                  controller: _emailController,
+                                  icon: Icons.mail_outline,
+                                  hint: 'tonemail@gmail.com',
+                                  keyboardType: TextInputType.emailAddress,
+                                ),
+                                const SizedBox(height: 16),
+
+                                _buildInputLabel('Mot de passe'),
+                                _buildTextField(
+                                  controller: _passwordController,
+                                  icon: Icons.key_outlined,
+                                  hint: '••••••••',
+                                  isPassword: true,
+                                  obscureText: _obscurePassword,
+                                  onToggleObscure: () {
+                                    setState(() =>
+                                        _obscurePassword = !_obscurePassword);
+                                  },
+                                ),
+
+                                if (_isLogin)
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: TextButton(
+                                      onPressed: () {},
+                                      child: const Text('Mot de passe oublié ?',
+                                          style: TextStyle(
+                                              color: PyraTheme.textMuted,
+                                              fontSize: 12)),
+                                    ),
+                                  )
+                                else
+                                  const SizedBox(height: 24),
+
+                                // Bouton principal
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: _isLoading
+                                      ? const Center(
+                                          child: CircularProgressIndicator(
+                                              color: PyraTheme.primaryPink))
+                                      : PulsarButton(
+                                          text: _isLogin
+                                              ? 'Se connecter'
+                                              : 'S\'inscrire',
+                                          gradient:
+                                              PyraTheme.purplePinkGradient,
+                                          onPressed: _submit,
+                                        ),
+                                ),
+
+                                const SizedBox(height: 24),
+
+                                // Toggle state
+                                Center(
+                                  child: GestureDetector(
+                                    onTap: _toggleMode,
+                                    child: RichText(
+                                      text: TextSpan(
+                                        text: _isLogin
+                                            ? 'Pas encore de compte ? '
+                                            : 'Déjà un compte ? ',
+                                        style: TextStyle(
+                                            color:
+                                                Colors.white.withOpacity(0.6)),
+                                        children: [
+                                          TextSpan(
+                                            text: _isLogin
+                                                ? 'S\'inscrire'
+                                                : 'Se connecter',
+                                            style: const TextStyle(
+                                                color: PyraTheme.primaryPink,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 24),
+
+                                // Ou continuer avec
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: Divider(
+                                            color:
+                                                Colors.white.withOpacity(0.1))),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
+                                      child: Text(
+                                        _isLogin
+                                            ? 'Ou se connecter avec'
+                                            : 'Ou s\'inscrire avec',
+                                        style: TextStyle(
+                                            color:
+                                                Colors.white.withOpacity(0.4),
+                                            fontSize: 12),
+                                      ),
+                                    ),
+                                    Expanded(
+                                        child: Divider(
+                                            color:
+                                                Colors.white.withOpacity(0.1))),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 24),
+
+                                // Boutons sociaux
+                                Column(
+                                  children: [
+                                    _buildSocialButton(
+                                      icon: Icons.g_mobiledata,
+                                      text: 'Continuer avec Google',
+                                      iconColor: Colors.white,
+                                      textColor: Colors.white,
+                                      backgroundColor:
+                                          Colors.white.withOpacity(0.1),
+                                      borderColor:
+                                          Colors.white.withOpacity(0.2),
+                                      onPressed: _signInWithGoogle,
+                                    ),
+                                    if (Theme.of(context).platform ==
+                                            TargetPlatform.iOS ||
+                                        Theme.of(context).platform ==
+                                            TargetPlatform.macOS) ...[
+                                      const SizedBox(height: 12),
+                                      _buildSocialButton(
+                                        icon: Icons.apple,
+                                        text: 'Continuer avec Apple',
+                                        iconColor: Colors.black,
+                                        textColor: Colors.black,
+                                        backgroundColor: Colors.white,
+                                        borderColor: Colors.white,
+                                        onPressed: _signInWithApple,
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Expanded(
-                            child:
-                                Divider(color: Colors.white.withOpacity(0.1))),
                       ],
                     ),
-
-                    const SizedBox(height: 24),
-
-                    // Boutons sociaux
-                    Column(
-                      children: [
-                        _buildSocialButton(
-                          icon: Icons.g_mobiledata,
-                          text: 'Continuer avec Google',
-                          iconColor: Colors.white,
-                          textColor: Colors.white,
-                          backgroundColor: Colors.white.withOpacity(0.1),
-                          borderColor: Colors.white.withOpacity(0.2),
-                          onPressed: _signInWithGoogle,
-                        ),
-                        if (Theme.of(context).platform == TargetPlatform.iOS ||
-                            Theme.of(context).platform == TargetPlatform.macOS) ...[
-                          const SizedBox(height: 12),
-                          _buildSocialButton(
-                            icon: Icons.apple,
-                            text: 'Continuer avec Apple',
-                            iconColor: Colors.black,
-                            textColor: Colors.black,
-                            backgroundColor: Colors.white,
-                            borderColor: Colors.white,
-                            onPressed: _signInWithApple,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-},
+                  ),
+                ],
               ),
             ),
           )

@@ -161,9 +161,14 @@ class AuthService {
           }
         }
         return cred;
+      } on SignInWithAppleAuthorizationException catch (e) {
+        if (e.code == AuthorizationErrorCode.canceled) {
+          return null; // Utilisateur a annulé
+        }
+        rethrow;
       } catch (e) {
         print('Erreur Apple Sign-In: $e');
-        return null;
+        rethrow;
       }
     }
   }
