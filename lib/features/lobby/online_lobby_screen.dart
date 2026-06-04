@@ -296,7 +296,7 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                               style: TextStyle(
                                   color: Colors.white54, fontSize: 12)),
                           Text(
-                            name ?? 'Invité',
+                            profile?.name ?? name ?? 'Joueur Inconnu',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -724,8 +724,10 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
     // On va récupérer le nom de l'hôte
     String hostName = 'Un ami';
     final user = ref.read(authStateChangesProvider).value;
+    final profile = ref.read(userProfileProvider).value;
+    
     if (user != null) {
-      hostName = user.displayName ?? 'Un ami';
+      hostName = profile?.name ?? user.displayName ?? 'Un ami';
     }
 
     showModalBottomSheet(

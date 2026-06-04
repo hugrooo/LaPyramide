@@ -7,28 +7,28 @@ class AudioManager {
   AudioManager._internal();
 
   final AudioPlayer _player = AudioPlayer();
-  bool isMuted = false;
+  bool soundEnabled = true;
+  double sfxVolume = 1.0;
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
-    isMuted = prefs.getBool('isMuted') ?? false;
+    soundEnabled = prefs.getBool('soundEnabled') ?? true;
+    sfxVolume = prefs.getDouble('sfxVolume') ?? 1.0;
   }
 
-  void setMuted(bool muted) async {
-    isMuted = muted;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isMuted', muted);
+  void updateSettings(bool enabled, double volume) {
+    soundEnabled = enabled;
+    sfxVolume = volume;
   }
 
   void playSound(String path) async {
-    if (isMuted) return;
+    if (!soundEnabled) return;
     try {
-      // On utilise un AudioPlayer jetable pour jouer plusieurs sons en même temps si besoin
-      final p = AudioPlayer();
-      await p.play(AssetSource(path));
-      p.onPlayerComplete.listen((_) => p.dispose());
+      // Les fichiers originaux étaient corrompus (fichiers HTML au lieu de WAV).
+      // L'appel à p.play est temporairement désactivé pour éviter les crashs Web.
+      // Un fichier audio valide devra être ajouté dans assets/sounds/
+      print("Lecture audio demandée pour: $path");
     } catch (e) {
-      // Ignorer si le fichier n'est pas trouvé
       print("Erreur Audio: $e");
     }
   }

@@ -160,9 +160,29 @@ class StoreService {
     }
 
     // Ajouter le cosmétique à l'inventaire
-    final String listPath = type == 'cardBack' ? 'cardBacks' : 'titles';
-    final List<dynamic> currentList = List<dynamic>.from(
-        data[listPath] ?? [type == 'cardBack' ? 'classic' : 'Novice 🐣']);
+    String listPath;
+    String defaultItem = 'classic';
+    
+    if (type == 'cardBack') {
+      listPath = 'cardBacks';
+    } else if (type == 'title') {
+      listPath = 'titles';
+      defaultItem = 'Novice 🐣';
+    } else if (type == 'border') {
+      listPath = 'bordersOwned';
+    } else {
+      listPath = '${type}s';
+    }
+
+    List<dynamic> currentList = [];
+    if (data[listPath] is List) {
+      currentList = List<dynamic>.from(data[listPath]);
+    } else if (data[listPath] is Map) {
+      currentList = List<dynamic>.from((data[listPath] as Map).values);
+    } else {
+      currentList = [defaultItem];
+    }
+
     if (!currentList.contains(itemId)) {
       currentList.add(itemId);
       await dbRef.child(listPath).set(currentList);

@@ -17,11 +17,23 @@
       ".write": "auth != null",
       ".indexOn": ["totalSips"]
     },
-    "rooms": {
+    "games": {
       ".read": "auth != null",
       ".write": "auth != null"
     },
     "promo_codes": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "friends": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "friend_requests": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "sent_requests": {
       ".read": "auth != null",
       ".write": "auth != null"
     }

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
+import '../../core/audio/audio_manager.dart';
 
 final settingsProvider =
     StateNotifierProvider<SettingsNotifier, SettingsState>((ref) {
@@ -58,12 +59,14 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       sfxVolume: prefs.getDouble('sfxVolume') ?? 1.0,
       language: prefs.getString('language') ?? 'fr',
     );
+    AudioManager().updateSettings(state.soundEnabled, state.sfxVolume);
   }
 
   Future<void> toggleSound(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('soundEnabled', value);
     state = state.copyWith(soundEnabled: value);
+    AudioManager().updateSettings(state.soundEnabled, state.sfxVolume);
   }
 
   Future<void> toggleVibration(bool value) async {
@@ -88,6 +91,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('sfxVolume', value);
     state = state.copyWith(sfxVolume: value);
+    AudioManager().updateSettings(state.soundEnabled, state.sfxVolume);
   }
 
   Future<void> setLanguage(String value) async {

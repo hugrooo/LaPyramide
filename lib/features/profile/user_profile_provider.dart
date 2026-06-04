@@ -214,17 +214,24 @@ class UserProfile {
 }
 
 final userProfileProvider = StreamProvider<UserProfile?>((ref) {
-  final user = ref.watch(authStateChangesProvider).value;
+  final authState = ref.watch(authStateChangesProvider);
+  final user = authState.value;
+
   if (user == null) {
     return Stream.value(null);
   }
 
-  final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
-  return dbRef.onValue.map((event) {
-    final value = event.snapshot.value;
-    if (value != null && value is Map<dynamic, dynamic>) {
-      return UserProfile.fromMap(value);
-    }
-    return null;
+  return FirebaseDatabase.instance.ref('users/${user.uid}').onValue.map((event) {
+    final data = event.snapshot.value;
+    if (data == null) return null;
+    return UserProfile.fromMap(data as Map<dynamic, dynamic>);
   });
+});
+
+final publicProfileProvider = FutureProvider.family<UserProfile?, String>((ref, uid) async {
+  final snapshot = await FirebaseDatabase.instance.ref('users/$uid').get();
+  if (snapshot.exists && snapshot.value != null) {
+    return UserProfile.fromMap(snapshot.value as Map<dynamic, dynamic>);
+  }
+  return null;
 });

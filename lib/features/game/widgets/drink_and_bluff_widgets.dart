@@ -68,7 +68,7 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Emoji bière animé
-                const Text('🍺', style: TextStyle(fontSize: 80))
+                const Text('🎯', style: TextStyle(fontSize: 80))
                     .animate(onPlay: (ctrl) => ctrl.repeat())
                     .scale(
                       begin: const Offset(1.0, 1.0),
@@ -169,9 +169,9 @@ class _DrinkOverlayState extends ConsumerState<DrinkOverlay> {
                   builder: (context, ref, child) {
                     final currentUser =
                         ref.watch(authStateChangesProvider).value;
-                    // Vérifier si c'est le joueur actuel (on suppose que le pseudo ou l'ID correspond)
+                    // Vérifier si c'est le joueur actuel en comparant les IDs
                     if (currentUser != null &&
-                        currentUser.displayName == widget.player.name) {
+                        currentUser.uid == widget.player.id) {
                       final profile = ref.watch(userProfileProvider).value;
                       final coins = profile?.coins ?? 0;
 

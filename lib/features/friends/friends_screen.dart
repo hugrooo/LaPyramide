@@ -201,34 +201,37 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
       itemCount: _searchResults.length,
       itemBuilder: (context, index) {
         final user = _searchResults[index];
-        return GlassCard(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              AvatarWithBorder(
-                emoji: user.emoji ?? '👤',
-                photoUrl: user.photoUrl,
-                borderType: user.selectedBorder,
-                size: 40,
-                showLevel: false,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(user.name,
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-              IconButton(
-                icon:
-                    const Icon(Icons.person_add, color: PyraTheme.primaryCyan),
-                onPressed: () {
-                  ref.read(friendServiceProvider).sendFriendRequest(user.id);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Demande envoyée à ${user.name} !')),
-                  );
-                },
-              ),
-            ],
+        return GestureDetector(
+          onTap: () => context.pushNamed('publicProfile', pathParameters: {'uid': user.id}),
+          child: GlassCard(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                AvatarWithBorder(
+                  emoji: user.emoji ?? '👤',
+                  photoUrl: user.photoUrl,
+                  borderType: user.selectedBorder,
+                  size: 40,
+                  showLevel: false,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(user.name,
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+                IconButton(
+                  icon:
+                      const Icon(Icons.person_add, color: PyraTheme.primaryCyan),
+                  onPressed: () {
+                    ref.read(friendServiceProvider).sendFriendRequest(user.id);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Demande envoyée à ${user.name} !')),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ).animate().fadeIn().slideY(begin: 0.1);
       },
@@ -238,37 +241,40 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
   Widget _buildRequestTile(FriendProfile req) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: GlassCard(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            AvatarWithBorder(
-              emoji: req.emoji ?? '👤',
-              photoUrl: req.photoUrl,
-              borderType: req.selectedBorder,
-              size: 40,
-              showLevel: false,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(req.name,
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-            IconButton(
-              icon:
-                  const Icon(Icons.check_circle, color: PyraTheme.primaryCyan),
-              onPressed: () {
-                ref.read(friendServiceProvider).acceptFriendRequest(req.id);
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.cancel, color: PyraTheme.primaryPink),
-              onPressed: () {
-                ref.read(friendServiceProvider).declineFriendRequest(req.id);
-              },
-            ),
-          ],
+      child: GestureDetector(
+        onTap: () => context.pushNamed('publicProfile', pathParameters: {'uid': req.id}),
+        child: GlassCard(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              AvatarWithBorder(
+                emoji: req.emoji ?? '👤',
+                photoUrl: req.photoUrl,
+                borderType: req.selectedBorder,
+                size: 40,
+                showLevel: false,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(req.name,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+              IconButton(
+                icon:
+                    const Icon(Icons.check_circle, color: PyraTheme.primaryCyan),
+                onPressed: () {
+                  ref.read(friendServiceProvider).acceptFriendRequest(req.id);
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.cancel, color: PyraTheme.primaryPink),
+                onPressed: () {
+                  ref.read(friendServiceProvider).declineFriendRequest(req.id);
+                },
+              ),
+            ],
+          ),
         ),
       ).animate().fadeIn().slideX(),
     );
@@ -277,24 +283,57 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
   Widget _buildFriendTile(FriendProfile friend) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: GlassCard(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            AvatarWithBorder(
-              emoji: friend.emoji ?? '👤',
-              photoUrl: friend.photoUrl,
-              borderType: friend.selectedBorder,
-              size: 40,
-              showLevel: false,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(friend.name,
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-          ],
+      child: GestureDetector(
+        onTap: () => context.pushNamed('publicProfile', pathParameters: {'uid': friend.id}),
+        child: GlassCard(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              AvatarWithBorder(
+                emoji: friend.emoji ?? '👤',
+                photoUrl: friend.photoUrl,
+                borderType: friend.selectedBorder,
+                size: 40,
+                showLevel: false,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(friend.name,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+              IconButton(
+                icon: const Icon(Icons.person_remove_rounded, color: PyraTheme.primaryPink),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      backgroundColor: PyraTheme.bgSurface,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      title: const Text('Supprimer cet ami ?', style: TextStyle(color: Colors.white)),
+                      content: Text('Voulez-vous vraiment retirer ${friend.name} de votre liste d\'amis ?', style: const TextStyle(color: Colors.white70)),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Annuler', style: TextStyle(color: Colors.white54)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            ref.read(friendServiceProvider).removeFriend(friend.id);
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('${friend.name} a été retiré de vos amis.')),
+                            );
+                          },
+                          child: const Text('Supprimer', style: TextStyle(color: PyraTheme.primaryPink, fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ).animate().fadeIn().slideY(begin: 0.1),
     );

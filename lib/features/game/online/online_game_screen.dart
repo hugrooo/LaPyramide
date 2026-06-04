@@ -672,8 +672,9 @@ class OnlineGameScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(24),
             border: Border.all(
                 color: PyraTheme.primaryOrange.withOpacity(0.5), width: 2),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
                   '😱 BLUFF ?!',
@@ -696,6 +697,7 @@ class OnlineGameScreen extends ConsumerWidget {
                     .animate(onPlay: (c) => c.repeat(reverse: true))
                     .fade(duration: 1.seconds),
               ],
+            ),
             ),
           ).animate().fadeIn();
         }
@@ -738,8 +740,9 @@ class OnlineGameScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(24),
             border: Border.all(
                 color: PyraTheme.primaryPink.withOpacity(0.5), width: 2),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
                   '⚔️ ATTAQUE !',
@@ -829,6 +832,7 @@ class OnlineGameScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 const CircularProgressIndicator(color: PyraTheme.primaryPink),
               ],
+            ),
             ),
           ).animate().fadeIn(duration: 300.ms);
         }

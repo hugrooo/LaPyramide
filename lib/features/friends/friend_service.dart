@@ -118,6 +118,15 @@ class FriendService {
     await _db.ref('sent_requests/$fromUid/${user.uid}').remove();
   }
 
+  /// Supprimer un ami
+  Future<void> removeFriend(String friendUid) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    await _db.ref('friends/${user.uid}/$friendUid').remove();
+    await _db.ref('friends/$friendUid/${user.uid}').remove();
+  }
+
   /// Récupérer les amis
   Stream<List<FriendProfile>> getFriends() {
     final user = _auth.currentUser;

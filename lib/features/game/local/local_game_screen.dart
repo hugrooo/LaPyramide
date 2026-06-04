@@ -322,7 +322,7 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
           boxShadow: PyraTheme.glowOrange,
         ),
         child: Text(
-          'Envoyer ${gameState.currentSips} 🍺 à ${target.emoji} ${target.name}',
+          'Envoyer ${gameState.currentSips} 🎯 à ${target.emoji} ${target.name}',
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: Colors.white,
@@ -483,7 +483,7 @@ class _PlayerChip extends StatelessWidget {
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '🍺 ${player.totalSips}',
+                  '🎯 ${player.totalSips}',
                   style: TextStyle(
                       color: Colors.white.withOpacity(0.7), fontSize: 11),
                 ),

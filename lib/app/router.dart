@@ -19,6 +19,7 @@ import '../features/store/store_screen.dart';
 import '../features/friends/friends_screen.dart';
 import '../features/shared/screens/coming_soon_screen.dart';
 import '../features/profile/level_screen.dart';
+import '../features/profile/public_profile_screen.dart';
 import '../features/shared/screens/quests_screen.dart';
 
 // ─── Transitions ────────────────────────────────────────────────────────────
@@ -174,8 +175,27 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/store',
             name: 'store',
-            pageBuilder: (context, state) =>
-                _fadeTransition(context, state, const StoreScreen()),
+            pageBuilder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>?;
+              final tabString = extra?['tab'] as String?;
+              StoreTab? initialTab;
+              if (tabString == 'coins') initialTab = StoreTab.coins;
+              if (tabString == 'jokers') initialTab = StoreTab.jokers;
+              if (tabString == 'cosmetics') initialTab = StoreTab.cosmetics;
+              
+              final scrollToBetaGifts = extra != null && extra['scrollToBetaGifts'] == true;
+              final scrollToTitle = extra != null && extra['scrollToTitle'] == true;
+
+              return _fadeTransition(
+                context, 
+                state, 
+                StoreScreen(
+                  initialTab: initialTab,
+                  scrollToBetaGifts: scrollToBetaGifts,
+                  scrollToTitle: scrollToTitle,
+                )
+              );
+            },
           ),
         ],
       ),
@@ -192,6 +212,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'level',
         pageBuilder: (context, state) =>
             _slideRight(context, state, const LevelScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/public-profile/:uid',
+        name: 'publicProfile',
+        pageBuilder: (context, state) {
+          final uid = state.pathParameters['uid']!;
+          return _slideRight(context, state, PublicProfileScreen(uid: uid));
+        },
       ),
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,

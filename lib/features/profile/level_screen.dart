@@ -113,7 +113,7 @@ class LevelScreen extends ConsumerWidget {
       '🐼',
       '🐸',
       '🦄',
-      '🍹',
+      '🥤',
       '🃏',
       '🔥',
       '⚡',
@@ -124,7 +124,7 @@ class LevelScreen extends ConsumerWidget {
       '🤖',
       '👻',
       '🎯',
-      '🍺',
+      '🎯',
       '🎰',
       '🦅',
       '🐯',
@@ -287,7 +287,7 @@ class LevelScreen extends ConsumerWidget {
       'girl': {'name': 'Girly Rose', 'emoji': '🎀', 'color': Color(0xFFFF1493)},
       'beta': {
         'name': 'Testeur Bêta',
-        'emoji': '🥂',
+        'emoji': '🚀',
         'color': Color(0xFFE040FB)
       },
       'pharaoh': {
@@ -576,6 +576,14 @@ class LevelScreen extends ConsumerWidget {
       'neon' => 'Néon Cyberpunk ⚡',
       'pirate' => 'Pirate Doré ☠️',
       'retro' => 'Rétro Pixel 👾',
+      'girl' => 'Girly Rose 🎀',
+      'beta' => 'Testeur Bêta 🚀',
+      'pharaoh' => 'Pharaon 👁️',
+      'casino' => 'Casino Royal 🎲',
+      'toxic' => 'Toxique 🧪',
+      'clubbing' => 'Clubbing 🪩',
+      'demon' => 'Démoniaque 😈',
+      'vip' => 'VIP Diamant 💎',
       _ => 'Classique Rouge 🟥',
     };
 
@@ -931,7 +939,7 @@ class LevelScreen extends ConsumerWidget {
                           ),
                           const SizedBox(width: 10),
                           _StatCard(
-                            icon: '🍺',
+                            icon: '🎯',
                             label: 'Pénalités',
                             value:
                                 numberFormat.format(profile?.drinksGiven ?? 0),
@@ -1155,62 +1163,7 @@ class LevelScreen extends ConsumerWidget {
                           ),
                         ).animate().fadeIn(delay: 775.ms).slideY(begin: 0.1),
 
-                        const SizedBox(height: 10),
 
-                        // Thème musical (pleine largeur)
-                        GestureDetector(
-                          onTap: () {
-                            HapticFeedback.selectionClick();
-                            _showThemePicker(context, user.uid,
-                                profile.selectedTheme, profile.themesOwned);
-                          },
-                          child: GlassContainer(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 16),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                                color: PyraTheme.primaryPink.withOpacity(0.35)),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(Icons.music_note_rounded,
-                                      color: PyraTheme.primaryPink),
-                                ),
-                                const SizedBox(width: 14),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text('Thème Musical',
-                                          style: TextStyle(
-                                              color: Colors.white54,
-                                              fontSize: 12)),
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        profile.selectedTheme == 'classic'
-                                            ? 'Classique'
-                                            : 'Spécial',
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const Icon(Icons.arrow_forward_ios_rounded,
-                                    color: Colors.white30, size: 14),
-                              ],
-                            ),
-                          ),
-                        ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.1),
                       ],
 
                       const SizedBox(height: 24),

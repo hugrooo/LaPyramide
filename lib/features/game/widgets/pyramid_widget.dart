@@ -54,7 +54,7 @@ class PyramidWidget extends StatelessWidget {
                 border: Border.all(color: rowColor.withOpacity(0.5)),
               ),
               child: Text(
-                '🍺 $sips pénalité${sips > 1 ? 's' : ''}',
+                '🎯 $sips pénalité${sips > 1 ? 's' : ''}',
                 style: TextStyle(
                   color: rowColor,
                   fontSize: 11,

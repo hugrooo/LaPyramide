@@ -5,7 +5,7 @@ const List<String> kDefaultEmojis = [
   '🎉',
   '🔥',
   '😎',
-  '🍺',
+  '🎯',
   '👑',
   '🎲',
   '💀',

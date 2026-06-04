@@ -364,7 +364,7 @@ class _EndGameScreenState extends ConsumerState<EndGameScreen> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold)),
                         ),
-                        Text('${player.totalSips} 🍺',
+                        Text('${player.totalSips} 🎯',
                             style: const TextStyle(
                                 color: PyraTheme.primaryOrange,
                                 fontSize: 18,

@@ -98,13 +98,13 @@ class SettingsScreen extends ConsumerWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        user.displayName ?? 'Mon Profil',
+                                        profile.name ?? user.displayName ?? 'Mon Profil',
                                         style: const TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w900,
                                             fontSize: 16),
                                       ),
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 8),
                                       Row(
                                         children: [
                                           Container(
@@ -133,6 +133,38 @@ class SettingsScreen extends ConsumerWidget {
                                                   fontWeight: FontWeight.bold)),
                                         ],
                                       ),
+                                      const SizedBox(height: 10),
+                                      Stack(
+                                        children: [
+                                          Container(
+                                            height: 6,
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white10,
+                                              borderRadius: BorderRadius.circular(3),
+                                            ),
+                                          ),
+                                          FractionallySizedBox(
+                                            widthFactor: (profile.xp / (profile.level * 100)).clamp(0.0, 1.0),
+                                            child: Container(
+                                              height: 6,
+                                              decoration: BoxDecoration(
+                                                color: PyraTheme.primaryCyan,
+                                                borderRadius: BorderRadius.circular(3),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: PyraTheme.primaryCyan.withOpacity(0.5),
+                                                    blurRadius: 4,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text('${profile.xp} / ${profile.level * 100} XP',
+                                          style: const TextStyle(color: Colors.white54, fontSize: 10)),
                                     ],
                                   ),
                                 ),
@@ -160,14 +192,6 @@ class SettingsScreen extends ConsumerWidget {
                         title: 'AUDIO & HAPTIQUE',
                         children: [
                           _VolumeSliderTile(
-                            icon: Icons.music_note_rounded,
-                            label: 'Musique',
-                            value: settings.musicVolume,
-                            onChanged: (v) =>
-                                settingsNotifier.updateMusicVolume(v),
-                          ),
-                          const Divider(color: Colors.white10, height: 1),
-                          _VolumeSliderTile(
                             icon: Icons.volume_up_rounded,
                             label: 'Bruitages (SFX)',
                             value: settings.sfxVolume,
@@ -186,25 +210,7 @@ class SettingsScreen extends ConsumerWidget {
                       ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
                       const SizedBox(height: 24),
 
-                      _SettingsGroup(
-                        title: 'ACCESSIBILITÉ & LANGUE',
-                        children: [
-                          _SettingTile(
-                            icon: Icons.visibility_rounded,
-                            label: 'Mode daltonien',
-                            value: settings.colorBlindMode,
-                            onChanged: (v) =>
-                                settingsNotifier.toggleColorBlindMode(v),
-                          ),
-                          const Divider(color: Colors.white10, height: 1),
-                          _LanguageTile(
-                            selected: settings.language,
-                            onChanged: (lang) =>
-                                settingsNotifier.setLanguage(lang),
-                          ),
-                        ],
-                      ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
-                      const SizedBox(height: 24),
+
 
                       _SettingsGroup(
                         title: 'SUPPORT & INFOS',
@@ -240,7 +246,7 @@ class SettingsScreen extends ConsumerWidget {
                             trailing: const Icon(Icons.open_in_new_rounded,
                                 color: Colors.white30, size: 16),
                             onTap: () => _launchUrl(
-                                'mailto:support@lapyramide.app?subject=Support%20Pyramide%20Party'),
+                                'mailto:contact@pyramideparty.fr?subject=Support%20Pyramide%20Party'),
                           ),
                           const Divider(color: Colors.white10, height: 1),
                           ListTile(
@@ -253,7 +259,7 @@ class SettingsScreen extends ConsumerWidget {
                             trailing: const Icon(Icons.open_in_new_rounded,
                                 color: Colors.white30, size: 16),
                             onTap: () =>
-                                _launchUrl('https://lapyramide.app/privacy'),
+                                _launchUrl('https://pyramideparty.fr/privacy'),
                           ),
                           const Divider(color: Colors.white10, height: 1),
                           ListTile(
@@ -266,82 +272,77 @@ class SettingsScreen extends ConsumerWidget {
                             trailing: const Icon(Icons.open_in_new_rounded,
                                 color: Colors.white30, size: 16),
                             onTap: () =>
-                                _launchUrl('https://lapyramide.app/terms'),
+                                _launchUrl('https://pyramideparty.fr/terms'),
                           ),
                         ],
                       ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
                       const SizedBox(height: 32),
 
-                      Consumer(builder: (context, ref, child) {
-                        return Center(
-                          child: PulsarButton(
-                            text: 'Se déconnecter',
-                            paddingHorizontal: 32,
-                            gradient: const LinearGradient(
-                                colors: [Colors.grey, Colors.blueGrey]),
-                            onPressed: () async {
-                              await ref.read(authServiceProvider).signOut();
-                              if (context.mounted) {
-                                context.goNamed('auth');
-                              }
-                            },
-                          ),
-                        );
-                      }),
-                      const SizedBox(height: 16),
-                      Consumer(builder: (context, ref, child) {
-                        return Center(
-                          child: TextButton.icon(
-                            icon: const Icon(Icons.warning_rounded,
-                                color: Colors.redAccent, size: 16),
-                            label: const Text('Supprimer mon compte',
-                                style: TextStyle(
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.bold)),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  backgroundColor: PyraTheme.bgCard,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20)),
-                                  title: const Text('⚠️ Attention',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold)),
-                                  content: const Text(
-                                    'Cette action est irréversible. Toutes vos statistiques, XP, jokers et cosmétiques seront définitivement perdus. Êtes-vous sûr de vouloir continuer ?',
-                                    style: TextStyle(color: Colors.white70),
+                      _SettingsGroup(
+                        title: 'GESTION DU COMPTE',
+                        borderColor: Colors.redAccent.withOpacity(0.3),
+                        children: [
+                          Consumer(builder: (context, ref, child) {
+                            return ListTile(
+                              leading: const Icon(Icons.logout_rounded, color: Colors.white70),
+                              title: const Text('Se déconnecter',
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              onTap: () async {
+                                await ref.read(authServiceProvider).signOut();
+                                if (context.mounted) {
+                                  context.goNamed('auth');
+                                }
+                              },
+                            );
+                          }),
+                          const Divider(color: Colors.white10, height: 1),
+                          Consumer(builder: (context, ref, child) {
+                            return ListTile(
+                              leading: const Icon(Icons.warning_rounded, color: Colors.redAccent),
+                              title: const Text('Supprimer mon compte',
+                                  style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    backgroundColor: PyraTheme.bgCard,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20)),
+                                    title: const Text('⚠️ Attention',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)),
+                                    content: const Text(
+                                      'Cette action est irréversible. Toutes vos statistiques, XP, jokers et cosmétiques seront définitivement perdus. Êtes-vous sûr de vouloir continuer ?',
+                                      style: TextStyle(color: Colors.white70),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Annuler',
+                                            style: TextStyle(color: Colors.white)),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          await ref.read(authServiceProvider).signOut();
+                                          if (context.mounted) {
+                                            context.goNamed('auth');
+                                          }
+                                        },
+                                        child: const Text('Supprimer',
+                                            style: TextStyle(
+                                                color: Colors.redAccent,
+                                                fontWeight: FontWeight.bold)),
+                                      ),
+                                    ],
                                   ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Annuler',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        Navigator.pop(context);
-                                        await ref
-                                            .read(authServiceProvider)
-                                            .signOut();
-                                        if (context.mounted) {
-                                          context.goNamed('auth');
-                                        }
-                                      },
-                                      child: const Text('Supprimer',
-                                          style: TextStyle(
-                                              color: Colors.redAccent,
-                                              fontWeight: FontWeight.bold)),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      }),
+                                );
+                              },
+                            );
+                          }),
+                        ],
+                      ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1),
                       const SizedBox(height: 24),
                       Center(
                         child: Text(
@@ -367,8 +368,9 @@ class SettingsScreen extends ConsumerWidget {
 class _SettingsGroup extends StatelessWidget {
   final String title;
   final List<Widget> children;
+  final Color? borderColor;
 
-  const _SettingsGroup({required this.title, required this.children});
+  const _SettingsGroup({required this.title, required this.children, this.borderColor});
 
   @override
   Widget build(BuildContext context) {
@@ -389,7 +391,11 @@ class _SettingsGroup extends StatelessWidget {
         GlassContainer(
           borderRadius: BorderRadius.circular(24),
           padding: EdgeInsets.zero,
-          child: Column(children: children),
+          border: borderColor != null ? Border.all(color: borderColor!) : null,
+          child: Material(
+            color: Colors.transparent,
+            child: Column(children: children),
+          ),
         ),
       ],
     );
@@ -489,52 +495,4 @@ class _VolumeSliderTile extends StatelessWidget {
   }
 }
 
-class _LanguageTile extends StatelessWidget {
-  final String selected;
-  final ValueChanged<String> onChanged;
 
-  const _LanguageTile({required this.selected, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Row(
-        children: [
-          for (final lang in [('fr', '🇫🇷 Français'), ('en', '🇬🇧 English')])
-            Expanded(
-              child: GestureDetector(
-                onTap: () => onChanged(lang.$1),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: EdgeInsets.only(right: lang.$1 == 'fr' ? 8 : 0),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    gradient: selected == lang.$1
-                        ? PyraTheme.purplePinkGradient
-                        : null,
-                    color: selected == lang.$1
-                        ? null
-                        : Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: selected == lang.$1
-                            ? Colors.transparent
-                            : Colors.white12),
-                  ),
-                  child: Text(
-                    lang.$2,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color:
-                            selected == lang.$1 ? Colors.white : Colors.white54,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}

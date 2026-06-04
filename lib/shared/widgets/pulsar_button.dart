@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../app/theme.dart';
+import '../../core/audio/audio_manager.dart';
 
 class PulsarButton extends StatefulWidget {
   final VoidCallback? onPressed;
@@ -60,19 +61,20 @@ class _PulsarButtonState extends State<PulsarButton>
 
   void _onTapDown(TapDownDetails _) {
     if (widget.onPressed == null) return;
-    setState(() => _isPressed = true);
+    if (mounted) setState(() => _isPressed = true);
     _pressController.forward();
     HapticFeedback.lightImpact();
+    AudioManager().playClick();
   }
 
   void _onTapUp(TapUpDetails _) {
     _pressController.reverse();
-    setState(() => _isPressed = false);
+    if (mounted) setState(() => _isPressed = false);
   }
 
   void _onTapCancel() {
     _pressController.reverse();
-    setState(() => _isPressed = false);
+    if (mounted) setState(() => _isPressed = false);
   }
 
   void _onTap() {

@@ -49,7 +49,7 @@ class SipScoreboardWidget extends StatelessWidget {
                           fontSize: 12))),
               Expanded(
                   flex: 2,
-                  child: Text('Reçues 🍺',
+                  child: Text('Reçues 🎯',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: PyraTheme.textMuted,

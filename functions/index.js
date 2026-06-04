@@ -51,3 +51,51 @@ exports.onGameInviteCreated = onValueCreated(
     }
   }
 );
+exports.onFriendRequestCreated = onValueCreated(
+  "/friend_requests/{targetUid}/{fromUid}",
+  async (event) => {
+    const targetUid = event.params.targetUid;
+    const requestData = event.data.val();
+
+    if (!requestData) {
+      return null;
+    }
+
+    const { fromName } = requestData;
+
+    try {
+      // Fetch the target user's FCM token
+      const tokenSnapshot = await admin.database()
+        .ref(`/users/${targetUid}/fcmToken`)
+        .once("value");
+      
+      const fcmToken = tokenSnapshot.val();
+
+      if (!fcmToken) {
+        console.log(`No FCM token found for user ${targetUid}`);
+        return null;
+      }
+
+      // Build the message payload
+      const message = {
+        notification: {
+          title: "👋 Nouvelle demande d'ami !",
+          body: `${fromName || 'Quelqu\'un'} veut vous ajouter en ami !`
+        },
+        data: {
+          type: "friend_request",
+          click_action: "FLUTTER_NOTIFICATION_CLICK"
+        },
+        token: fcmToken
+      };
+
+      // Send the push notification
+      const response = await admin.messaging().send(message);
+      console.log(`Successfully sent friend request notification to user ${targetUid}:`, response);
+      return response;
+    } catch (error) {
+      console.error(`Error sending friend request notification to user ${targetUid}:`, error);
+      return null;
+    }
+  }
+);

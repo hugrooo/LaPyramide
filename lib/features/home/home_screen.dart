@@ -50,7 +50,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final int nextClaim =
         (profile?.lastDailyChestClaimed ?? 0) + 24 * 60 * 60 * 1000;
     final bool isChestAvailable = now >= nextClaim;
-    final hasClaimedBetaGift = profile?.cardBacks.contains('beta') ?? false;
+    final hasClaimedBetaCard = profile?.cardBacks.contains('beta') ?? false;
+    final hasClaimedBetaTitle = profile?.titles.contains('Pionnier de la Bêta 🚀') ?? false;
+    final hasClaimedAllBetaGifts = hasClaimedBetaCard && hasClaimedBetaTitle;
+    final int claimedBetaGiftsCount = (hasClaimedBetaCard ? 1 : 0) + (hasClaimedBetaTitle ? 1 : 0);
 
     // Texte et badge dynamiques pour le panneau de coffre
     String questTitle;
@@ -344,14 +347,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.2),
 
                 // ── Annonce Cadeau Bêta ──────────────────────────────
-                if (!hasClaimedBetaGift)
+                if (!hasClaimedAllBetaGifts)
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: GestureDetector(
                       onTap: () {
                         HapticFeedback.mediumImpact();
-                        context.pushNamed('store');
+                        context.pushNamed('store', extra: {
+                          'tab': 'cosmetics',
+                          'scrollToBetaGifts': true,
+                          'scrollToTitle': hasClaimedBetaCard && !hasClaimedBetaTitle,
+                        });
                       },
                       child: GlassContainer(
                         padding: const EdgeInsets.symmetric(
@@ -377,19 +384,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     end: const Offset(1.1, 1.1),
                                     duration: 1.seconds),
                             const SizedBox(width: 12),
-                            const Expanded(
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Cadeaux de Bêta Testeur 🎁',
-                                    style: TextStyle(
+                                    'Cadeaux de Bêta Testeur ($claimedBetaGiftsCount/2) 🎁',
+                                    style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13),
                                   ),
-                                  SizedBox(height: 2),
-                                  Text(
+                                  const SizedBox(height: 2),
+                                  const Text(
                                     'Récupère tes récompenses gratuites !',
                                     style: TextStyle(
                                         color: Colors.white54, fontSize: 11),

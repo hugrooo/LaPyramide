@@ -352,7 +352,7 @@ class ScoreboardScreen extends ConsumerWidget {
       children: [
         Expanded(
           child: _StatBadge(
-            emoji: '🍺',
+            emoji: '🎯',
             label: l10n.scoreboard_most_drunk,
             player: _mostDrunk,
             value: '${_mostDrunk.totalSips} pénalités',
@@ -408,7 +408,7 @@ class ScoreboardScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '🍺 ${player.totalSips}',
+                '🎯 ${player.totalSips}',
                 style: const TextStyle(
                     color: PyraTheme.primaryOrange,
                     fontWeight: FontWeight.bold,

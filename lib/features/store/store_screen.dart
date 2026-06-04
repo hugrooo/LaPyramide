@@ -17,7 +17,16 @@ import '../auth/auth_service.dart';
 enum StoreTab { coins, jokers, cosmetics }
 
 class StoreScreen extends ConsumerStatefulWidget {
-  const StoreScreen({super.key});
+  final StoreTab? initialTab;
+  final bool scrollToBetaGifts;
+  final bool scrollToTitle;
+
+  const StoreScreen({
+    super.key,
+    this.initialTab,
+    this.scrollToBetaGifts = false,
+    this.scrollToTitle = false,
+  });
 
   @override
   ConsumerState<StoreScreen> createState() => _StoreScreenState();
@@ -28,11 +37,33 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
   bool _isLoading = true;
   StoreTab _activeTab = StoreTab.coins;
 
+  final GlobalKey _betaGiftKey = GlobalKey();
+  final GlobalKey _betaTitleKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
+    _activeTab = widget.initialTab ?? StoreTab.coins;
     ref.read(storeServiceProvider).init();
     _loadProducts();
+
+    if (widget.scrollToBetaGifts) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          final contextToScroll = widget.scrollToTitle 
+              ? _betaTitleKey.currentContext 
+              : _betaGiftKey.currentContext;
+          if (contextToScroll != null) {
+            Scrollable.ensureVisible(
+              contextToScroll,
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOutCubic,
+              alignment: 0.3,
+            );
+          }
+        });
+      });
+    }
   }
 
   Future<void> _loadProducts() async {
@@ -186,17 +217,20 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           isOwned: cardBacksOwned.contains('girl'),
         ),
         const SizedBox(height: 16),
-        _buildItemPurchaseCard(
-          id: 'beta',
-          title: 'Dos Testeur Bêta 🥂',
-          desc: 'Édition spéciale réservée aux pionniers de Pyramide Party.',
-          cost: 0,
-          currency: 'diamonds',
-          icon: Icons.star_rounded,
-          iconColor: const Color(0xFFE040FB),
-          ownedCount: cardBacksOwned.contains('beta') ? 1 : 0,
-          type: 'cardBack',
-          isOwned: cardBacksOwned.contains('beta'),
+        Container(
+          key: _betaGiftKey,
+          child: _buildItemPurchaseCard(
+            id: 'beta',
+            title: 'Dos Testeur Bêta 🚀',
+            desc: 'Édition spéciale réservée aux pionniers de Pyramide Party.',
+            cost: 0,
+            currency: 'diamonds',
+            icon: Icons.star_rounded,
+            iconColor: const Color(0xFFE040FB),
+            ownedCount: cardBacksOwned.contains('beta') ? 1 : 0,
+            type: 'cardBack',
+            isOwned: cardBacksOwned.contains('beta'),
+          ),
         ),
         const SizedBox(height: 16),
         _buildItemPurchaseCard(
@@ -297,18 +331,21 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           isOwned: titlesOwned.contains('Légende du Bluff 🎭'),
         ),
         const SizedBox(height: 16),
-        _buildItemPurchaseCard(
-          id: 'Pionnier de la Bêta 🥂',
-          title: 'Pionnier de la Bêta 🥂',
-          desc:
-              'Titre exclusif gratuit réservé aux tout premiers joueurs de la Bêta !',
-          cost: 0,
-          currency: 'coins',
-          icon: Icons.star_rounded,
-          iconColor: const Color(0xFFE040FB), // Purple
-          ownedCount: titlesOwned.contains('Pionnier de la Bêta 🥂') ? 1 : 0,
-          type: 'title',
-          isOwned: titlesOwned.contains('Pionnier de la Bêta 🥂'),
+        Container(
+          key: _betaTitleKey,
+          child: _buildItemPurchaseCard(
+            id: 'Pionnier de la Bêta 🚀',
+            title: 'Pionnier de la Bêta 🚀',
+            desc:
+                'Titre exclusif gratuit réservé aux tout premiers joueurs de la Bêta !',
+            cost: 0,
+            currency: 'coins',
+            icon: Icons.star_rounded,
+            iconColor: const Color(0xFFE040FB), // Purple
+            ownedCount: titlesOwned.contains('Pionnier de la Bêta 🚀') ? 1 : 0,
+            type: 'title',
+            isOwned: titlesOwned.contains('Pionnier de la Bêta 🚀'),
+          ),
         ),
         const SizedBox(height: 16),
         _buildItemPurchaseCard(
@@ -378,8 +415,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         ),
         const SizedBox(height: 32),
         _buildBordersSection(profile?.bordersOwned ?? ['classic']),
-        const SizedBox(height: 32),
-        _buildThemesSection(profile?.themesOwned ?? ['classic']),
       ],
     );
   }
@@ -436,62 +471,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 
-  Widget _buildThemesSection(List<String> themesOwned) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Thèmes Musicaux (Host) 🎶',
-          style: TextStyle(
-              color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Quand tu crées une partie, cette musique jouera pour tous les joueurs dans ton salon !',
-          style: TextStyle(color: Colors.white54, fontSize: 13),
-        ),
-        const SizedBox(height: 12),
-        _buildItemPurchaseCard(
-          id: 'casino',
-          title: 'Thème Casino Royal 🎰',
-          desc: 'Ambiance lounge, piano et tension feutrée.',
-          cost: 600,
-          currency: 'coins',
-          icon: Icons.music_note_rounded,
-          iconColor: PyraTheme.primaryPink,
-          ownedCount: themesOwned.contains('casino') ? 1 : 0,
-          type: 'theme',
-          isOwned: themesOwned.contains('casino'),
-        ),
-        const SizedBox(height: 16),
-        _buildItemPurchaseCard(
-          id: 'clubbing',
-          title: 'Thème Clubbing 🪩',
-          desc: 'Grosse basse et ambiance de folie.',
-          cost: 800,
-          currency: 'coins',
-          icon: Icons.speaker_group_rounded,
-          iconColor: PyraTheme.primaryCyan,
-          ownedCount: themesOwned.contains('clubbing') ? 1 : 0,
-          type: 'theme',
-          isOwned: themesOwned.contains('clubbing'),
-        ),
-        const SizedBox(height: 16),
-        _buildItemPurchaseCard(
-          id: 'horror',
-          title: 'Thème Tension Horrifique 🔪',
-          desc: 'Parfait pour déstabiliser les menteurs...',
-          cost: 150,
-          currency: 'diamonds',
-          icon: Icons.piano_rounded,
-          iconColor: Colors.redAccent,
-          ownedCount: themesOwned.contains('horror') ? 1 : 0,
-          type: 'theme',
-          isOwned: themesOwned.contains('horror'),
-        ),
-      ],
-    );
-  }
 
   Widget _buildItemPurchaseCard({
     required String id,
@@ -651,16 +630,20 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 )
               else
                 PulsarButton(
-                  width: null, // Let it size to fit text and icon
-                  text: '$cost',
+                  width: null,
+                  text: cost == 0 ? 'GRATUIT' : '$cost',
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                   fontSize: 14,
-                  icon: currencyIcon,
+                  icon: cost == 0 
+                      ? Icons.redeem_rounded 
+                      : currencyIcon,
                   iconSize: 14,
-                  gradient: isCoins
-                      ? PyraTheme.cyanGradient
-                      : PyraTheme.purplePinkGradient,
+                  gradient: cost == 0
+                      ? const LinearGradient(colors: [Colors.greenAccent, Colors.green])
+                      : (isCoins
+                          ? PyraTheme.cyanGradient
+                          : PyraTheme.purplePinkGradient),
                   onPressed: () async {
                     final user = ref.read(authServiceProvider).currentUser;
                     if (user == null || user.isAnonymous) {
@@ -691,6 +674,19 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                             backgroundColor: Colors.green,
                           ),
                         );
+                        
+                        if (id == 'beta') {
+                          Future.delayed(const Duration(milliseconds: 1500), () {
+                            if (mounted && _betaTitleKey.currentContext != null) {
+                              Scrollable.ensureVisible(
+                                _betaTitleKey.currentContext!,
+                                duration: const Duration(milliseconds: 800),
+                                curve: Curves.easeInOutCubic,
+                                alignment: 0.3,
+                              );
+                            }
+                          });
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

@@ -81,7 +81,7 @@ class OnlineGameService {
 
     final host = Player(
       id: user.uid,
-      name: user.displayName ?? 'Joueur 1',
+      name: userProfile?.name ?? user.displayName ?? 'Joueur 1',
       emoji: avatar,
       photoUrl: user.photoURL,
       activeCardBack: activeCardBack,
@@ -191,7 +191,7 @@ class OnlineGameService {
 
     final newPlayer = Player(
       id: user.uid,
-      name: user.displayName ?? 'Nouveau Joueur',
+      name: userProfile?.name ?? user.displayName ?? 'Nouveau Joueur',
       emoji: avatar,
       photoUrl: user.photoURL,
       activeCardBack: activeCardBack,

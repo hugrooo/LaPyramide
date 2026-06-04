@@ -228,8 +228,8 @@ class PlayingCardWidget extends ConsumerWidget {
         );
         borderColor = const Color(0xFFE040FB); // Bright purple
         centerGlowColor = const Color(0xFFE040FB);
-        centerSymbol = '🥂\nBÊTA';
-        bgPattern = '🥂\n⭐';
+        centerSymbol = '🚀\nBÊTA';
+        bgPattern = '🚀\n⭐';
         break;
       case 'pharaoh':
         bgGradient = const LinearGradient(
@@ -284,7 +284,7 @@ class PlayingCardWidget extends ConsumerWidget {
         borderColor = const Color(0xFFFF00FF);
         centerGlowColor = const Color(0xFF00FFFF);
         centerSymbol = '🪩';
-        bgPattern = '🍸\n🎵';
+        bgPattern = '🎵\n⭐';
         break;
       case 'demon':
         bgGradient = const LinearGradient(
