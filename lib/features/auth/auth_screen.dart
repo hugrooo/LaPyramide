@@ -70,20 +70,28 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   Future<void> _signInWithGoogle() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
     final authService = ref.read(authServiceProvider);
     try {
       await authService.signInWithGoogle();
     } catch (e) {
       _showErrorSnackBar(_translateAuthError(e));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _signInWithApple() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
     final authService = ref.read(authServiceProvider);
     try {
       await authService.signInWithApple();
     } catch (e) {
       _showErrorSnackBar(_translateAuthError(e));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -550,24 +558,33 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     required VoidCallback onPressed,
   }) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: _isLoading ? null : onPressed,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: _isLoading ? backgroundColor.withOpacity(0.5) : backgroundColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: borderColor),
+          border: Border.all(color: _isLoading ? borderColor.withOpacity(0.5) : borderColor),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: iconColor, size: 28),
+            _isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Icon(icon, color: _isLoading ? iconColor.withOpacity(0.5) : iconColor, size: 28),
             const SizedBox(width: 8),
             Text(
               text,
               style: TextStyle(
-                color: textColor,
+                color: _isLoading ? textColor.withOpacity(0.5) : textColor,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
