@@ -105,7 +105,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                         color: PyraTheme.primaryPink,
                         title: 'Bienvenue !',
                         description:
-                            'Prépare-toi à passer des soirées mémorables avec tes amis sur La Pyramide.',
+                            'Prépare-toi à passer des parties mémorables avec tes amis sur La Pyramide.',
                       ),
                       _buildSlide(
                         icon: Icons.trending_up_rounded,

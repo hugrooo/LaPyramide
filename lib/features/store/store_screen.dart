@@ -312,30 +312,30 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         ),
         const SizedBox(height: 16),
         _buildItemPurchaseCard(
-          id: 'Pilier de Bar 🍻',
-          title: 'Pilier de Bar 🍻',
+          id: 'Maître du Jeu 🃏',
+          title: 'Maître du Jeu 🃏',
           desc:
               'Un titre idéal pour ceux qui ne reculent devant aucune pénalité.',
           cost: 150,
           currency: 'coins',
-          icon: Icons.sports_bar_rounded,
+          icon: Icons.psychology_rounded,
           iconColor: PyraTheme.primaryYellow,
-          ownedCount: titlesOwned.contains('Pilier de Bar 🍻') ? 1 : 0,
+          ownedCount: titlesOwned.contains('Maître du Jeu 🃏') ? 1 : 0,
           type: 'title',
-          isOwned: titlesOwned.contains('Pilier de Bar 🍻'),
+          isOwned: titlesOwned.contains('Maître du Jeu 🃏'),
         ),
         const SizedBox(height: 16),
         _buildItemPurchaseCard(
-          id: 'Roi de la Soirée 👑',
-          title: 'Roi de la Soirée 👑',
+          id: 'Roi de la Partie 👑',
+          title: 'Roi de la Partie 👑',
           desc: 'Pour celui ou celle qui met toujours l\'ambiance.',
           cost: 200,
           currency: 'coins',
           icon: Icons.celebration_rounded,
           iconColor: const Color(0xFFFFD700), // Gold
-          ownedCount: titlesOwned.contains('Roi de la Soirée 👑') ? 1 : 0,
+          ownedCount: titlesOwned.contains('Roi de la Partie 👑') ? 1 : 0,
           type: 'title',
-          isOwned: titlesOwned.contains('Roi de la Soirée 👑'),
+          isOwned: titlesOwned.contains('Roi de la Partie 👑'),
         ),
         const SizedBox(height: 16),
         _buildItemPurchaseCard(
@@ -912,7 +912,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     children: [
                       if (_activeTab == StoreTab.coins) ...[
                         const Text(
-                          'Achète des pièces pour débloquer des Jokers et dominer vos soirées !',
+                          'Achète des pièces pour débloquer des Jokers et dominer vos parties !',
                           style: TextStyle(color: Colors.white70, fontSize: 14),
                           textAlign: TextAlign.center,
                         ),

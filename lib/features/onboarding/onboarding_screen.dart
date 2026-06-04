@@ -19,7 +19,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       'title': 'Bienvenue',
       'subtitle':
-          'Découvre le meilleur jeu de cartes à prendre pour tes soirées entre amis.',
+          'Découvre le meilleur jeu de cartes pour tes parties entre amis.',
     },
     {
       'title': 'Distribue',
@@ -57,7 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
           // 2. Floating floating elements (Background)
           _buildFloatingElement('🃏', top: 100, left: 40, rotation: -0.2),
-          _buildFloatingElement('🍻', top: 250, right: 50, rotation: 0.15),
+          _buildFloatingElement('🎯', top: 250, right: 50, rotation: 0.15),
           _buildFloatingElement('🏆', bottom: 150, left: 60, rotation: -0.1),
           _buildFloatingElement('🎲', bottom: 300, right: 40, rotation: 0.3),
 

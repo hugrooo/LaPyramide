@@ -386,7 +386,7 @@ class OnlineGameScreen extends ConsumerWidget {
 
   void _showTauntDialog(
       BuildContext context, WidgetRef ref, String roomId, String userId) {
-    final taunts = ['🍻', '🍅', '💩', '🤡', '💤', '🤣'];
+    final taunts = ['🎯', '🍅', '💩', '🤡', '💤', '🤣'];
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -871,7 +871,7 @@ class OnlineGameScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '🍺 ${state.currentSips} pénalité${state.currentSips > 1 ? 's' : ''}',
+                    '🃏 ${state.currentSips} pénalité${state.currentSips > 1 ? 's' : ''}',
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,

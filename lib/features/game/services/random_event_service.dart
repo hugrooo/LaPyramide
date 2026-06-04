@@ -48,9 +48,9 @@ class RandomEventNotifier extends StateNotifier<RandomEvent?> {
       type: "global",
     ),
     RandomEvent(
-      title: "Gage Fatal Général 🍻",
-      description: "TRÈS RARE ! Tout le monde finit son verre. Santé !",
-      emoji: "🍻",
+      title: "Action Générale ⚡",
+      description: "TRÈS RARE ! Tout le monde prend 3 pénalités !",
+      emoji: "⚡",
       type: "global",
     ),
   ];

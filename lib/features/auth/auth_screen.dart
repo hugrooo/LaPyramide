@@ -216,7 +216,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           Positioned(
             top: 140,
             right: 40,
-            child: _buildFloatingIcon('🍻', 0.15),
+            child: _buildFloatingIcon('🎯', 0.15),
           ),
           Positioned(
             top: 100,

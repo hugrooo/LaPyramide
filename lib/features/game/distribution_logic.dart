@@ -173,7 +173,7 @@ class DistributionLogic {
       phase: nextPhase,
       pendingDrinks: [],
       lastEventMessage:
-          "🍻 ${fromPlayer.name} a donné ${assignment.sips} pénalité(s) à ${toPlayer.name} !",
+          "🎯 ${fromPlayer.name} a donné ${assignment.sips} pénalité(s) à ${toPlayer.name} !",
       lastEventTime: DateTime.now().millisecondsSinceEpoch,
     );
   }
