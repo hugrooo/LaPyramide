@@ -1,6 +1,6 @@
 {
-    "name": "la_pyramide",
-    "short_name": "la_pyramide",
+    "name": "Pyramideparty",
+    "short_name": "Pyramideparty",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
