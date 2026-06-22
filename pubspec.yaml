@@ -1,5 +1,5 @@
 name: la_pyramide
-description: Le jeu de cartes alcoolisé La Pyramide — version mobile iOS & Android.
+description: Le jeu de cartes La Pyramide — version mobile iOS & Android.
 publish_to: 'none'
 version: 1.0.4+5
 
@@ -48,6 +48,7 @@ dependencies:
   mobile_scanner: ^7.2.0
   confetti: ^0.8.0
   in_app_purchase: ^3.2.3
+  purchases_flutter: ^8.1.1
   url_launcher: ^6.3.2
   flutter_timezone: ^5.1.0
 

@@ -23,6 +23,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  int _currentCardIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -414,15 +416,72 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                 const Spacer(),
 
-                // ── Carte 3D Centrale (Bouton Jouer) ─────────────────────
-                PlayCard3D(
-                  onTap: () {
-                    context.pushNamed('onlineLobby');
-                  },
+                // ── PageView Cartes 3D ─────────────────────
+                SizedBox(
+                  height: 380,
+                  child: PageView(
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentCardIndex = index;
+                      });
+                    },
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Center(
+                          child: PlayCard3D(
+                            onTap: () {
+                              context.pushNamed('onlineLobby');
+                            },
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Center(
+                          child: PlayCard3D(
+                            title: 'JEUX DE TABLE',
+                            modeLabel: 'COMPAGNON',
+                            statusText: 'Outils de jeu physique',
+                            icon: Icons.casino_rounded,
+                            statusIcon: Icons.casino_outlined,
+                            statusIconColor: PyraTheme.primaryPurple,
+                            buttonGradient: PyraTheme.purplePinkGradient,
+                            glowBackColors: const [
+                              PyraTheme.primaryPurple,
+                              PyraTheme.primaryPink,
+                            ],
+                            onTap: () {
+                              context.pushNamed('boardGames');
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 )
                     .animate()
                     .fadeIn(duration: 800.ms, curve: Curves.easeOutBack)
                     .scale(begin: const Offset(0.8, 0.8)),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(2, (index) {
+                    final isSelected = _currentCardIndex == index;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: isSelected ? 16 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: isSelected
+                            ? PyraTheme.primaryCyan
+                            : Colors.white.withOpacity(0.3),
+                      ),
+                    );
+                  }),
+                ),
 
                 const Spacer(),
                 Row(

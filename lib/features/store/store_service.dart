@@ -1,6 +1,7 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../auth/auth_service.dart';
 
@@ -10,103 +11,156 @@ final storeServiceProvider = Provider<StoreService>((ref) {
 
 class StoreService {
   final Ref _ref;
-  final InAppPurchase _iap = InAppPurchase.instance;
-  StreamSubscription<List<PurchaseDetails>>? _subscription;
+  bool _isInitialized = false;
 
-  // Example Product IDs (You need to create these exactly in App Store Connect)
+  static const String _apiKeyAndroid = 'goog_placeholder_api_key';
+  static const String _apiKeyIOS = 'appl_placeholder_api_key';
+
+  static const String vipEntitlementId = 'premium';
+
   static const String pack100Id = 'com.lapyramide.pack100';
   static const String pack500Id = 'com.lapyramide.pack500';
   static const String pack1200Id = 'com.lapyramide.pack1200';
+  static const String diamonds50Id = 'com.lapyramide.diamonds50';
+  static const String diamonds250Id = 'com.lapyramide.diamonds250';
+  static const String diamonds600Id = 'com.lapyramide.diamonds600';
+  static const String subVipMonthlyId = 'com.lapyramide.sub_vip_monthly';
 
   StoreService(this._ref);
 
-  void init() {
+  Future<void> init() async {
+    if (kIsWeb) return;
+    if (_isInitialized) return;
+
     try {
-      final purchaseUpdated = _iap.purchaseStream;
-      _subscription = purchaseUpdated.listen((purchaseDetailsList) {
-        _listenToPurchaseUpdated(purchaseDetailsList);
-      }, onDone: () {
-        _subscription?.cancel();
-      }, onError: (error) {
-        print("Erreur d'achat: $error");
+      if (kDebugMode) {
+        await Purchases.setLogLevel(LogLevel.debug);
+      }
+
+      PurchasesConfiguration configuration;
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        configuration = PurchasesConfiguration(_apiKeyAndroid);
+      } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+        configuration = PurchasesConfiguration(_apiKeyIOS);
+      } else {
+        return;
+      }
+
+      await Purchases.configure(configuration);
+      _isInitialized = true;
+
+      _ref.listen(authServiceProvider, (previous, next) {
+        final user = next.currentUser;
+        if (user != null && !user.isAnonymous) {
+          Purchases.logIn(user.uid);
+        } else {
+          Purchases.logOut();
+        }
+      }, fireImmediately: true);
+
+      Purchases.addCustomerInfoUpdateListener((customerInfo) {
+        _updateVipStatusFromCustomerInfo(customerInfo);
       });
     } catch (e) {
-      print("Erreur d'initialisation du store (simulateur ou autre): $e");
+      print("Erreur d'initialisation de RevenueCat: $e");
     }
   }
 
-  void dispose() {
-    _subscription?.cancel();
-  }
+  void dispose() {}
 
-  Future<List<ProductDetails>> fetchProducts() async {
+  Future<Offerings?> fetchOfferings() async {
+    if (kIsWeb) return null;
     try {
-      final bool available =
-          await _iap.isAvailable().timeout(const Duration(seconds: 3));
-      if (!available) {
-        print("Store indisponible");
-        return [];
-      }
-
-      const Set<String> kIds = <String>{pack100Id, pack500Id, pack1200Id};
-      final ProductDetailsResponse response = await _iap
-          .queryProductDetails(kIds)
-          .timeout(const Duration(seconds: 5));
-
-      if (response.notFoundIDs.isNotEmpty) {
-        print("Produits non trouvés: ${response.notFoundIDs}");
-      }
-
-      return response.productDetails;
+      await init();
+      return await Purchases.getOfferings();
     } catch (e) {
-      print("Erreur de récupération des produits (timeout ou autre): $e");
-      return [];
+      print("Erreur de récupération des Offerings RevenueCat: $e");
+      return null;
     }
   }
 
-  Future<void> buyProduct(ProductDetails product) async {
-    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
-    await _iap.buyConsumable(purchaseParam: purchaseParam);
+  Future<void> buyPackage(Package package) async {
+    if (kIsWeb) return;
+    try {
+      final customerInfo = await Purchases.purchasePackage(package);
+      await _updateVipStatusFromCustomerInfo(customerInfo);
+      await _deliverNonSubscriptionProductIfNeeded(package.storeProduct.identifier);
+    } catch (e) {
+      print("Erreur d'achat de package: $e");
+    }
   }
 
-  Future<void> _listenToPurchaseUpdated(
-      List<PurchaseDetails> purchaseDetailsList) async {
-    for (var purchaseDetails in purchaseDetailsList) {
-      if (purchaseDetails.status == PurchaseStatus.pending) {
-        // En attente
+  Future<void> _updateVipStatusFromCustomerInfo(CustomerInfo customerInfo) async {
+    final user = _ref.read(authServiceProvider).currentUser;
+    if (user == null || user.isAnonymous) return;
+
+    final userDbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
+    
+    final bool isVipActive = customerInfo.entitlements.all[vipEntitlementId]?.isActive ?? false;
+    final String? expirationDate = customerInfo.entitlements.all[vipEntitlementId]?.expirationDate;
+
+    if (isVipActive) {
+      final snapshot = await userDbRef.get();
+      if (snapshot.exists && snapshot.value is Map) {
+        final data = snapshot.value as Map;
+        List<dynamic> titles = data['titles'] is List ? List<dynamic>.from(data['titles']) : ['Novice 🐣'];
+        List<dynamic> borders = data['bordersOwned'] is List ? List<dynamic>.from(data['bordersOwned']) : ['classic'];
+        
+        if (!titles.contains('Dieu de la Pyramide 👁️')) titles.add('Dieu de la Pyramide 👁️');
+        if (!borders.contains('gold')) borders.add('gold');
+
+        await userDbRef.update({
+          'isVip': true,
+          'vipExpireDate': expirationDate ?? DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+          'titles': titles,
+          'bordersOwned': borders,
+        });
       } else {
-        if (purchaseDetails.status == PurchaseStatus.error) {
-          print("Erreur d'achat: ${purchaseDetails.error}");
-        } else if (purchaseDetails.status == PurchaseStatus.purchased ||
-            purchaseDetails.status == PurchaseStatus.restored) {
-          // L'achat a réussi, donner la récompense
-          await _deliverProduct(purchaseDetails);
-        }
-
-        if (purchaseDetails.pendingCompletePurchase) {
-          await _iap.completePurchase(purchaseDetails);
-        }
+        await userDbRef.update({
+          'isVip': true,
+          'vipExpireDate': expirationDate ?? DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+          'titles': ['Novice 🐣', 'Dieu de la Pyramide 👁️'],
+          'bordersOwned': ['classic', 'gold'],
+        });
       }
+    } else {
+      await userDbRef.update({
+        'isVip': false,
+      });
     }
   }
 
-  Future<void> _deliverProduct(PurchaseDetails purchaseDetails) async {
+  Future<void> _deliverNonSubscriptionProductIfNeeded(String productID) async {
     final user = _ref.read(authServiceProvider).currentUser;
     if (user == null) return;
 
     int coinsToAdd = 0;
-    if (purchaseDetails.productID == pack100Id) coinsToAdd = 100;
-    if (purchaseDetails.productID == pack500Id) coinsToAdd = 500;
-    if (purchaseDetails.productID == pack1200Id) coinsToAdd = 1200;
+    int diamondsToAdd = 0;
+
+    if (productID.contains('pack100') || productID.contains('coin100') || productID == pack100Id) coinsToAdd = 100;
+    if (productID.contains('pack500') || productID.contains('coin500') || productID == pack500Id) coinsToAdd = 500;
+    if (productID.contains('pack1200') || productID.contains('coin1200') || productID == pack1200Id) coinsToAdd = 1200;
+
+    if (productID.contains('diamonds50') || productID == diamonds50Id) diamondsToAdd = 50;
+    if (productID.contains('diamonds250') || productID == diamonds250Id) diamondsToAdd = 250;
+    if (productID.contains('diamonds600') || productID == diamonds600Id) diamondsToAdd = 600;
+
+    final userDbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
 
     if (coinsToAdd > 0) {
-      final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}/coins');
-      // Pour éviter les écritures concurrentes, on lit puis on écrit.
-      // Dans une application en production, utilisez un Transaction Firebase
+      final dbRef = userDbRef.child('coins');
       final snapshot = await dbRef.get();
       final currentCoins = (snapshot.value as int?) ?? 0;
       await dbRef.set(currentCoins + coinsToAdd);
-      print("Ajout de $coinsToAdd pièces au compte ${user.uid}");
+      print("RevenueCat: Ajout de $coinsToAdd pièces");
+    }
+
+    if (diamondsToAdd > 0) {
+      final dbRef = userDbRef.child('diamonds');
+      final snapshot = await dbRef.get();
+      final currentDiamonds = (snapshot.value as int?) ?? 0;
+      await dbRef.set(currentDiamonds + diamondsToAdd);
+      print("RevenueCat: Ajout de $diamondsToAdd diamants");
     }
   }
 
@@ -129,7 +183,6 @@ class StoreService {
       currentJokerCount = (rawJokers[jokerId] as num?)?.toInt() ?? 0;
     }
 
-    // Déduire pièces et ajouter le joker
     await dbRef.update({
       'coins': currentCoins - cost,
       'jokers/$jokerId': currentJokerCount + 1,
@@ -148,7 +201,6 @@ class StoreService {
 
     final data = snapshot.value as Map;
 
-    // Vérifier monnaie
     if (currency == 'coins') {
       final currentCoins = (data['coins'] as num?)?.toInt() ?? 0;
       if (currentCoins < cost) return false;
@@ -159,7 +211,6 @@ class StoreService {
       await dbRef.child('diamonds').set(currentDiamonds - cost);
     }
 
-    // Ajouter le cosmétique à l'inventaire
     String listPath;
     String defaultItem = 'classic';
     

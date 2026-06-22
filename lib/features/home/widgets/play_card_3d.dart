@@ -6,8 +6,38 @@ import '../../../app/theme.dart';
 
 class PlayCard3D extends StatefulWidget {
   final VoidCallback onTap;
+  final String title;
+  final String modeLabel;
+  final String statusText;
+  final IconData icon;
+  final IconData statusIcon;
+  final Color statusIconColor;
+  final List<Color> cardColors;
+  final List<BoxShadow>? glowShadows;
+  final Gradient buttonGradient;
+  final List<Color> glowBackColors;
 
-  const PlayCard3D({super.key, required this.onTap});
+  const PlayCard3D({
+    super.key,
+    required this.onTap,
+    this.title = 'JOUER',
+    this.modeLabel = 'MODE LIGNE',
+    this.statusText = 'Prêt pour la Pyramide',
+    this.icon = Icons.play_arrow_rounded,
+    this.statusIcon = Icons.wifi_rounded,
+    this.statusIconColor = PyraTheme.primaryCyan,
+    this.cardColors = const [
+      PyraTheme.bgCard,
+      PyraTheme.bgSurface,
+      PyraTheme.bgDark,
+    ],
+    this.glowShadows,
+    this.buttonGradient = PyraTheme.orangeYellowGradient,
+    this.glowBackColors = const [
+      PyraTheme.primaryPink,
+      PyraTheme.primaryCyan,
+    ],
+  });
 
   @override
   State<PlayCard3D> createState() => _PlayCard3DState();
@@ -102,27 +132,26 @@ class _PlayCard3DState extends State<PlayCard3D>
       height: 340,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            PyraTheme.bgCard,
-            PyraTheme.bgSurface,
-            PyraTheme.bgDark,
-          ],
+          colors: widget.cardColors,
         ),
         boxShadow: [
-          // Ombre colorée (Glow arrière)
-          BoxShadow(
-              color: PyraTheme.primaryPink.withOpacity(0.4),
-              blurRadius: 40,
-              spreadRadius: -5,
-              offset: const Offset(-20, 20)),
-          BoxShadow(
-              color: PyraTheme.primaryCyan.withOpacity(0.4),
-              blurRadius: 40,
-              spreadRadius: -5,
-              offset: const Offset(20, -20)),
+          if (widget.glowShadows != null)
+            ...widget.glowShadows!
+          else ...[
+            BoxShadow(
+                color: widget.glowBackColors[0].withOpacity(0.4),
+                blurRadius: 40,
+                spreadRadius: -5,
+                offset: const Offset(-20, 20)),
+            BoxShadow(
+                color: widget.glowBackColors[1].withOpacity(0.4),
+                blurRadius: 40,
+                spreadRadius: -5,
+                offset: const Offset(20, -20)),
+          ],
           // Ombre de portée 3D
           BoxShadow(
               color: Colors.black.withOpacity(0.7),
@@ -156,7 +185,7 @@ class _PlayCard3DState extends State<PlayCard3D>
               ).animate(onPlay: (c) => c.repeat(reverse: true)).slideX(
                   begin: -1, end: 1, duration: 3.seconds, curve: Curves.linear),
             ),
-
+ 
             // Halo lumineux au centre
             Positioned.fill(
               child: Center(
@@ -175,7 +204,7 @@ class _PlayCard3DState extends State<PlayCard3D>
                 ),
               ),
             ),
-
+ 
             // Contenu (Logo, Texte, Play)
             Padding(
               padding: const EdgeInsets.all(24.0),
@@ -194,18 +223,18 @@ class _PlayCard3DState extends State<PlayCard3D>
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: Colors.white24),
                         ),
-                        child: const Text('MODE LIGNE',
-                            style: TextStyle(
+                        child: Text(widget.modeLabel,
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1)),
                       ),
-                      const Icon(Icons.wifi_rounded,
-                          color: PyraTheme.primaryCyan, size: 20),
+                      Icon(widget.statusIcon,
+                          color: widget.statusIconColor, size: 20),
                     ],
                   ),
-
+ 
                   // Center
                   Column(
                     children: [
@@ -214,23 +243,32 @@ class _PlayCard3DState extends State<PlayCard3D>
                         height: 80,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: PyraTheme.orangeYellowGradient,
-                          boxShadow: PyraTheme.glowOrange,
+                          gradient: widget.buttonGradient,
+                          boxShadow: [
+                            BoxShadow(
+                              color: (widget.buttonGradient is LinearGradient)
+                                  ? (widget.buttonGradient as LinearGradient).colors.first.withOpacity(0.6)
+                                  : PyraTheme.primaryOrange.withOpacity(0.6),
+                              blurRadius: 24,
+                              spreadRadius: 2,
+                            ),
+                          ],
                         ),
-                        child: const Icon(Icons.play_arrow_rounded,
+                        child: Icon(widget.icon,
                             color: Colors.white, size: 48),
                       ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
                           begin: const Offset(1, 1),
                           end: const Offset(1.05, 1.05),
                           duration: 1.seconds),
                       const SizedBox(height: 16),
-                      const Text(
-                        'JOUER',
-                        style: TextStyle(
+                      Text(
+                        widget.title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 32,
+                          fontSize: 24,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 4,
+                          letterSpacing: 2,
                           shadows: [
                             Shadow(
                                 color: Colors.black54,
@@ -241,7 +279,7 @@ class _PlayCard3DState extends State<PlayCard3D>
                       ),
                     ],
                   ),
-
+ 
                   // Bottom (Joueurs en ligne etc)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -249,22 +287,25 @@ class _PlayCard3DState extends State<PlayCard3D>
                       Container(
                         width: 8,
                         height: 8,
-                        decoration: const BoxDecoration(
-                            color: Colors.greenAccent,
+                        decoration: BoxDecoration(
+                            color: widget.statusIconColor,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                  color: Colors.greenAccent, blurRadius: 8)
+                                  color: widget.statusIconColor, blurRadius: 8)
                             ]),
                       )
                           .animate(onPlay: (c) => c.repeat(reverse: true))
                           .fade(duration: 800.ms),
                       const SizedBox(width: 8),
-                      const Text('Prêt pour la Pyramide',
-                          style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold)),
+                      Flexible(
+                        child: Text(widget.statusText,
+                            style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis),
+                      ),
                     ],
                   ),
                 ],

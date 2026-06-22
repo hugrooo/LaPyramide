@@ -21,6 +21,7 @@ import '../features/shared/screens/coming_soon_screen.dart';
 import '../features/profile/level_screen.dart';
 import '../features/profile/public_profile_screen.dart';
 import '../features/shared/screens/quests_screen.dart';
+import '../features/game/board_games/board_games_screen.dart';
 
 // ─── Transitions ────────────────────────────────────────────────────────────
 
@@ -294,6 +295,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'quests',
         pageBuilder: (context, state) =>
             _slideRight(context, state, const QuestsScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/board-games',
+        name: 'boardGames',
+        pageBuilder: (context, state) =>
+            _slideRight(context, state, const BoardGamesScreen()),
       ),
     ],
   );

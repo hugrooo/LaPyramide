@@ -27,6 +27,8 @@ class UserProfile {
   final String selectedTheme;
   // Quêtes : clé = path de la quête, valeur = {progress, claimed}
   final Map<String, Map<String, dynamic>> quests;
+  final bool isVip;
+  final String vipExpireDate;
 
   UserProfile({
     this.name = 'Utilisateur',
@@ -52,9 +54,14 @@ class UserProfile {
     required this.themesOwned,
     required this.selectedTheme,
     this.quests = const {},
+    this.isVip = false,
+    this.vipExpireDate = '',
   });
 
   factory UserProfile.fromMap(Map<dynamic, dynamic> map) {
+    final isVip = map['isVip'] == true;
+    final vipExpireDate = map['vipExpireDate']?.toString() ?? '';
+
     // Parse jokers safely
     final rawJokers = map['jokers'];
     final Map<String, int> jokersMap = {};
@@ -156,6 +163,8 @@ class UserProfile {
       themesOwned: themesList,
       selectedTheme: map['selectedTheme'] ?? 'classic',
       quests: questsMap,
+      isVip: isVip,
+      vipExpireDate: vipExpireDate,
     );
   }
 
