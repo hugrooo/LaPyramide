@@ -352,7 +352,7 @@ class SettingsScreen extends ConsumerWidget {
                               color: PyraTheme.textMuted, fontSize: 12),
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 120),
                     ]),
                   ),
                 ),

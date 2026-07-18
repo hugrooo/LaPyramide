@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../auth/auth_service.dart';
 import '../../../app/theme.dart';
+import '../../../core/security/screen_protection.dart';
 import '../../../shared/widgets/animated_background.dart';
 import '../models/game_state.dart';
 import '../models/player_model.dart';
@@ -41,6 +42,16 @@ class LocalGameNotifier extends StateNotifier<GameState?> {
       state: state!,
       fromPlayerId: fromId,
       toPlayerId: toId,
+    );
+  }
+
+  void assignDrinkSplit(String fromId, List<String> toIds, int totalSips) {
+    if (state == null) return;
+    state = GameLogic.assignDrinkSplit(
+      state: state!,
+      fromPlayerId: fromId,
+      toPlayerIds: toIds,
+      totalSips: totalSips,
     );
   }
 
@@ -96,16 +107,26 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
   int _currentPlayerIndex = 0;
   PyraCard? _selectedCard;
   String? _assignToPlayerId;
+  final Set<String> _assignToPlayerIds = {};
+  bool _splitMode = false;
   bool _showPassPhone = false;
+  bool _navigatedToScoreboard = false;
 
   @override
   void initState() {
     super.initState();
+    ScreenProtection.enable();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref
           .read(localGameProvider.notifier)
           .initGame(widget.players, widget.settings);
     });
+  }
+
+  @override
+  void dispose() {
+    ScreenProtection.disable();
+    super.dispose();
   }
 
   Player get currentPlayer =>
@@ -131,9 +152,15 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
     });
 
     // Redirection vers le scoreboard si partie terminée
-    if (gameState.phase == GamePhase.finished) {
+    if (gameState.phase == GamePhase.finished && !_navigatedToScoreboard) {
+      _navigatedToScoreboard = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.goNamed('scoreboard', extra: {'players': gameState.players});
+        if (mounted) {
+          context.goNamed('scoreboard', extra: {
+            'players': gameState.players,
+            'settings': gameState.settings,
+          });
+        }
       });
     }
 
@@ -208,11 +235,27 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
         itemBuilder: (context, i) {
           final player = gameState.players[i];
           final isActive = i == _currentPlayerIndex;
+          final isTargeted = _splitMode
+              ? _assignToPlayerIds.contains(player.id)
+              : _assignToPlayerId == player.id;
           return _PlayerChip(
             player: player,
             isActive: isActive,
-            onTap: () => setState(() => _assignToPlayerId = player.id),
-            isTargeted: _assignToPlayerId == player.id,
+            onTap: () {
+              if (player.id == currentPlayer.id) return;
+              setState(() {
+                if (_splitMode) {
+                  if (_assignToPlayerIds.contains(player.id)) {
+                    _assignToPlayerIds.remove(player.id);
+                  } else {
+                    _assignToPlayerIds.add(player.id);
+                  }
+                } else {
+                  _assignToPlayerId = player.id;
+                }
+              });
+            },
+            isTargeted: isTargeted,
           );
         },
       ),
@@ -247,50 +290,109 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
             onCardSelected: (card) => setState(() => _selectedCard = card),
           ),
 
-          if (isAssigning && _assignToPlayerId != null) ...[
-            const SizedBox(height: 16),
-            Consumer(
-              builder: (context, ref, child) {
-                final profileAsync = ref.watch(userProfileProvider);
-                final profile = profileAsync.value;
-                if (profile == null) return const SizedBox();
-
-                final int doubleDoseCount = profile.jokers['double_dose'] ?? 0;
-                if (doubleDoseCount == 0) return const SizedBox();
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: PulsarButton(
-                    text: '🧪 Activer Joker Double Dose (x$doubleDoseCount)',
-                    fontSize: 12,
-                    gradient: PyraTheme.purplePinkGradient,
-                    onPressed: () async {
-                      HapticFeedback.mediumImpact();
-
-                      final user = ref.read(authStateChangesProvider).value;
-                      if (user != null) {
-                        await FirebaseDatabase.instance
-                            .ref('users/${user.uid}/jokers/double_dose')
-                            .set(doubleDoseCount - 1);
+          if (isAssigning) ...[
+            const SizedBox(height: 12),
+            // Toggle split mode
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    setState(() {
+                      _splitMode = !_splitMode;
+                      if (_splitMode) {
+                        if (_assignToPlayerId != null) {
+                          _assignToPlayerIds.add(_assignToPlayerId!);
+                          _assignToPlayerId = null;
+                        }
+                      } else {
+                        _assignToPlayerIds.clear();
                       }
-
-                      if (mounted) {
-                        ref
-                            .read(localGameProvider.notifier)
-                            .useJoker('double_dose', currentPlayer.id);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text(
-                                  'Double Dose activé ! Vos pénalités sont doublées pour ce tour !'),
-                              backgroundColor: Colors.purpleAccent),
-                        );
-                      }
-                    },
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: _splitMode
+                          ? PyraTheme.primaryCyan.withOpacity(0.2)
+                          : Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: _splitMode
+                            ? PyraTheme.primaryCyan
+                            : Colors.white24,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.call_split_rounded,
+                          color: _splitMode ? PyraTheme.primaryCyan : Colors.white54,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Diviser',
+                          style: TextStyle(
+                            color: _splitMode ? PyraTheme.primaryCyan : Colors.white54,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
-            _buildAssignButton(gameState),
+            if ((_splitMode && _assignToPlayerIds.isNotEmpty) ||
+                (!_splitMode && _assignToPlayerId != null)) ...[
+              const SizedBox(height: 12),
+              Consumer(
+                builder: (context, ref, child) {
+                  final profileAsync = ref.watch(userProfileProvider);
+                  final profile = profileAsync.value;
+                  if (profile == null) return const SizedBox();
+
+                  final int doubleDoseCount = profile.jokers['double_dose'] ?? 0;
+                  if (doubleDoseCount == 0) return const SizedBox();
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: PulsarButton(
+                      text: '🧪 Activer Joker Double Dose (x$doubleDoseCount)',
+                      fontSize: 12,
+                      gradient: PyraTheme.purplePinkGradient,
+                      onPressed: () async {
+                        HapticFeedback.mediumImpact();
+
+                        final user = ref.read(authStateChangesProvider).value;
+                        if (user != null) {
+                          await FirebaseDatabase.instance
+                              .ref('users/${user.uid}/jokers/double_dose')
+                              .set(doubleDoseCount - 1);
+                        }
+
+                        if (mounted) {
+                          ref
+                              .read(localGameProvider.notifier)
+                              .useJoker('double_dose', currentPlayer.id);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Double Dose activé ! Pénalités doublées !'),
+                                backgroundColor: Colors.purpleAccent),
+                          );
+                        }
+                      },
+                    ),
+                  );
+                },
+              ),
+              _buildAssignButton(gameState),
+            ],
           ],
         ],
       ),
@@ -298,11 +400,55 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
   }
 
   Widget _buildAssignButton(GameState gameState) {
+    if (_splitMode) {
+      final targets = gameState.players
+          .where((p) => _assignToPlayerIds.contains(p.id))
+          .toList();
+      final totalSips = gameState.currentSips;
+      final perPlayer = (totalSips / targets.length).ceil();
+      final targetNames = targets.map((t) => t.emoji).join(' ');
+
+      return GestureDetector(
+        onTap: () {
+          HapticFeedback.mediumImpact();
+          ref.read(localGameProvider.notifier).assignDrinkSplit(
+                currentPlayer.id,
+                _assignToPlayerIds.toList(),
+                totalSips,
+              );
+          setState(() {
+            _selectedCard = null;
+            _assignToPlayerIds.clear();
+            _splitMode = false;
+          });
+        },
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            gradient: PyraTheme.cyanGradient,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: PyraTheme.glowCyan,
+          ),
+          child: Text(
+            'Diviser $totalSips 🎯 → $perPlayer chacun à $targetNames',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    }
+
     final target =
         gameState.players.firstWhere((p) => p.id == _assignToPlayerId);
 
     return GestureDetector(
       onTap: () {
+        HapticFeedback.mediumImpact();
         ref.read(localGameProvider.notifier).assignDrink(
               currentPlayer.id,
               _assignToPlayerId!,

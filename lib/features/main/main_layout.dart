@@ -16,7 +16,7 @@ class MainLayout extends StatelessWidget {
     int currentIndex = 0;
     if (location.startsWith('/home')) {
       currentIndex = 0;
-    } else if (location.startsWith('/rules')) {
+    } else if (location.startsWith('/battle-pass')) {
       currentIndex = 1;
     } else if (location.startsWith('/lobby') || location.startsWith('/game')) {
       currentIndex = 2; // Play tab
@@ -63,7 +63,7 @@ class MainLayout extends StatelessWidget {
               context.goNamed('home');
               break;
             case 1:
-              context.pushNamed('rules');
+              context.pushNamed('battlePass');
               break;
             case 2:
               // Play action (open game mode selector or local lobby directly)
@@ -121,8 +121,8 @@ class _GlassBottomNavBar extends StatelessWidget {
                   onTap: () => onTap(0),
                 ),
                 _NavBarItem(
-                  icon: Icons.menu_book_rounded,
-                  label: 'Règles',
+                  icon: Icons.military_tech_rounded,
+                  label: 'Pass',
                   isActive: currentIndex == 1,
                   onTap: () => onTap(1),
                 ),

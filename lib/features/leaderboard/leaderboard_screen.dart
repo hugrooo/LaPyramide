@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,11 +22,12 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
   final _service = LeaderboardService();
   List<Map<String, dynamic>> _topDrinkers = [];
   bool _isLoading = true;
+  StreamSubscription? _leaderboardSub;
 
   @override
   void initState() {
     super.initState();
-    _service.getGlobalLeaderboard().listen((event) {
+    _leaderboardSub = _service.getGlobalLeaderboard().listen((event) {
       if (!mounted) return;
       if (event.snapshot.value != null) {
         final data = event.snapshot.value as Map<dynamic, dynamic>;
@@ -55,6 +57,12 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
         setState(() => _isLoading = false);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _leaderboardSub?.cancel();
+    super.dispose();
   }
 
   @override
@@ -118,8 +126,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                                   ),
                                 Expanded(
                                   child: ListView.builder(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
+                                    padding: const EdgeInsets.only(
+                                        left: 16, right: 16, bottom: 100),
                                     itemCount: _topDrinkers.length > 3
                                         ? _topDrinkers.length - 3
                                         : 0,

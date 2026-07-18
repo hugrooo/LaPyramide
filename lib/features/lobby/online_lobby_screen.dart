@@ -245,82 +245,159 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
       children: [
         // Top Bar
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Row(
             children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white),
-                onPressed: () => context.pop(),
-              ),
-              const Expanded(
-                child: Text(
-                  'Mode en Ligne',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900),
-                  textAlign: TextAlign.center,
+              GestureDetector(
+                onTap: () => context.pop(),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1)),
+                  ),
+                  child: const Icon(Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white, size: 18),
                 ),
               ),
-              const SizedBox(width: 48), // Balance for title
+              const Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      'LA PYRAMIDE',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Créer ou rejoindre une partie',
+                      style: TextStyle(
+                          color: Colors.white38,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 48),
             ],
           ),
         ),
 
+        // Scrollable content (user card + mode selection)
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
             children: [
               // User Card
               GlassContainer(
-                padding: const EdgeInsets.all(20),
-                borderRadius: BorderRadius.circular(24),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 14),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                    color: PyraTheme.primaryCyan.withValues(alpha: 0.2)),
                 child: Row(
                   children: [
-                    // Avatar
                     AvatarWithBorder(
                       emoji: profile?.emoji ?? '😎',
-                      size: 64,
+                      size: 48,
                       borderType: profile?.selectedBorder ?? 'classic',
                       showLevel: true,
                       level: profile?.level,
                     ),
-                    const SizedBox(width: 16),
-                    // Info
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Connecté en tant que',
-                              style: TextStyle(
-                                  color: Colors.white54, fontSize: 12)),
                           Text(
                             profile?.name ?? name ?? 'Joueur Inconnu',
                             style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Container(
+                                width: 6,
+                                height: 6,
+                                decoration: const BoxDecoration(
+                                  color: Colors.greenAccent,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              const Text('Connecté',
+                                  style: TextStyle(
+                                      color: Colors.greenAccent,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: PyraTheme.primaryCyan.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.wifi_rounded,
+                              color: PyraTheme.primaryCyan, size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Lv.${profile?.level ?? 1}',
+                            style: const TextStyle(
+                                color: PyraTheme.primaryCyan,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700),
                           ),
                         ],
                       ),
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2),
+              ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
 
-              const Text(
-                'Choix du Mode',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  Container(
+                    width: 3,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      gradient: PyraTheme.purplePinkGradient,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'Configuration',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800),
+                  ),
+                ],
               ).animate().fadeIn(delay: 100.ms),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               if (_isLoading)
                 const Padding(
@@ -329,42 +406,107 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                       child: CircularProgressIndicator(
                           color: PyraTheme.primaryPink)),
                 )
-              else ...[
+              else
                 GameModeCarousel(
                   selectedMode: _settings.mode,
+                  penaltyMode: _settings.penaltyMode,
                   replaceCardsWithPowers: _settings.replaceCardsWithPowers,
                   onModeChanged: (mode) => setState(
                       () => _settings = _settings.copyWith(mode: mode)),
+                  onPenaltyModeChanged: (pm) => setState(() =>
+                      _settings = _settings.copyWith(penaltyMode: pm)),
                   onReplaceCardsChanged: (v) => setState(() => _settings =
                       _settings.copyWith(replaceCardsWithPowers: v)),
                 ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.2),
-                const SizedBox(height: 32),
+            ],
+          ),
+        ),
+
+        // Action buttons pinned at bottom
+        if (!_isLoading)
+          Container(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  PyraTheme.bgDark.withValues(alpha: 0.95),
+                ],
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Main CTA
                 PulsarButton(
                   text: 'Créer un salon',
                   icon: Icons.add_circle_outline_rounded,
                   gradient: PyraTheme.purplePinkGradient,
                   onPressed: _createRoom,
                 ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.2),
-                const SizedBox(height: 16),
-                PulsarButton(
-                  text: 'Rejoindre un salon',
-                  icon: Icons.login_rounded,
-                  gradient: PyraTheme.cyanGradient,
-                  onPressed: _showJoinDialog,
+                const SizedBox(height: 12),
+                // Secondary actions
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildSecondaryAction(
+                        icon: Icons.login_rounded,
+                        label: 'Rejoindre',
+                        color: PyraTheme.primaryCyan,
+                        onTap: _showJoinDialog,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildSecondaryAction(
+                        icon: Icons.qr_code_scanner_rounded,
+                        label: 'Scanner QR',
+                        color: PyraTheme.primaryPurple,
+                        onTap: _showScannerDialog,
+                      ),
+                    ),
+                  ],
                 ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
-                const SizedBox(height: 16),
-                PulsarButton(
-                  text: 'Scanner un QR Code',
-                  icon: Icons.qr_code_scanner_rounded,
-                  gradient: const LinearGradient(
-                      colors: [Colors.indigo, PyraTheme.primaryPurple]),
-                  onPressed: _showScannerDialog,
-                ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.2),
               ],
-            ],
+            ),
           ),
-        ),
       ],
+    );
+  }
+
+  Widget _buildSecondaryAction({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      child: GlassContainer(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -445,19 +587,60 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
             const Text('Partage ce code à tes amis',
                 style: TextStyle(color: PyraTheme.textSecondary)),
             const SizedBox(height: 12),
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: QrImageView(
+                    data: roomCode,
+                    version: QrVersions.auto,
+                    size: qrSize,
+                  ),
                 ),
-                child: QrImageView(
-                  data: roomCode,
-                  version: QrVersions.auto,
-                  size: qrSize,
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(
+                        text: 'https://lapyramide.app/join/$roomCode'));
+                    HapticFeedback.mediumImpact();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Lien copié !'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: PyraTheme.primaryCyan.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                          color: PyraTheme.primaryCyan.withValues(alpha: 0.3)),
+                    ),
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.link_rounded,
+                            color: PyraTheme.primaryCyan, size: 22),
+                        SizedBox(height: 4),
+                        Text('Copier\nle lien',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: PyraTheme.primaryCyan,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
             SizedBox(height: spaceMiddle),
             Expanded(

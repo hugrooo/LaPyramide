@@ -116,10 +116,14 @@ class _LocalLobbyScreenState extends ConsumerState<LocalLobbyScreen> {
                       // Modes de Jeu
                       GameModeCarousel(
                         selectedMode: _settings.mode,
+                        penaltyMode: _settings.penaltyMode,
                         replaceCardsWithPowers:
                             _settings.replaceCardsWithPowers,
                         onModeChanged: (mode) => setState(
                             () => _settings = _settings.copyWith(mode: mode)),
+                        onPenaltyModeChanged: (pm) => setState(() =>
+                            _settings =
+                                _settings.copyWith(penaltyMode: pm)),
                         onReplaceCardsChanged: (v) => setState(() => _settings =
                             _settings.copyWith(replaceCardsWithPowers: v)),
                       ),

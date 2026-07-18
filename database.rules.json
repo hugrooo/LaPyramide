@@ -36,6 +36,19 @@
     "sent_requests": {
       ".read": "auth != null",
       ".write": "auth != null"
+    },
+    "crews": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "community_decks": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["downloads", "creatorId"]
+    },
+    "deck_ratings": {
+      ".read": "auth != null",
+      ".write": "auth != null"
     }
   }
 }

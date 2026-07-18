@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app/theme.dart';
 import '../../shared/widgets/glass_container.dart';
@@ -28,10 +29,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Demande la permission pour les notifications (au premier lancement) et initialise l'écoute
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(pushNotificationServiceProvider).initialize();
+      _checkTutorial();
     });
+  }
+
+  Future<void> _checkTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    final done = prefs.getBool('tutorial_completed') ?? false;
+    if (!done && mounted) {
+      context.pushNamed('tutorial');
+    }
   }
 
   @override
@@ -117,8 +126,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
           // ── Contenu principal ─────────────────────────────────────────
           SafeArea(
-            child: Column(
-              children: [
+            bottom: false,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).padding.bottom + 100,
+              ),
+              child: Column(
+                children: [
                 // ── HUD : Barre Unifiée CLIQUABLE → Profil ───────────────
                 GestureDetector(
                   onTap: () {
@@ -414,7 +428,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ).animate().fadeIn(duration: 700.ms).slideX(begin: -0.2),
 
-                const Spacer(),
+                const SizedBox(height: 16),
 
                 // ── PageView Cartes 3D ─────────────────────
                 SizedBox(
@@ -483,45 +497,154 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   }),
                 ),
 
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GlassContainer(
-                      padding: const EdgeInsets.all(8),
-                      borderRadius: BorderRadius.circular(20),
-                      child: IconButton(
-                        icon: const Icon(Icons.people_alt_rounded,
-                            color: PyraTheme.primaryCyan, size: 32),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          context.pushNamed('friends');
-                        },
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _QuickAction(
+                            icon: Icons.people_alt_rounded,
+                            label: 'Amis',
+                            color: PyraTheme.primaryCyan,
+                            onTap: () => context.pushNamed('friends'),
+                          ),
+                          _QuickAction(
+                            icon: Icons.extension_rounded,
+                            label: 'Mini-Jeux',
+                            color: PyraTheme.primaryPink,
+                            onTap: () => context.pushNamed('minigames'),
+                          ),
+                          _QuickAction(
+                            icon: Icons.groups_rounded,
+                            label: 'Crews',
+                            color: PyraTheme.primaryPurple,
+                            onTap: () => context.pushNamed('crews'),
+                          ),
+                          _QuickAction(
+                            icon: Icons.style_rounded,
+                            label: 'Decks',
+                            color: PyraTheme.primaryOrange,
+                            onTap: () => context.pushNamed('customDecks'),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 32),
-                    GlassContainer(
-                      padding: const EdgeInsets.all(8),
-                      borderRadius: BorderRadius.circular(20),
-                      child: IconButton(
-                        icon: const Icon(Icons.leaderboard_rounded,
-                            color: PyraTheme.primaryYellow, size: 32),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          context.pushNamed('leaderboard');
-                        },
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _QuickAction(
+                            icon: Icons.leaderboard_rounded,
+                            label: 'Classement',
+                            color: PyraTheme.primaryYellow,
+                            onTap: () => context.pushNamed('leaderboard'),
+                          ),
+                          _QuickAction(
+                            icon: Icons.bar_chart_rounded,
+                            label: 'Stats',
+                            color: PyraTheme.primaryGreen,
+                            onTap: () => context.pushNamed('stats'),
+                          ),
+                          _QuickAction(
+                            icon: Icons.military_tech_rounded,
+                            label: 'Pass',
+                            color: PyraTheme.primaryPink,
+                            onTap: () => context.pushNamed('battlePass'),
+                          ),
+                          _QuickAction(
+                            icon: Icons.visibility_rounded,
+                            label: 'Regarder',
+                            color: PyraTheme.primaryBlue,
+                            onTap: () => _showSpectateDialog(context),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ).animate().fadeIn(duration: 900.ms).slideY(begin: 0.2),
-                const SizedBox(height: 48),
+                const SizedBox(height: 24),
               ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+void _showSpectateDialog(BuildContext context) {
+  final controller = TextEditingController();
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: PyraTheme.bgCard,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: const Text(
+        'Regarder une partie',
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Entre le code de la room pour regarder en direct',
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 13),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: controller,
+            textCapitalization: TextCapitalization.characters,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 4,
+            ),
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              hintText: 'CODE',
+              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
+              filled: true,
+              fillColor: Colors.white.withValues(alpha: 0.05),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: PyraTheme.primaryCyan),
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: Text('Annuler',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.5))),
+        ),
+        TextButton(
+          onPressed: () {
+            final code = controller.text.trim();
+            if (code.isNotEmpty) {
+              Navigator.pop(ctx);
+              GoRouter.of(context).pushNamed('spectate', extra: code);
+            }
+          },
+          child: const Text('Regarder',
+              style: TextStyle(color: PyraTheme.primaryCyan, fontWeight: FontWeight.w700)),
+        ),
+      ],
+    ),
+  );
 }
 
 class _GlowOrb extends StatelessWidget {
@@ -542,6 +665,53 @@ class _GlowOrb extends StatelessWidget {
             color: color,
             blurRadius: size / 1.5,
             spreadRadius: 0,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: color.withValues(alpha: 0.3)),
+            ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            label,
+            style: TextStyle(
+              color: color.withValues(alpha: 0.9),
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

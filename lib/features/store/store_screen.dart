@@ -1480,7 +1480,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 // Content Area
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
                     children: [
                       if (_activeTab == StoreTab.coins) ...[
                         const Text(

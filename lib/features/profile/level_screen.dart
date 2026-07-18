@@ -199,7 +199,6 @@ class LevelScreen extends ConsumerWidget {
         title: 'Choisir ton Titre',
         child: ListView.builder(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
           itemCount: ownedTitles.length,
           itemBuilder: (_, i) {
             final title = ownedTitles[i];
@@ -1478,7 +1477,11 @@ class _AppearanceSheet extends StatelessWidget {
   const _AppearanceSheet({required this.title, required this.child});
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) {
+    final maxHeight = MediaQuery.of(context).size.height * 0.7;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: Container(
         decoration: BoxDecoration(
           color: PyraTheme.bgCard.withOpacity(0.95),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
@@ -1502,8 +1505,10 @@ class _AppearanceSheet extends StatelessWidget {
                     fontSize: 20,
                     fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
-            child,
+            Flexible(child: child),
           ],
         ),
-      );
+      ),
+    );
+  }
 }

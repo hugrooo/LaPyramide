@@ -21,7 +21,14 @@ import '../features/shared/screens/coming_soon_screen.dart';
 import '../features/profile/level_screen.dart';
 import '../features/profile/public_profile_screen.dart';
 import '../features/shared/screens/quests_screen.dart';
-import '../features/game/board_games/board_games_screen.dart';
+import '../features/minigames/minigames_hub_screen.dart';
+import '../features/minigames/liar_game_screen.dart';
+import '../features/custom_decks/custom_decks_screen.dart';
+import '../features/stats/stats_screen.dart';
+import '../features/tutorial/tutorial_screen.dart';
+import '../features/seasons/battle_pass_screen.dart';
+import '../features/crews/crews_screen.dart';
+import '../features/game/online/spectator_screen.dart';
 
 // ─── Transitions ────────────────────────────────────────────────────────────
 
@@ -270,6 +277,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 players: extra['players'],
                 isOnline: extra['isOnline'] ?? false,
                 roomCode: extra['roomCode'],
+                settings: extra['settings'],
               ));
         },
       ),
@@ -298,10 +306,62 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
-        path: '/board-games',
-        name: 'boardGames',
+        path: '/minigames',
+        name: 'minigames',
         pageBuilder: (context, state) =>
-            _slideRight(context, state, const BoardGamesScreen()),
+            _slideRight(context, state, const MinigamesHubScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/minigames/liar',
+        name: 'minigameLiar',
+        pageBuilder: (context, state) =>
+            _slideRight(context, state, const LiarGameScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/custom-decks',
+        name: 'customDecks',
+        pageBuilder: (context, state) =>
+            _slideRight(context, state, const CustomDecksScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/stats',
+        name: 'stats',
+        pageBuilder: (context, state) =>
+            _slideRight(context, state, const StatsScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/tutorial',
+        name: 'tutorial',
+        pageBuilder: (context, state) =>
+            _fadeSlideUp(context, state, const TutorialScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/battle-pass',
+        name: 'battlePass',
+        pageBuilder: (context, state) =>
+            _slideRight(context, state, const BattlePassScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/crews',
+        name: 'crews',
+        pageBuilder: (context, state) =>
+            _slideRight(context, state, const CrewsScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/game/spectate',
+        name: 'spectate',
+        pageBuilder: (context, state) {
+          final roomCode = state.extra as String? ?? '';
+          return _slideRight(
+              context, state, SpectatorScreen(roomCode: roomCode));
+        },
       ),
     ],
   );

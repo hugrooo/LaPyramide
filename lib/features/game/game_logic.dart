@@ -100,6 +100,42 @@ class GameLogic {
     return state.copyWith(phase: GamePhase.assigning);
   }
 
+  /// Divise les pénalités entre plusieurs joueurs
+  static GameState assignDrinkSplit({
+    required GameState state,
+    required String fromPlayerId,
+    required List<String> toPlayerIds,
+    required int totalSips,
+  }) {
+    final perPlayer = (totalSips / toPlayerIds.length).ceil();
+    final totalGiven = perPlayer * toPlayerIds.length;
+
+    final updatedPlayers = state.players.map((p) {
+      if (toPlayerIds.contains(p.id)) {
+        return p.copyWith(totalSips: p.totalSips + perPlayer);
+      }
+      if (p.id == fromPlayerId) {
+        return p.copyWith(drinksGiven: p.drinksGiven + totalGiven);
+      }
+      return p;
+    }).toList();
+
+    final from = state.players.firstWhere((p) => p.id == fromPlayerId);
+    final targets = state.players
+        .where((p) => toPlayerIds.contains(p.id))
+        .map((p) => p.emoji)
+        .join(' ');
+    final unit = state.settings.penaltyUnitPlural;
+
+    return state.copyWith(
+      players: updatedPlayers,
+      phase: GamePhase.transition,
+      lastEventMessage:
+          "🎯 ${from.name} divise $totalSips $unit → $perPlayer chacun à $targets !",
+      lastEventTime: DateTime.now().millisecondsSinceEpoch,
+    );
+  }
+
   /// Un joueur assigne des pénalités à un autre joueur
   /// Peut poser une carte (vraie ou bluff) ou assigner directement
   static GameState assignDrink({
@@ -196,15 +232,22 @@ class GameLogic {
       final fromPlayer = state.players.firstWhere((p) => p.id == fromPlayerId);
       final toPlayer =
           state.players.firstWhere((p) => p.id == assignment.toPlayerId);
+      final unit = state.settings.penaltyUnitPlural;
 
       newState = _applyDrink(newState, penalty);
+      newState = _updateBluffStats(
+        newState,
+        blufferId: assignment.fromPlayerId,
+        challengerId: assignment.toPlayerId,
+        bluffCaught: true,
+      );
       return newState.copyWith(
         phase: GamePhase.assigning,
         lastBluffResult: BluffResult.caught,
         lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
         lastBlufferId: assignment.fromPlayerId,
         lastEventMessage:
-            "💥 Bluff démasqué ! ${fromPlayer.name} prend ${penalty.sips} pénalités !",
+            "💥 Bluff démasqué ! ${fromPlayer.name} prend ${penalty.sips} $unit !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else {
@@ -217,15 +260,22 @@ class GameLogic {
       final fromPlayer = state.players.firstWhere((p) => p.id == fromPlayerId);
       final toPlayer =
           state.players.firstWhere((p) => p.id == assignment.toPlayerId);
+      final unit = state.settings.penaltyUnitPlural;
 
       newState = _applyDrink(newState, penalty);
+      newState = _updateBluffStats(
+        newState,
+        blufferId: assignment.fromPlayerId,
+        challengerId: assignment.toPlayerId,
+        bluffCaught: false,
+      );
       return newState.copyWith(
         phase: GamePhase.assigning,
         lastBluffResult: BluffResult.success,
         lastPlayerRevealedCard: revealedCard?.copyWith(isFaceUp: true),
         lastBlufferId: assignment.fromPlayerId,
         lastEventMessage:
-            "✅ Pas de bluff ! ${toPlayer.name} prend ${penalty.sips} pénalités !",
+            "✅ Pas de bluff ! ${toPlayer.name} prend ${penalty.sips} $unit !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     }
@@ -291,16 +341,15 @@ class GameLogic {
       lastRevealedCard: card.copyWith(isFaceUp: true), // On montre le pouvoir
     );
 
+    final unit = state.settings.penaltyUnitPlural;
     if (card.powerType == PowerType.shield) {
-      // Bouclier : annule les pénalités
       return newState.copyWith(
         phase: GamePhase.transition,
         lastEventMessage:
-            "🛡️ ${player.name} utilise un Bouclier ! Pénalités annulées.",
+            "🛡️ ${player.name} utilise un Bouclier ! $unit annulé(e)s.",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (card.powerType == PowerType.mirror) {
-      // Miroir : renvoie les pénalités à l'attaquant
       final reflection = DrinkAssignment(
         fromPlayerId: assignment.toPlayerId,
         toPlayerId: assignment.fromPlayerId,
@@ -314,11 +363,10 @@ class GameLogic {
       return newState.copyWith(
         phase: GamePhase.transition,
         lastEventMessage:
-            "🪞 ${player.name} sort le Miroir ! ${attacker.name} prend le retour de flamme : ${reflection.sips} pénalités !",
+            "🪞 ${player.name} sort le Miroir ! ${attacker.name} prend le retour : ${reflection.sips} $unit !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (card.powerType == PowerType.multiplier) {
-      // Multiplicateur : renvoie le double des pénalités à l'attaquant
       final reflection = DrinkAssignment(
         fromPlayerId: assignment.toPlayerId,
         toPlayerId: assignment.fromPlayerId,
@@ -332,7 +380,7 @@ class GameLogic {
       return newState.copyWith(
         phase: GamePhase.transition,
         lastEventMessage:
-            "⚡ ${player.name} utilise un Multiplicateur ! ${attacker.name} prend ${reflection.sips} pénalités (x2) !",
+            "⚡ ${player.name} utilise un Multiplicateur ! ${attacker.name} prend ${reflection.sips} $unit (x2) !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     }
@@ -460,22 +508,22 @@ class GameLogic {
           isMiniGame: true,
           miniGameTitle: 'Dans ma valise',
           miniGameDescription:
-              'Tour à tour, chacun répète les objets précédents et en ajoute un nouveau. Le premier qui se trompe prend 2 pénalités !'),
+              'Tour à tour, chacun répète les objets précédents et en ajoute un nouveau. Le premier qui se trompe est pénalisé !'),
       PyraCard(
           isMiniGame: true,
           miniGameTitle: 'Le jeu des Rimes',
           miniGameDescription:
-              'L\'hôte choisit un mot. Chacun doit trouver une rime. Le premier qui bloque prend 2 pénalités !'),
+              'L\'hôte choisit un mot. Chacun doit trouver une rime. Le premier qui bloque est pénalisé !'),
       PyraCard(
           isMiniGame: true,
           miniGameTitle: 'Thème',
           miniGameDescription:
-              'L\'hôte choisit un thème (ex: Marques de voitures). Chacun donne un exemple. Le premier qui bloque prend 2 pénalités !'),
+              'L\'hôte choisit un thème (ex: Marques de voitures). Chacun donne un exemple. Le premier qui bloque est pénalisé !'),
       PyraCard(
           isMiniGame: true,
           miniGameTitle: 'Action ou Vérité',
           miniGameDescription:
-              'Le joueur qui a retourné la carte choisit quelqu\'un. Action ou Vérité ? S\'il refuse, il prend 3 pénalités !'),
+              'Le joueur qui a retourné la carte choisit quelqu\'un. Action ou Vérité ? S\'il refuse, il est pénalisé !'),
     ];
     miniGames.shuffle();
 
@@ -503,13 +551,13 @@ class GameLogic {
   static String _getRandomTruthOrSip() {
     final questions = [
       "Vérité: Raconte ton pire rencard amoureux.",
-      "Action: Danse la carioca pendant 30 secondes ou prends 4 pénalités.",
+      "Action: Danse la carioca pendant 30 secondes ou tu es pénalisé !",
       "Vérité: Quel est le joueur le plus menteur selon toi ?",
-      "Action: Fais rire quelqu'un d'autre ou prends 3 pénalités.",
+      "Action: Fais rire quelqu'un d'autre ou tu es pénalisé !",
       "Vérité: Quel est le secret inavouable que tu gardes ?",
-      "Action: Fais un câlin à un joueur ou prends 4 pénalités.",
+      "Action: Fais un câlin à un joueur ou tu es pénalisé !",
       "Vérité: Qui a le meilleur bluff à cette table ?",
-      "Action: Laisse ton voisin de droite lire tes SMS ou prends 5 pénalités.",
+      "Action: Laisse ton voisin de droite lire tes SMS ou tu es pénalisé !",
     ];
     return questions[Random().nextInt(questions.length)];
   }
@@ -522,6 +570,7 @@ class GameLogic {
     if (state.pendingDrinks.isEmpty) return state;
 
     final assignment = state.pendingDrinks.last;
+    final unit = state.settings.penaltyUnitPlural;
 
     if (jokerId == 'miroir' && assignment.toPlayerId == playerId) {
       final reflection = DrinkAssignment(
@@ -531,7 +580,6 @@ class GameLogic {
       );
       final attacker =
           state.players.firstWhere((p) => p.id == assignment.fromPlayerId);
-      final defender = state.players.firstWhere((p) => p.id == playerId);
 
       GameState newState = state.copyWith(pendingDrinks: []);
       newState = _applyDrink(newState, reflection);
@@ -539,7 +587,7 @@ class GameLogic {
       return newState.copyWith(
         phase: GamePhase.transition,
         lastEventMessage:
-            "🪞 Joker Miroir ! Les ${reflection.sips} pénalités de ${attacker.name} se retournent contre lui !",
+            "🪞 Joker Miroir ! Les ${reflection.sips} $unit de ${attacker.name} se retournent contre lui !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (jokerId == 'bouclier' && assignment.toPlayerId == playerId) {
@@ -558,7 +606,7 @@ class GameLogic {
       return newState.copyWith(
         phase: GamePhase.transition,
         lastEventMessage:
-            "🛡️ Joker Bouclier ! ${defender.name} réduit ses pénalités à $reducedSips (au lieu de ${assignment.sips}) !",
+            "🛡️ Joker Bouclier ! ${defender.name} réduit à $reducedSips $unit (au lieu de ${assignment.sips}) !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     } else if (jokerId == 'double_dose' &&
@@ -580,7 +628,7 @@ class GameLogic {
       return state.copyWith(
         pendingDrinks: newPending,
         lastEventMessage:
-            "🧪 Joker Double Dose ! ${fromPlayer.name} double la punition : $newSips pénalités !",
+            "🧪 Joker Double Dose ! ${fromPlayer.name} double la punition : $newSips $unit !",
         lastEventTime: DateTime.now().millisecondsSinceEpoch,
       );
     }

@@ -21,6 +21,12 @@ enum GameMode {
   speedRun,
 }
 
+enum PenaltyMode {
+  sips, // Mode soirée (classique)
+  points, // Mode points (sans alcool, compétitif)
+  challenges, // Mode gages (sans alcool, fun)
+}
+
 enum BluffResult { none, caught, success }
 
 class DrinkAssignment {
@@ -57,17 +63,18 @@ class DrinkAssignment {
 }
 
 class GameSettings {
-  final GameMode mode; // Mode de jeu actuel
-  final bool
-      replaceCardsWithPowers; // Si le joueur a choisi de remplacer des cartes classiques par les pouvoirs
-  final int pyramidRows; // Nombre de rangées (3, 4 ou 5)
-  final bool bluffEnabled; // Bluff activé
-  final bool doubleBluff; // Double mise sur bluff
-  final bool superChallenge; // Super challenge (triple mise)
-  final int cardsPerPlayer; // Cartes par joueur (défaut 4)
+  final GameMode mode;
+  final PenaltyMode penaltyMode;
+  final bool replaceCardsWithPowers;
+  final int pyramidRows;
+  final bool bluffEnabled;
+  final bool doubleBluff;
+  final bool superChallenge;
+  final int cardsPerPlayer;
 
   const GameSettings({
     this.mode = GameMode.classic,
+    this.penaltyMode = PenaltyMode.sips,
     this.replaceCardsWithPowers = false,
     this.pyramidRows = 5,
     this.bluffEnabled = true,
@@ -78,6 +85,7 @@ class GameSettings {
 
   GameSettings copyWith({
     GameMode? mode,
+    PenaltyMode? penaltyMode,
     bool? replaceCardsWithPowers,
     int? pyramidRows,
     bool? bluffEnabled,
@@ -87,6 +95,7 @@ class GameSettings {
   }) {
     return GameSettings(
       mode: mode ?? this.mode,
+      penaltyMode: penaltyMode ?? this.penaltyMode,
       replaceCardsWithPowers:
           replaceCardsWithPowers ?? this.replaceCardsWithPowers,
       pyramidRows: pyramidRows ?? this.pyramidRows,
@@ -100,8 +109,54 @@ class GameSettings {
   /// Nombre de pénalités pour une rangée donnée (0-indexed depuis le bas)
   int sipsForRow(int rowIndex) => rowIndex + 1;
 
+  /// Texte pour l'unité de pénalité selon le mode
+  String get penaltyUnit {
+    switch (penaltyMode) {
+      case PenaltyMode.sips:
+        return 'gorgée';
+      case PenaltyMode.points:
+        return 'point';
+      case PenaltyMode.challenges:
+        return 'gage';
+    }
+  }
+
+  String get penaltyUnitPlural {
+    switch (penaltyMode) {
+      case PenaltyMode.sips:
+        return 'gorgées';
+      case PenaltyMode.points:
+        return 'points';
+      case PenaltyMode.challenges:
+        return 'gages';
+    }
+  }
+
+  String get penaltyUnitEn {
+    switch (penaltyMode) {
+      case PenaltyMode.sips:
+        return 'sip';
+      case PenaltyMode.points:
+        return 'point';
+      case PenaltyMode.challenges:
+        return 'challenge';
+    }
+  }
+
+  String get penaltyUnitPluralEn {
+    switch (penaltyMode) {
+      case PenaltyMode.sips:
+        return 'sips';
+      case PenaltyMode.points:
+        return 'points';
+      case PenaltyMode.challenges:
+        return 'challenges';
+    }
+  }
+
   Map<String, dynamic> toJson() => {
         'mode': mode.index,
+        'penaltyMode': penaltyMode.index,
         'replaceCardsWithPowers': replaceCardsWithPowers,
         'pyramidRows': pyramidRows,
         'bluffEnabled': bluffEnabled,
@@ -114,6 +169,9 @@ class GameSettings {
         mode: json['mode'] != null
             ? GameMode.values[json['mode']]
             : GameMode.classic,
+        penaltyMode: json['penaltyMode'] != null
+            ? PenaltyMode.values[json['penaltyMode']]
+            : PenaltyMode.sips,
         replaceCardsWithPowers: json['replaceCardsWithPowers'] ?? false,
         pyramidRows: json['pyramidRows'] ?? 5,
         bluffEnabled: json['bluffEnabled'] ?? true,

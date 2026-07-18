@@ -157,12 +157,14 @@ class ScoreboardScreen extends ConsumerWidget {
   final List<Player> players;
   final bool isOnline;
   final String? roomCode;
+  final GameSettings? settings;
 
   const ScoreboardScreen({
     super.key,
     required this.players,
     this.isOnline = false,
     this.roomCode,
+    this.settings,
   });
 
   Player get _mostDrunk =>
@@ -323,13 +325,40 @@ class ScoreboardScreen extends ConsumerWidget {
                       ),
                     ),
                   ] else ...[
-                    // Mode Local
+                    // Mode Local — Rejouer instantané (mêmes joueurs & settings)
                     PulsarButton(
-                      text: '🎲 ${l10n.scoreboard_play_again}',
+                      text: '🔄 Rejouer',
                       gradient: PyraTheme.purplePinkGradient,
-                      onPressed: () => context.goNamed('localLobby'),
+                      onPressed: () {
+                        HapticFeedback.mediumImpact();
+                        // Reset player stats for new game
+                        final resetPlayers = players
+                            .map((p) => Player(
+                                  name: p.name,
+                                  emoji: p.emoji,
+                                  photoUrl: p.photoUrl,
+                                  activeCardBack: p.activeCardBack,
+                                  activeTitle: p.activeTitle,
+                                  selectedBorder: p.selectedBorder,
+                                  level: p.level,
+                                  xp: p.xp,
+                                ))
+                            .toList();
+                        context.goNamed('localGame', extra: {
+                          'players': resetPlayers,
+                          'settings': settings ?? const GameSettings(),
+                        });
+                      },
                     ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.3),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () => context.goNamed('localLobby'),
+                      child: Text(
+                        '🎲 ${l10n.scoreboard_play_again}',
+                        style: const TextStyle(color: PyraTheme.textSecondary),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     TextButton(
                       onPressed: () => context.goNamed('home'),
                       child: Text(

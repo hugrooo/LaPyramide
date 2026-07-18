@@ -68,9 +68,10 @@ class DistributionLogic {
       totalSips: player.totalSips + sipsToAdd,
     );
 
+    final unit = state.settings.penaltyUnitPlural;
     String message = isCorrect
-        ? "✅ ${player.name} a juste ! Il distribue ${cardIndex + 1} pénalité(s) !"
-        : "💥 ${player.name} a faux ! Il prend ${cardIndex + 1} pénalité(s) !";
+        ? "✅ ${player.name} a juste ! Il distribue ${cardIndex + 1} $unit !"
+        : "💥 ${player.name} a faux ! Il prend ${cardIndex + 1} $unit !";
 
     final updatedPlayers = List<Player>.from(state.players);
     updatedPlayers[playerIndex] = updatedPlayer;
@@ -165,6 +166,7 @@ class DistributionLogic {
     final fromPlayer =
         updatedPlayers.firstWhere((p) => p.id == assignment.fromPlayerId);
     final toPlayer = updatedPlayers.firstWhere((p) => p.id == targetPlayerId);
+    final unit = state.settings.penaltyUnitPlural;
 
     return state.copyWith(
       players: updatedPlayers,
@@ -173,7 +175,7 @@ class DistributionLogic {
       phase: nextPhase,
       pendingDrinks: [],
       lastEventMessage:
-          "🎯 ${fromPlayer.name} a donné ${assignment.sips} pénalité(s) à ${toPlayer.name} !",
+          "🎯 ${fromPlayer.name} a donné ${assignment.sips} $unit à ${toPlayer.name} !",
       lastEventTime: DateTime.now().millisecondsSinceEpoch,
     );
   }
