@@ -180,15 +180,7 @@ class ScoreboardScreen extends ConsumerWidget {
       ..sort((a, b) => b.totalSips.compareTo(a.totalSips));
     final service = ref.read(onlineGameServiceProvider);
 
-    if (isOnline && roomCode != null) {
-      ref.listen(onlineGameStateProvider, (previous, next) {
-        if (next.value != null && next.value!.phase == GamePhase.setup) {
-          if (context.mounted) {
-            context.goNamed('onlineLobby');
-          }
-        }
-      });
-    }
+    // Pas de listener auto ici — la navigation est gérée explicitement dans le bouton
 
     return Scaffold(
       body: Stack(
@@ -295,8 +287,10 @@ class ScoreboardScreen extends ConsumerWidget {
                           HapticFeedback.mediumImpact();
                           try {
                             await service.restartRoom(roomCode!);
+                            // go() vide toute la stack (root + shell) et va au lobby
+                            // currentRoomCodeProvider reste défini → lobby affiche la salle
                             if (context.mounted) {
-                              context.goNamed('onlineLobby');
+                              context.go('/lobby/online');
                             }
                           } catch (e) {
                             if (context.mounted) {

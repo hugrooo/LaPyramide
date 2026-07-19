@@ -465,23 +465,7 @@ class OnlineGameService {
     final state = await _fetchCurrentState(roomCode);
     if (state == null) throw Exception('Salon introuvable');
 
-    // Recrée un deck et une pyramide frais
-    final settings = state.settings;
-    final deck = PyraCard.generateDeck();
-    final List<List<PyraCard>> pyramid = [];
-    int cardIndex = 0;
-
-    for (int r = 0; r < settings.pyramidRows; r++) {
-      final row = <PyraCard>[];
-      for (int c = 0; c <= r; c++) {
-        if (cardIndex < deck.length) {
-          row.add(deck[cardIndex++]);
-        }
-      }
-      pyramid.add(row);
-    }
-
-    // Réinitialise les joueurs (main vide, stats à zéro, mais on garde noms/emojis)
+    // Réinitialise les joueurs (stats à zéro, main vide — GameLogic va les redistribuer)
     final resetPlayers = state.players
         .map((p) => Player(
               id: p.id,
@@ -493,21 +477,29 @@ class OnlineGameService {
               selectedBorder: p.selectedBorder,
               level: p.level,
               xp: p.xp,
-              isReady:
-                  p.id == state.players.first.id, // L'hôte est prêt par défaut
+              isReady: p.id == state.players.first.id,
             ))
         .toList();
 
+    // Utilise GameLogic.initGame pour garantir pyramide + mains distribuées correctement
+    final freshState = GameLogic.initGame(
+      players: resetPlayers,
+      settings: state.settings,
+    );
+
+    // On remet le bon gameId, la phase setup (retour au lobby), et la présence
     final newState = GameState(
       gameId: roomCode,
-      pyramid: pyramid,
-      players: resetPlayers,
-      deck: deck.sublist(cardIndex),
+      pyramid: freshState.pyramid,
+      players: freshState.players,
+      deck: freshState.deck,
       phase: GamePhase.setup,
-      currentRow: settings.pyramidRows - 1,
+      currentRow: freshState.currentRow,
       currentCardIndex: 0,
+      currentDistributionPlayerIndex: 0,
+      currentDistributionCardIndex: 0,
       pendingDrinks: [],
-      settings: settings,
+      settings: state.settings,
       presence: state.presence,
       updatedAt: DateTime.now().millisecondsSinceEpoch,
     );

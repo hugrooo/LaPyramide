@@ -29,6 +29,7 @@ class UserProfile {
   final Map<String, Map<String, dynamic>> quests;
   final bool isVip;
   final String vipExpireDate;
+  final bool battlePassActive;
 
   UserProfile({
     this.name = 'Utilisateur',
@@ -56,6 +57,7 @@ class UserProfile {
     this.quests = const {},
     this.isVip = false,
     this.vipExpireDate = '',
+    this.battlePassActive = false,
   });
 
   factory UserProfile.fromMap(Map<dynamic, dynamic> map) {
@@ -154,7 +156,7 @@ class UserProfile {
       bluffWins: (map['bluffWins'] as num? ?? 0).toInt(),
       streak: (map['streak'] as num? ?? 0).toInt(),
       gamesPlayed: (map['gamesPlayed'] as num? ?? 0).toInt(),
-      lastClaimedLevel: (map['lastClaimedLevel'] as num? ?? 1).toInt(),
+      lastClaimedLevel: (map['lastClaimedLevel'] as num? ?? 0).toInt(),
       jokers: jokersMap,
       cardBacks: cardBacksList,
       titles: titlesList,
@@ -165,6 +167,8 @@ class UserProfile {
       quests: questsMap,
       isVip: isVip,
       vipExpireDate: vipExpireDate,
+      // Le pass est actif si VIP (inclus) ou acheté séparément
+      battlePassActive: isVip || map['battlePassActive'] == true,
     );
   }
 
@@ -199,26 +203,95 @@ class UserProfile {
     }
   }
 
-  static Future<void> claimLevelReward(String uid) async {
+  // Récompenses par tier (index 0 = tier 1, index 14 = tier 15)
+  static const List<Map<String, dynamic>> _tierRewards = [
+    {'type': 'coins', 'amount': 50},                          // Tier 1
+    {'type': 'title', 'value': 'Débutant 🏷️'},              // Tier 2
+    {'type': 'coins', 'amount': 100},                         // Tier 3
+    {'type': 'joker', 'key': 'bouclier'},                    // Tier 4
+    {'type': 'coins', 'amount': 200},                         // Tier 5
+    {'type': 'cardBack', 'value': 'neon'},                   // Tier 6
+    {'type': 'coins', 'amount': 500},                         // Tier 7
+    {'type': 'title', 'value': 'Vétéran ⭐'},                // Tier 8
+    {'type': 'border', 'value': 'flamme'},                   // Tier 9
+    {'type': 'coins', 'amount': 1000},                        // Tier 10
+    {'type': 'cardBack', 'value': 'galaxy'},                 // Tier 11
+    {'type': 'title', 'value': 'Champion 🏆'},               // Tier 12
+    {'type': 'coins', 'amount': 500},                         // Tier 13
+    {'type': 'coins', 'amount': 2000},                        // Tier 14
+    {'type': 'border', 'value': 'diamant'},                  // Tier 15
+  ];
+
+  /// Réclame la récompense du prochain tier non réclamé.
+  /// tierIndex : 0-based index du tier à réclamer (0 = tier 1).
+  /// Si null, réclame le prochain tier disponible automatiquement.
+  static Future<Map<String, dynamic>?> claimLevelReward(String uid, {int? tierIndex}) async {
     final dbRef = FirebaseDatabase.instance.ref('users/$uid');
     final snapshot = await dbRef.get();
+    if (!snapshot.exists || snapshot.value is! Map) return null;
 
-    if (snapshot.exists && snapshot.value is Map) {
-      final data = snapshot.value as Map<dynamic, dynamic>;
-      final int currentLevel = (data['level'] as num? ?? 1).toInt();
-      final int currentCoins = (data['coins'] as num? ?? 0).toInt();
-      final int currentDiamonds = (data['diamonds'] as num? ?? 0).toInt();
-      final int lastClaimed = (data['lastClaimedLevel'] as num? ?? 1).toInt();
+    final data = snapshot.value as Map<dynamic, dynamic>;
+    final int currentLevel = (data['level'] as num? ?? 1).toInt();
+    final int lastClaimed = (data['lastClaimedLevel'] as num? ?? 0).toInt();
 
-      if (currentLevel > lastClaimed) {
-        final nextClaimable = lastClaimed + 1;
-        await dbRef.update({
-          'coins': currentCoins + 200,
-          'diamonds': currentDiamonds + 10,
-          'lastClaimedLevel': nextClaimable,
-        });
-      }
+    // Détermine quel tier réclamer
+    final int claimIndex = tierIndex ?? lastClaimed; // 0-based
+    // Niveau N débloque les tiers 0..N-1 (tier index = level - 1 max)
+    // claimIndex 0 → se débloque au level 1, claimIndex 1 → level 2, etc.
+    if (currentLevel < claimIndex + 1) return null;       // pas encore débloqué
+    if (lastClaimed > claimIndex) return null;             // déjà réclamé
+    if (claimIndex >= _tierRewards.length) return null;   // hors limites
+    // Sécurité : ne jamais écrire lastClaimedLevel > currentLevel
+    final newLastClaimed = (claimIndex + 1).clamp(0, currentLevel);
+
+    final reward = _tierRewards[claimIndex];
+    final updates = <String, dynamic>{
+      'lastClaimedLevel': newLastClaimed,
+    };
+
+    // Applique la récompense
+    switch (reward['type']) {
+      case 'coins':
+        final int current = (data['coins'] as num? ?? 0).toInt();
+        updates['coins'] = current + (reward['amount'] as int);
+        break;
+      case 'title':
+        final titles = _parseList(data['titles']) ?? ['Novice 🐣'];
+        final v = reward['value'] as String;
+        if (!titles.contains(v)) titles.add(v);
+        updates['titles'] = titles;
+        break;
+      case 'joker':
+        final rawJokers = data['jokers'];
+        final Map<String, dynamic> jokers = rawJokers is Map
+            ? Map<String, dynamic>.from(rawJokers)
+            : {};
+        final key = reward['key'] as String;
+        jokers[key] = ((jokers[key] as num? ?? 0).toInt()) + 1;
+        updates['jokers'] = jokers;
+        break;
+      case 'cardBack':
+        final backs = _parseList(data['cardBacks']) ?? ['classic'];
+        final v = reward['value'] as String;
+        if (!backs.contains(v)) backs.add(v);
+        updates['cardBacks'] = backs;
+        break;
+      case 'border':
+        final borders = _parseList(data['bordersOwned']) ?? ['classic'];
+        final v = reward['value'] as String;
+        if (!borders.contains(v)) borders.add(v);
+        updates['bordersOwned'] = borders;
+        break;
     }
+
+    await dbRef.update(updates);
+    return reward;
+  }
+
+  static List<String>? _parseList(dynamic raw) {
+    if (raw is List) return raw.map((e) => e.toString()).toList();
+    if (raw is Map) return raw.values.map((e) => e.toString()).toList();
+    return null;
   }
 }
 

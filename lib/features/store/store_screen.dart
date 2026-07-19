@@ -52,8 +52,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     if (widget.scrollToBetaGifts) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          final contextToScroll = widget.scrollToTitle 
-              ? _betaTitleKey.currentContext 
+          final contextToScroll = widget.scrollToTitle
+              ? _betaTitleKey.currentContext
               : _betaGiftKey.currentContext;
           if (contextToScroll != null) {
             Scrollable.ensureVisible(
@@ -102,7 +102,35 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     final Map<String, int> jokersOwned = profile?.jokers ?? {};
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Section header banner
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: PyraTheme.primaryCyan.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: PyraTheme.primaryCyan.withOpacity(0.25)),
+          ),
+          child: const Row(
+            children: [
+              Text('⭐', style: TextStyle(fontSize: 18)),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Jokers achetables avec tes Pièces 🪙',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
         _buildItemPurchaseCard(
           id: 'miroir',
           title: 'Joker Miroir 🪞',
@@ -348,7 +376,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             cost: 0,
             currency: 'coins',
             icon: Icons.star_rounded,
-            iconColor: const Color(0xFFE040FB), // Purple
+            iconColor: const Color(0xFFE040FB),
             ownedCount: titlesOwned.contains('Pionnier de la Bêta 🚀') ? 1 : 0,
             type: 'title',
             isOwned: titlesOwned.contains('Pionnier de la Bêta 🚀'),
@@ -376,7 +404,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           cost: 200,
           currency: 'coins',
           icon: Icons.celebration_rounded,
-          iconColor: const Color(0xFFFFD700), // Gold
+          iconColor: const Color(0xFFFFD700),
           ownedCount: titlesOwned.contains('Roi de la Partie 👑') ? 1 : 0,
           type: 'title',
           isOwned: titlesOwned.contains('Roi de la Partie 👑'),
@@ -388,8 +416,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           desc: 'Vous mentez tellement bien que c\'en est devenu un art.',
           cost: 400,
           currency: 'coins',
-          icon: Icons.masks_rounded, // Better fit for a scammer/thief
-          iconColor: const Color(0xFFFF8C00), // Dark Orange
+          icon: Icons.masks_rounded,
+          iconColor: const Color(0xFFFF8C00),
           ownedCount: titlesOwned.contains('Escroc Professionnel 🦊') ? 1 : 0,
           type: 'title',
           isOwned: titlesOwned.contains('Escroc Professionnel 🦊'),
@@ -478,7 +506,6 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 
-
   Widget _buildItemPurchaseCard({
     required String id,
     required String title,
@@ -492,227 +519,167 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     bool isOwned = false,
   }) {
     final bool isCoins = currency == 'coins';
-    final String currencySuffix = isCoins ? ' pièces' : ' diamants';
     final IconData currencyIcon =
         isCoins ? Icons.monetization_on_rounded : Icons.diamond_rounded;
-    final Color currencyColor =
-        isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple;
 
     return GestureDetector(
-        onTap: () {
-          if (type == 'cardBack' ||
-              type == 'title' ||
-              type == 'border' ||
-              type == 'theme') {
-            showDialog(
-              context: context,
-              builder: (ctx) => Dialog(
-                backgroundColor: Colors.transparent,
-                child: GlassContainer(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (type == 'cardBack')
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 24),
-                          child: Card3DShowcase(
-                              skinId: id, width: 140, height: 196),
-                        )
-                      else if (type == 'border')
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 24),
-                          child: AvatarWithBorder(
-                              emoji: '😎', size: 80, borderType: id),
-                        )
-                      else
-                        Icon(icon, color: iconColor, size: 80),
-                      const SizedBox(height: 16),
-                      Text(title,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      Text(desc,
-                          style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
-                              fontSize: 16),
-                          textAlign: TextAlign.center),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: PyraTheme.primaryPurple),
-                        onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Fermer',
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-        },
-        child: GlassContainer(
-          padding: const EdgeInsets.all(16),
-          borderRadius: BorderRadius.circular(20),
-          child: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: iconColor.withOpacity(0.3)),
-                ),
-                child: type == 'cardBack'
-                    ? Center(
-                        child: Card3DShowcase(
-                          skinId: id,
-                          width: 32,
-                          height: 44,
-                        ),
-                      )
-                    : type == 'border'
-                        ? Center(
-                            child: AvatarWithBorder(
-                                emoji: '😎', size: 30, borderType: id),
-                          )
-                        : Icon(icon, color: iconColor, size: 28),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
+      onTap: () {
+        if ({'cardBack', 'title', 'border', 'theme'}.contains(type)) {
+          showDialog(
+            context: context,
+            builder: (ctx) => Dialog(
+              backgroundColor: Colors.transparent,
+              child: GlassContainer(
+                padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (ownedCount > 0 && type == 'joker')
-                          NeoBadge(
-                              text: 'x$ownedCount',
-                              fontSize: 10,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2))
-                        else if (isOwned)
-                          const NeoBadge(
-                              text: 'ACQUIS',
-                              gradient: LinearGradient(
-                                  colors: [Colors.greenAccent, Colors.green]),
-                              fontSize: 8,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2)),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
+                    if (type == 'cardBack')
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Card3DShowcase(skinId: id, width: 140, height: 196),
+                      )
+                    else if (type == 'border')
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: AvatarWithBorder(emoji: '😎', size: 80, borderType: id),
+                      )
+                    else
+                      Icon(icon, color: iconColor, size: 80),
+                    const SizedBox(height: 16),
+                    Text(title,
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
                     Text(desc,
-                        style: TextStyle(
-                            color: Colors.white.withOpacity(0.55),
-                            fontSize: 12)),
+                        style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16),
+                        textAlign: TextAlign.center),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryPurple),
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Fermer', style: TextStyle(color: Colors.white)),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              if (isOwned)
-                const SizedBox(
-                  width: 80,
-                  height: 40,
-                  child: Center(
-                    child: Icon(Icons.check_circle_rounded,
-                        color: Colors.greenAccent, size: 28),
+            ),
+          );
+        }
+      },
+      child: GlassContainer(
+        padding: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(20),
+        child: Row(
+          children: [
+            Container(
+              width: 50, height: 50,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: iconColor.withOpacity(0.3)),
+              ),
+              child: type == 'cardBack'
+                  ? Center(child: Card3DShowcase(skinId: id, width: 32, height: 44))
+                  : type == 'border'
+                      ? Center(child: AvatarWithBorder(emoji: '😎', size: 30, borderType: id))
+                      : Icon(icon, color: iconColor, size: 28),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(title,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                      ),
+                      if (ownedCount > 0 && type == 'joker')
+                        NeoBadge(
+                            text: 'x$ownedCount', fontSize: 10,
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2))
+                      else if (isOwned)
+                        const NeoBadge(
+                            text: 'ACQUIS',
+                            gradient: LinearGradient(colors: [Colors.greenAccent, Colors.green]),
+                            fontSize: 8,
+                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2)),
+                    ],
                   ),
-                )
-              else
-                PulsarButton(
-                  width: null,
-                  text: cost == 0 ? 'GRATUIT' : '$cost',
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                  fontSize: 14,
-                  icon: cost == 0 
-                      ? Icons.redeem_rounded 
-                      : currencyIcon,
-                  iconSize: 14,
-                  gradient: cost == 0
-                      ? const LinearGradient(colors: [Colors.greenAccent, Colors.green])
-                      : (isCoins
-                          ? PyraTheme.cyanGradient
-                          : PyraTheme.purplePinkGradient),
-                  onPressed: () async {
-                    final user = ref.read(authServiceProvider).currentUser;
-                    if (user == null || user.isAnonymous) {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                                'Veuillez vous connecter avec un compte pour effectuer cet achat.'),
-                            backgroundColor: Colors.redAccent));
-                      }
-                      return;
-                    }
-                    bool success = false;
-                    if (type == 'joker') {
-                      success = await ref
-                          .read(storeServiceProvider)
-                          .buyJoker(id, cost);
-                    } else {
-                      success = await ref
-                          .read(storeServiceProvider)
-                          .buyCosmetic(type, id, cost, currency);
-                    }
-
+                  const SizedBox(height: 4),
+                  Text(desc,
+                      style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 12)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            if (isOwned)
+              const SizedBox(
+                  width: 80, height: 40,
+                  child: Center(
+                      child: Icon(Icons.check_circle_rounded,
+                          color: Colors.greenAccent, size: 28)))
+            else
+              PulsarButton(
+                width: null,
+                text: cost == 0 ? 'GRATUIT' : '$cost',
+                paddingHorizontal: 12, paddingVertical: 8, fontSize: 14,
+                icon: cost == 0 ? Icons.redeem_rounded : currencyIcon,
+                iconSize: 14,
+                gradient: cost == 0
+                    ? const LinearGradient(colors: [Colors.greenAccent, Colors.green])
+                    : (isCoins ? PyraTheme.cyanGradient : PyraTheme.purplePinkGradient),
+                onPressed: () async {
+                  final user = ref.read(authServiceProvider).currentUser;
+                  if (user == null || user.isAnonymous) {
                     if (mounted) {
-                      if (success) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Achat réussi : $title !'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                        
-                        if (id == 'beta') {
-                          Future.delayed(const Duration(milliseconds: 1500), () {
-                            if (mounted && _betaTitleKey.currentContext != null) {
-                              Scrollable.ensureVisible(
-                                _betaTitleKey.currentContext!,
-                                duration: const Duration(milliseconds: 800),
-                                curve: Curves.easeInOutCubic,
-                                alignment: 0.3,
-                              );
-                            }
-                          });
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                'Monnaie insuffisante pour acheter : $title !'),
-                            backgroundColor: Colors.redAccent,
-                          ),
-                        );
-                      }
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Veuillez vous connecter avec un compte pour effectuer cet achat.'),
+                          backgroundColor: Colors.redAccent));
                     }
-                  },
-                ),
-            ],
-          ),
-        ));
+                    return;
+                  }
+                  final success = type == 'joker'
+                      ? await ref.read(storeServiceProvider).buyJoker(id, cost)
+                      : await ref.read(storeServiceProvider).buyCosmetic(type, id, cost, currency);
+
+                  if (mounted) {
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Achat réussi : $title !'),
+                              backgroundColor: Colors.green));
+                      if (id == 'beta') {
+                        Future.delayed(const Duration(milliseconds: 1500), () {
+                          if (mounted && _betaTitleKey.currentContext != null) {
+                            Scrollable.ensureVisible(_betaTitleKey.currentContext!,
+                                duration: const Duration(milliseconds: 800),
+                                curve: Curves.easeInOutCubic, alignment: 0.3);
+                          }
+                        });
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Monnaie insuffisante pour acheter : $title !'),
+                          backgroundColor: Colors.redAccent));
+                    }
+                  }
+                },
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildRealPackageCard(Package package) {
-    final bool isCoins = package.storeProduct.identifier.contains('pack') || package.storeProduct.identifier.contains('coin');
+    final bool isCoins = package.storeProduct.identifier.contains('pack') ||
+        package.storeProduct.identifier.contains('coin');
+    final Color accent = isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: GlassContainer(
@@ -720,53 +687,36 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         child: Row(
           children: [
             Container(
-              width: 50,
-              height: 50,
+              width: 50, height: 50,
               decoration: BoxDecoration(
-                color: (isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple).withValues(alpha: 0.15),
+                color: accent.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                    color: (isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple).withValues(alpha: 0.3)),
+                border: Border.all(color: accent.withValues(alpha: 0.3)),
               ),
-              child: Icon(
-                isCoins ? Icons.monetization_on_rounded : Icons.diamond_rounded,
-                color: isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple,
-                size: 28,
-              ),
+              child: Icon(isCoins ? Icons.monetization_on_rounded : Icons.diamond_rounded,
+                  color: accent, size: 28),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    package.storeProduct.title,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
-                  ),
+                  Text(package.storeProduct.title,
+                      style: const TextStyle(
+                          color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text(
-                    package.storeProduct.description,
-                    style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.55),
-                        fontSize: 12),
-                  ),
+                  Text(package.storeProduct.description,
+                      style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.55), fontSize: 12)),
                 ],
               ),
             ),
             const SizedBox(width: 8),
             PulsarButton(
-              width: null,
-              text: package.storeProduct.priceString,
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              fontSize: 14,
+              width: null, text: package.storeProduct.priceString,
+              paddingHorizontal: 12, paddingVertical: 8, fontSize: 14,
               gradient: isCoins ? PyraTheme.cyanGradient : PyraTheme.purplePinkGradient,
-              onPressed: () {
-                ref.read(storeServiceProvider).buyPackage(package);
-              },
+              onPressed: () => ref.read(storeServiceProvider).buyPackage(package),
             ),
           ],
         ),
@@ -774,7 +724,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 
-  Future<void> _simulatePurchase(String title, int coins, int diamonds, String price) async {
+  Future<void> _simulatePurchase(
+      String title, int coins, int diamonds, String price) async {
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -792,7 +743,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               const SizedBox(height: 16),
               const Text(
                 'Simulation d\'achat',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Text(
@@ -805,42 +759,50 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.white12),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white12),
                     onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Annuler', style: TextStyle(color: Colors.white)),
+                    child: const Text('Annuler',
+                        style: TextStyle(color: Colors.white)),
                   ),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryPurple),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: PyraTheme.primaryPurple),
                     onPressed: () async {
                       Navigator.pop(ctx);
                       final user = ref.read(authServiceProvider).currentUser;
                       if (user == null || user.isAnonymous) {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text('Veuillez vous connecter pour simuler cet achat.'),
+                            content: Text(
+                                'Veuillez vous connecter pour simuler cet achat.'),
                             backgroundColor: Colors.redAccent));
                         return;
                       }
-                      
+
                       if (coins > 0) {
-                        final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}/coins');
+                        final dbRef = FirebaseDatabase.instance
+                            .ref('users/${user.uid}/coins');
                         final snap = await dbRef.get();
                         final val = (snap.value as int?) ?? 0;
                         await dbRef.set(val + coins);
                       } else if (diamonds > 0) {
-                        final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}/diamonds');
+                        final dbRef = FirebaseDatabase.instance
+                            .ref('users/${user.uid}/diamonds');
                         final snap = await dbRef.get();
                         final val = (snap.value as int?) ?? 0;
                         await dbRef.set(val + diamonds);
                       }
-                      
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Achat simulé réussi : +${coins > 0 ? "$coins pièces" : "$diamonds diamants"} !'),
+                          content: Text(
+                              'Achat simulé réussi : +${coins > 0 ? "$coins pièces" : "$diamonds diamants"} !'),
                           backgroundColor: Colors.green,
                         ),
                       );
                     },
-                    child: const Text('Acheter', style: TextStyle(color: Colors.white)),
+                    child: const Text('Acheter',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -849,6 +811,26 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         ),
       ),
     );
+  }
+
+  void _triggerVipPurchase() {
+    if (kIsWeb) {
+      _simulateVipPurchase('4,99 €');
+      return;
+    }
+    final packages = _offerings?.current?.availablePackages ?? [];
+    Package? vipPackage;
+    for (var p in packages) {
+      if (p.storeProduct.identifier == StoreService.subVipMonthlyId) {
+        vipPackage = p;
+        break;
+      }
+    }
+    if (vipPackage != null) {
+      ref.read(storeServiceProvider).buyPackage(vipPackage);
+    } else {
+      _simulateVipPurchase('4,99 €');
+    }
   }
 
   Future<void> _simulateVipPurchase(String price) async {
@@ -863,13 +845,16 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             children: [
               const Icon(
                 Icons.workspace_premium_rounded,
-                color: Color(0xFFFFD700), // Gold
+                color: Color(0xFFFFD700),
                 size: 80,
               ),
               const SizedBox(height: 16),
               const Text(
                 'Simulation d\'abonnement',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Text(
@@ -882,38 +867,53 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.white12),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white12),
                     onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Annuler', style: TextStyle(color: Colors.white)),
+                    child: const Text('Annuler',
+                        style: TextStyle(color: Colors.white)),
                   ),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryPurple),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: PyraTheme.primaryPurple),
                     onPressed: () async {
                       Navigator.pop(ctx);
                       final user = ref.read(authServiceProvider).currentUser;
                       if (user == null || user.isAnonymous) {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text('Veuillez vous connecter pour simuler cet achat.'),
+                            content: Text(
+                                'Veuillez vous connecter pour simuler cet achat.'),
                             backgroundColor: Colors.redAccent));
                         return;
                       }
-                      
-                      final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
+
+                      final dbRef =
+                          FirebaseDatabase.instance.ref('users/${user.uid}');
                       final snapshot = await dbRef.get();
                       if (snapshot.exists && snapshot.value is Map) {
                         final data = snapshot.value as Map;
-                        final currentCoins = (data['coins'] as num?)?.toInt() ?? 0;
-                        final currentDiamonds = (data['diamonds'] as num?)?.toInt() ?? 0;
-                        
-                        List<dynamic> titles = data['titles'] is List ? List<dynamic>.from(data['titles']) : ['Novice 🐣'];
-                        List<dynamic> borders = data['bordersOwned'] is List ? List<dynamic>.from(data['bordersOwned']) : ['classic'];
-                        
-                        if (!titles.contains('Dieu de la Pyramide 👁️')) titles.add('Dieu de la Pyramide 👁️');
+                        final currentCoins =
+                            (data['coins'] as num?)?.toInt() ?? 0;
+                        final currentDiamonds =
+                            (data['diamonds'] as num?)?.toInt() ?? 0;
+
+                        List<dynamic> titles = data['titles'] is List
+                            ? List<dynamic>.from(data['titles'])
+                            : ['Novice 🐣'];
+                        List<dynamic> borders = data['bordersOwned'] is List
+                            ? List<dynamic>.from(data['bordersOwned'])
+                            : ['classic'];
+
+                        if (!titles.contains('Dieu de la Pyramide 👁️')) {
+                          titles.add('Dieu de la Pyramide 👁️');
+                        }
                         if (!borders.contains('gold')) borders.add('gold');
 
                         await dbRef.update({
                           'isVip': true,
-                          'vipExpireDate': DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+                          'vipExpireDate': DateTime.now()
+                              .add(const Duration(days: 30))
+                              .toIso8601String(),
                           'coins': currentCoins + 500,
                           'diamonds': currentDiamonds + 100,
                           'titles': titles,
@@ -922,24 +922,28 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       } else {
                         await dbRef.update({
                           'isVip': true,
-                          'vipExpireDate': DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+                          'vipExpireDate': DateTime.now()
+                              .add(const Duration(days: 30))
+                              .toIso8601String(),
                           'coins': 500,
                           'diamonds': 100,
                           'titles': ['Novice 🐣', 'Dieu de la Pyramide 👁️'],
                           'bordersOwned': ['classic', 'gold'],
                         });
                       }
-                      
+
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Abonnement VIP simulé avec succès ! +500 Pièces & +100 Diamants.'),
+                            content: Text(
+                                'Abonnement VIP simulé avec succès ! +500 Pièces & +100 Diamants.'),
                             backgroundColor: Colors.green,
                           ),
                         );
                       }
                     },
-                    child: const Text('S\'abonner', style: TextStyle(color: Colors.white)),
+                    child: const Text('S\'abonner',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -950,69 +954,117 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 
+  // Improved product card: big emoji+amount on the left, optional value badge top-right
   Widget _buildMockProductCard({
     required String title,
     required String description,
     required String price,
     required int coins,
     required int diamonds,
+    String? badgeLabel,
+    Color? badgeColor,
   }) {
     final bool isCoins = coins > 0;
+    final int amount = isCoins ? coins : diamonds;
+    final Color accentColor =
+        isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: GlassContainer(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Stack(
           children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: (isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple).withOpacity(0.15),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                    color: (isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple).withOpacity(0.3)),
-              ),
-              child: Icon(
-                isCoins ? Icons.monetization_on_rounded : Icons.diamond_rounded,
-                color: isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple,
-                size: 28,
-              ),
+            Row(
+              children: [
+                // Large emoji + amount display
+                Container(
+                  width: 66,
+                  height: 66,
+                  decoration: BoxDecoration(
+                    color: accentColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: accentColor.withOpacity(0.3)),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(isCoins ? '🪙' : '💎',
+                          style: const TextStyle(fontSize: 26)),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$amount',
+                        style: TextStyle(
+                          color: accentColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        style: TextStyle(
+                            color: Colors.white.withOpacity(0.55),
+                            fontSize: 12),
+                        maxLines: 2,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                PulsarButton(
+                  width: null,
+                  text: price,
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  fontSize: 14,
+                  gradient: isCoins
+                      ? PyraTheme.cyanGradient
+                      : PyraTheme.purplePinkGradient,
+                  onPressed: () =>
+                      _simulatePurchase(title, coins, diamonds, price),
+                ),
+              ],
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
+            // Optional value badge (top-right)
+            if (badgeLabel != null)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: badgeColor ?? Colors.orange,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    badgeLabel,
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: TextStyle(
-                        color: Colors.white.withOpacity(0.55),
-                        fontSize: 12),
-                  ),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            PulsarButton(
-              width: null,
-              text: price,
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              fontSize: 14,
-              gradient: isCoins ? PyraTheme.cyanGradient : PyraTheme.purplePinkGradient,
-              onPressed: () {
-                _simulatePurchase(title, coins, diamonds, price);
-              },
-            ),
           ],
         ),
       ),
@@ -1021,11 +1073,16 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
 
   Widget _buildCoinsProducts() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: PyraTheme.primaryYellow));
+      return const Center(
+          child: CircularProgressIndicator(color: PyraTheme.primaryYellow));
     }
-    
+
     final packages = _offerings?.current?.availablePackages ?? [];
-    final coinPackages = packages.where((p) => p.storeProduct.identifier.contains('pack') || p.storeProduct.identifier.contains('coin')).toList();
+    final coinPackages = packages
+        .where((p) =>
+            p.storeProduct.identifier.contains('pack') ||
+            p.storeProduct.identifier.contains('coin'))
+        .toList();
 
     if (kIsWeb || coinPackages.isEmpty) {
       return Column(
@@ -1043,6 +1100,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             price: '3,99 €',
             coins: 500,
             diamonds: 0,
+            badgeLabel: 'POPULAIRE',
+            badgeColor: Colors.orange,
           ),
           _buildMockProductCard(
             title: 'Pack de 1200 Pièces',
@@ -1050,11 +1109,13 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             price: '7,99 €',
             coins: 1200,
             diamonds: 0,
+            badgeLabel: 'MEILLEURE VALEUR',
+            badgeColor: Colors.green,
           ),
         ],
       );
     }
-    
+
     return Column(
       children: coinPackages.map((p) => _buildRealPackageCard(p)).toList(),
     );
@@ -1062,11 +1123,14 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
 
   Widget _buildDiamondsProducts() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: PyraTheme.primaryPurple));
+      return const Center(
+          child: CircularProgressIndicator(color: PyraTheme.primaryPurple));
     }
-    
+
     final packages = _offerings?.current?.availablePackages ?? [];
-    final diamondPackages = packages.where((p) => p.storeProduct.identifier.contains('diamond')).toList();
+    final diamondPackages = packages
+        .where((p) => p.storeProduct.identifier.contains('diamond'))
+        .toList();
 
     if (kIsWeb || diamondPackages.isEmpty) {
       return Column(
@@ -1084,6 +1148,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             price: '7,99 €',
             coins: 0,
             diamonds: 250,
+            badgeLabel: 'POPULAIRE',
+            badgeColor: Colors.orange,
           ),
           _buildMockProductCard(
             title: 'Trésor de 600 Diamants',
@@ -1091,11 +1157,13 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             price: '14,99 €',
             coins: 0,
             diamonds: 600,
+            badgeLabel: 'MEILLEURE VALEUR',
+            badgeColor: Colors.green,
           ),
         ],
       );
     }
-    
+
     return Column(
       children: diamondPackages.map((p) => _buildRealPackageCard(p)).toList(),
     );
@@ -1109,191 +1177,354 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     if (vipExpireDate.isNotEmpty) {
       try {
         final parsed = DateTime.parse(vipExpireDate);
-        formattedDate = "${parsed.day.toString().padLeft(2, '0')}/${parsed.month.toString().padLeft(2, '0')}/${parsed.year}";
+        formattedDate =
+            "${parsed.day.toString().padLeft(2, '0')}/${parsed.month.toString().padLeft(2, '0')}/${parsed.year}";
       } catch (_) {
         formattedDate = vipExpireDate;
       }
     }
 
+    const vipBenefits = [
+      (Icons.monetization_on_rounded, Color(0xFFFFD700), '+500 Pièces & +100 Diamants / mois',
+          'Crédités automatiquement chaque mois dès le renouvellement.'),
+      (Icons.palette_rounded, Color(0xFF80DEEA), 'Cosmétiques Légendaires',
+          'Cadre "Or Massif" + titre "Dieu de la Pyramide" offerts immédiatement.'),
+      (Icons.bolt_rounded, Color(0xFFFF8C00), '+50% de Gains en partie',
+          'Multipliez vos récompenses XP et pièces à chaque partie en ligne.'),
+      (Icons.block_rounded, Color(0xFFEF5350), '100% Sans Pub',
+          'Aucune publicité pendant vos soirées.'),
+    ];
+
+    const bundleBenefits = [
+      (Icons.workspace_premium_rounded, Color(0xFFFFD700), 'Tout le Club VIP',
+          '+500 Pièces/mois, cosmétiques légendaires, +50% gains, sans pub.'),
+      (Icons.military_tech_rounded, Color(0xFFE040FB), 'Pass de Combat inclus',
+          'Toutes les 15 récompenses du pass débloquées — tiers gratuits ET premium.'),
+      (Icons.savings_rounded, Color(0xFF69F0AE), 'Économisez 2,98 €/mois',
+          'VIP (4,99€) + Pass (2,99€) séparément = 7,98€. Offre groupée : 4,99€.'),
+    ];
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Main Premium Card
+        // ── OFFRE GROUPÉE (mise en avant) ────────────────────────────
+        Stack(
+          children: [
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFE040FB), Color(0xFF8A2BE2), Color(0xFFFFD700)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(color: const Color(0xFFE040FB).withOpacity(0.4),
+                      blurRadius: 24, spreadRadius: 2, offset: const Offset(0, 8)),
+                ],
+              ),
+              child: GlassContainer(
+                borderRadius: BorderRadius.circular(24),
+                padding: const EdgeInsets.all(24),
+                color: Colors.black.withOpacity(0.15),
+                child: Column(
+                  children: [
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('⚡', style: TextStyle(fontSize: 28)),
+                        SizedBox(width: 8),
+                        Text('VIP + PASS COMBAT',
+                            style: TextStyle(color: Colors.white, fontSize: 20,
+                                fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text('L\'offre complète — VIP et toutes les récompenses du Pass',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.3)),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text('4,99 €',
+                            style: TextStyle(color: Colors.white, fontSize: 38,
+                                fontWeight: FontWeight.w900, height: 1.0)),
+                        const SizedBox(width: 8),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('7,98 €',
+                                  style: TextStyle(
+                                      color: Colors.white.withOpacity(0.5),
+                                      fontSize: 14,
+                                      decoration: TextDecoration.lineThrough,
+                                      decorationColor: Colors.white54)),
+                              const Text('par mois',
+                                  style: TextStyle(color: Colors.white70, fontSize: 13)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    for (final b in bundleBenefits)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Row(
+                          children: [
+                            Icon(b.$1, color: b.$2, size: 16),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(b.$3,
+                                  style: const TextStyle(color: Colors.white, fontSize: 12,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    if (!isVip)
+                      PulsarButton(
+                        width: double.infinity,
+                        text: 'S\'ABONNER — VIP + PASS',
+                        paddingHorizontal: 20,
+                        paddingVertical: 14,
+                        fontSize: 15,
+                        icon: Icons.workspace_premium_rounded,
+                        gradient: const LinearGradient(
+                            colors: [Color(0xFFFFD700), Color(0xFFE040FB)]),
+                        onPressed: _triggerVipPurchase,
+                      )
+                    else
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Text(
+                          formattedDate.isNotEmpty
+                              ? 'Actif jusqu\'au $formattedDate ✓'
+                              : 'Abonnement actif ✓',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white,
+                              fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            // Badge "MEILLEURE OFFRE"
+            Positioned(
+              top: 12, right: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF69F0AE),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text('MEILLEURE OFFRE',
+                    style: TextStyle(color: Colors.black,
+                        fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1)),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+
+        // ── VIP SEUL ─────────────────────────────────────────────────
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFFFFD700), // Gold
-                Color(0xFF8A2BE2), // Purple
-                Color(0xFFFF1493), // Deep Pink
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFFFD700).withOpacity(0.3),
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, 10),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.4)),
+            color: Colors.white.withOpacity(0.03),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.workspace_premium_rounded,
+                      color: Color(0xFFFFD700), size: 22),
+                  const SizedBox(width: 8),
+                  const Text('Club VIP uniquement',
+                      style: TextStyle(color: Colors.white, fontSize: 16,
+                          fontWeight: FontWeight.w800)),
+                  const Spacer(),
+                  const Text('4,99 €/mois',
+                      style: TextStyle(color: Color(0xFFFFD700), fontSize: 16,
+                          fontWeight: FontWeight.w900)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              for (final b in vipBenefits)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(b.$1, color: b.$2, size: 15),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(b.$3,
+                          style: const TextStyle(color: Colors.white70, fontSize: 12))),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 8),
+              if (!isVip)
+                GestureDetector(
+                  onTap: _triggerVipPurchase,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.6)),
+                      borderRadius: BorderRadius.circular(12),
+                      color: const Color(0xFFFFD700).withOpacity(0.08),
+                    ),
+                    child: const Text('S\'abonner au VIP seulement',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Color(0xFFFFD700),
+                            fontWeight: FontWeight.w700, fontSize: 13)),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // ── PASS COMBAT SEUL ─────────────────────────────────────────
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: PyraTheme.primaryPurple.withOpacity(0.4)),
+            color: Colors.white.withOpacity(0.03),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.military_tech_rounded,
+                      color: PyraTheme.primaryPurple, size: 22),
+                  const SizedBox(width: 8),
+                  const Text('Pass de Combat uniquement',
+                      style: TextStyle(color: Colors.white, fontSize: 16,
+                          fontWeight: FontWeight.w800)),
+                  const Spacer(),
+                  const Text('2,99 €/mois',
+                      style: TextStyle(color: PyraTheme.primaryPurple, fontSize: 16,
+                          fontWeight: FontWeight.w900)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Débloque les 10 récompenses premium du Pass de Combat chaque saison.',
+                style: TextStyle(color: Colors.white54, fontSize: 12, height: 1.4),
+              ),
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: () {
+                  // Pour l'instant simule l'achat du pass
+                  final user = ref.read(authServiceProvider).currentUser;
+                  if (user == null || user.isAnonymous) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Connectez-vous pour acheter le Pass.'),
+                        backgroundColor: Colors.redAccent));
+                    return;
+                  }
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => Dialog(
+                      backgroundColor: Colors.transparent,
+                      child: GlassContainer(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('🏆', style: TextStyle(fontSize: 56)),
+                            const SizedBox(height: 12),
+                            const Text('Pass de Combat',
+                                style: TextStyle(color: Colors.white, fontSize: 20,
+                                    fontWeight: FontWeight.w900)),
+                            const SizedBox(height: 8),
+                            const Text('2,99 € / mois\nAnnulable à tout moment',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4)),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: const Text('Annuler',
+                                      style: TextStyle(color: Colors.white54)),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: PyraTheme.primaryPurple),
+                                  onPressed: () async {
+                                    Navigator.pop(ctx);
+                                    // Simulation : marque le pass comme actif
+                                    final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
+                                    await dbRef.update({
+                                      'battlePassActive': true,
+                                      'battlePassExpire': DateTime.now()
+                                          .add(const Duration(days: 30))
+                                          .toIso8601String(),
+                                    });
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Pass de Combat activé ! Toutes les récompenses premium débloquées.'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: const Text('S\'abonner',
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: PyraTheme.primaryPurple.withOpacity(0.6)),
+                    borderRadius: BorderRadius.circular(12),
+                    color: PyraTheme.primaryPurple.withOpacity(0.08),
+                  ),
+                  child: const Text('S\'abonner au Pass seulement',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: PyraTheme.primaryPurple,
+                          fontWeight: FontWeight.w700, fontSize: 13)),
+                ),
               ),
             ],
           ),
-          child: GlassContainer(
-            borderRadius: BorderRadius.circular(24),
-            padding: const EdgeInsets.all(28),
-            color: Colors.black.withOpacity(0.2),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.workspace_premium_rounded, color: Color(0xFFFFD700), size: 36),
-                    const SizedBox(width: 8),
-                    Text(
-                      isVip ? 'MEMBRE VIP ACTIF 👑' : 'PYRA CLUB VIP 👑',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  isVip
-                      ? 'Merci pour votre soutien ! Votre abonnement est actif.'
-                      : 'Devenez membre d\'élite et financez le développement de Pyramide Party.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
-                ),
-                if (isVip && formattedDate.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Valable jusqu\'au : $formattedDate',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                ] else ...[
-                  const SizedBox(height: 24),
-                  const Text(
-                    '4,99 € / mois',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const Text(
-                    'Annulable à tout moment sur les stores',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 28),
-        
-        // Benefits Section
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Avantages Exclusifs',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
         ),
         const SizedBox(height: 16),
-
-        _buildBenefitRow(
-          Icons.diamond_rounded,
-          const Color(0xFF80DEEA),
-          'Monnaie mensuelle gratuite',
-          '+500 Pièces et +100 Diamants crédités immédiatement chaque mois.',
+        Center(
+          child: Text('Annulable à tout moment depuis les Stores',
+              style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11)),
         ),
-        const SizedBox(height: 16),
-        _buildBenefitRow(
-          Icons.palette_rounded,
-          const Color(0xFFFFD700),
-          'Cosmétiques Légendaires Offerts',
-          'Débloque automatiquement le cadre doré "Or Massif" et le titre "Dieu de la Pyramide".',
-        ),
-        const SizedBox(height: 16),
-        _buildBenefitRow(
-          Icons.bolt_rounded,
-          const Color(0xFFFF8C00),
-          '+50% de Gains',
-          'Augmentez vos récompenses de pièces à la fin de chaque partie en ligne.',
-        ),
-        const SizedBox(height: 16),
-        _buildBenefitRow(
-          Icons.block_rounded,
-          const Color(0xFFEF5350),
-          'Expérience 100% Sans Pub',
-          'Aucune publicité intrusive ne viendra couper le rythme de vos soirées.',
-        ),
-        const SizedBox(height: 32),
-
-        // Action Button
-        if (!isVip)
-          PulsarButton(
-            width: double.infinity,
-            text: 'S\'ABONNER AU CLUB VIP',
-            paddingHorizontal: 24,
-            paddingVertical: 16,
-            fontSize: 16,
-            icon: Icons.workspace_premium_rounded,
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFFFFD700),
-                Color(0xFFFF007F),
-              ],
-            ),
-            onPressed: () {
-              if (kIsWeb) {
-                _simulateVipPurchase('4,99 €');
-                return;
-              }
-              final packages = _offerings?.current?.availablePackages ?? [];
-              Package? vipPackage;
-              for (var p in packages) {
-                if (p.storeProduct.identifier == StoreService.subVipMonthlyId) {
-                  vipPackage = p;
-                  break;
-                }
-              }
-              
-              if (vipPackage != null) {
-                ref.read(storeServiceProvider).buyPackage(vipPackage);
-              } else {
-                _simulateVipPurchase('4,99 €');
-              }
-            },
-          ),
       ],
     );
   }
@@ -1307,9 +1538,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
+                color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
             child: Icon(icon, color: color, size: 24),
           ),
           const SizedBox(width: 16),
@@ -1317,23 +1546,13 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(title,
+                    style: const TextStyle(
+                        color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(
-                  desc,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
-                    fontSize: 12,
-                    height: 1.3,
-                  ),
-                ),
+                Text(desc,
+                    style: TextStyle(
+                        color: Colors.white.withOpacity(0.6), fontSize: 12, height: 1.3)),
               ],
             ),
           ),
@@ -1342,37 +1561,81 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 
+  Widget _buildBalanceBanner(int coins, int diamonds) {
+    return GlassContainer(
+      padding: const EdgeInsets.all(16),
+      borderRadius: BorderRadius.circular(20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildCurrencyStat('🪙', '$coins', 'Pièces', PyraTheme.primaryYellow),
+              Container(width: 1, height: 40, color: Colors.white12),
+              _buildCurrencyStat('💎', '$diamonds', 'Diamants', PyraTheme.primaryPurple),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('✨', style: TextStyle(fontSize: 13)),
+              const SizedBox(width: 6),
+              Text('Gagnes des Pièces en jouant !',
+                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCurrencyStat(String emoji, String value, String label, Color color) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 22)),
+            const SizedBox(width: 6),
+            Text(value,
+                style: TextStyle(color: color, fontSize: 24, fontWeight: FontWeight.w900)),
+          ],
+        ),
+        Text(label,
+            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11)),
+      ],
+    );
+  }
+
   Widget _buildTabButton(String text, IconData icon, StoreTab tab) {
     final bool isActive = _activeTab == tab;
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _activeTab = tab;
-          });
-        },
+        onTap: () => setState(() => _activeTab = tab),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color:
-                isActive ? Colors.white.withOpacity(0.08) : Colors.transparent,
+            color: isActive ? PyraTheme.primaryCyan.withValues(alpha: 0.15) : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
-            border: isActive ? Border.all(color: Colors.white12) : null,
+            border: isActive ? Border.all(color: PyraTheme.primaryCyan.withValues(alpha: 0.4)) : null,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon,
-                  color: isActive ? PyraTheme.primaryCyan : Colors.white54,
-                  size: 16),
-              const SizedBox(width: 6),
+                  color: isActive ? PyraTheme.primaryCyan : Colors.white38,
+                  size: 18),
+              const SizedBox(height: 3),
               Text(
                 text,
                 style: TextStyle(
-                  color: isActive ? Colors.white : Colors.white60,
+                  color: isActive ? Colors.white : Colors.white38,
                   fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                  fontSize: 13,
+                  fontSize: 10,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -1457,21 +1720,20 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
 
                 // Tabs Selector
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: GlassContainer(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                    ),
                     padding: const EdgeInsets.all(4),
-                    borderRadius: BorderRadius.circular(20),
                     child: Row(
                       children: [
-                        _buildTabButton('Pièces & Diamants', Icons.monetization_on_rounded,
-                            StoreTab.coins),
-                        _buildTabButton(
-                            'Jokers', Icons.stars_rounded, StoreTab.jokers),
-                        _buildTabButton('Apparence', Icons.palette_rounded,
-                            StoreTab.cosmetics),
-                        _buildTabButton('Club VIP 👑', Icons.workspace_premium_rounded,
-                            StoreTab.vip),
+                        _buildTabButton('Monnaie', Icons.monetization_on_rounded, StoreTab.coins),
+                        _buildTabButton('Jokers', Icons.stars_rounded, StoreTab.jokers),
+                        _buildTabButton('Apparence', Icons.palette_rounded, StoreTab.cosmetics),
+                        _buildTabButton('VIP 👑', Icons.workspace_premium_rounded, StoreTab.vip),
                       ],
                     ),
                   ),
@@ -1483,18 +1745,16 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
                     children: [
                       if (_activeTab == StoreTab.coins) ...[
-                        const Text(
-                          'Achetez des pièces et des diamants avec de la vraie monnaie pour débloquer des objets uniques !',
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 24),
+                        _buildBalanceBanner(currentCoins, currentDiamonds),
+                        const SizedBox(height: 20),
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Pièces',
                             style: TextStyle(
-                                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -1505,7 +1765,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                           child: Text(
                             'Diamants',
                             style: TextStyle(
-                                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -1513,7 +1775,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       ] else if (_activeTab == StoreTab.jokers) ...[
                         const Text(
                           'Utilise tes pièces pour acheter des Jokers dévastateurs utilisables en pleine partie !',
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                          style:
+                              TextStyle(color: Colors.white70, fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
@@ -1521,7 +1784,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       ] else if (_activeTab == StoreTab.cosmetics) ...[
                         const Text(
                           'Dépense tes diamants et pièces pour obtenir des dos de cartes et titres légendaires !',
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                          style:
+                              TextStyle(color: Colors.white70, fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),

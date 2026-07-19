@@ -586,27 +586,93 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
             ),
             const Text('Partage ce code à tes amis',
                 style: TextStyle(color: PyraTheme.textSecondary)),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: QrImageView(
-                    data: roomCode,
-                    version: QrVersions.auto,
-                    size: qrSize,
+                // Bouton QR → ouvre une sheet
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => Container(
+                        padding: const EdgeInsets.all(32),
+                        decoration: BoxDecoration(
+                          color: PyraTheme.bgCard,
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(28)),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 40, height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.white24,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(roomCode,
+                                style: const TextStyle(
+                                    color: PyraTheme.primaryOrange,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 8)),
+                            const SizedBox(height: 20),
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: QrImageView(
+                                data: 'https://pyramideparty.fr/join/$roomCode',
+                                version: QrVersions.auto,
+                                size: 220,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text('Scanne ce QR code pour rejoindre',
+                                style: TextStyle(
+                                    color: Colors.white54, fontSize: 13)),
+                            const SizedBox(height: 24),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white24),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.qr_code_rounded,
+                            color: Colors.white70, size: 18),
+                        SizedBox(width: 6),
+                        Text('QR Code',
+                            style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600)),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
+                // Bouton copier le lien
                 GestureDetector(
                   onTap: () {
                     Clipboard.setData(ClipboardData(
-                        text: 'https://lapyramide.app/join/$roomCode'));
+                        text: 'https://pyramideparty.fr/join/$roomCode'));
                     HapticFeedback.mediumImpact();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -617,24 +683,23 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
+                        horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: PyraTheme.primaryCyan.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                           color: PyraTheme.primaryCyan.withValues(alpha: 0.3)),
                     ),
-                    child: const Column(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.link_rounded,
-                            color: PyraTheme.primaryCyan, size: 22),
-                        SizedBox(height: 4),
-                        Text('Copier\nle lien',
-                            textAlign: TextAlign.center,
+                            color: PyraTheme.primaryCyan, size: 18),
+                        SizedBox(width: 6),
+                        Text('Copier le lien',
                             style: TextStyle(
                                 color: PyraTheme.primaryCyan,
-                                fontSize: 9,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w600)),
                       ],
                     ),
@@ -999,13 +1064,16 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
   }
 
   void _showScannerDialog() {
+    final controller = MobileScannerController();
+    bool _detected = false;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (sheetContext) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.7,
+          height: MediaQuery.of(sheetContext).size.height * 0.7,
           decoration: const BoxDecoration(
             color: PyraTheme.bgDark,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -1024,16 +1092,22 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: MobileScanner(
+                      controller: controller,
                       onDetect: (capture) {
-                        final List<Barcode> barcodes = capture.barcodes;
-                        for (final barcode in barcodes) {
-                          if (barcode.rawValue != null) {
-                            final code = barcode.rawValue!.trim();
-                            if (code.length == 4) {
-                              Navigator.pop(context);
-                              _joinRoom(code);
-                              break;
-                            }
+                        if (_detected) return;
+                        for (final barcode in capture.barcodes) {
+                          if (barcode.rawValue == null) continue;
+                          final raw = barcode.rawValue!.trim();
+                          String code = raw;
+                          if (raw.contains('/join/')) {
+                            code = raw.split('/join/').last.trim();
+                          }
+                          if (code.length == 4) {
+                            _detected = true;
+                            controller.stop();
+                            Navigator.of(sheetContext).pop();
+                            _joinRoom(code.toUpperCase());
+                            return;
                           }
                         }
                       },
@@ -1046,6 +1120,6 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
           ),
         );
       },
-    );
+    ).whenComplete(() => controller.dispose());
   }
 }

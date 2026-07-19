@@ -146,7 +146,11 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
           (previous == null || previous.phase != GamePhase.finished)) {
         final user = ref.read(authServiceProvider).currentUser;
         if (user != null) {
-          UserProfile.addGameRewards(user.uid, 0, 0, 0);
+          // XP : 30 base + 5 par penalité distribuée + 10 par bluff gagné
+          final me = next.players.isNotEmpty ? next.players.first : null;
+          final xpDrinks = (me?.drinksGiven ?? 0) * 5;
+          final xpBluffs = (me?.bluffsWon ?? 0) * 10;
+          UserProfile.addGameRewards(user.uid, 30 + xpDrinks + xpBluffs, me?.drinksGiven ?? 0, me?.bluffsWon ?? 0);
         }
       }
     });

@@ -160,7 +160,7 @@ class MomentCard extends StatelessWidget {
           const SizedBox(height: 20),
           // Footer
           Text(
-            'pyramideparty.app',
+            'pyramideparty.fr',
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.4),
               fontSize: 11,

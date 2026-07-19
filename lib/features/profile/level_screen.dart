@@ -563,8 +563,8 @@ class LevelScreen extends ConsumerWidget {
 
     final level = profile?.level ?? 1;
     final xp = profile?.xp ?? 0;
-    final lastClaimedLevel = profile?.lastClaimedLevel ?? 1;
-    final hasRewardToClaim = level > lastClaimedLevel;
+    final lastClaimedLevel = profile?.lastClaimedLevel ?? 0;
+    final hasRewardToClaim = level > lastClaimedLevel + 1;
     final rewardLevel = lastClaimedLevel + 1;
     final xpNeededForNext = level * 100;
     final progress = (xp / xpNeededForNext).clamp(0.0, 1.0);
@@ -1179,9 +1179,10 @@ class LevelScreen extends ConsumerWidget {
                             HapticFeedback.heavyImpact();
                             final u = ref.read(authServiceProvider).currentUser;
                             if (u == null) return;
-                            await UserProfile.claimLevelReward(u.uid);
-                            if (context.mounted) {
-                              _showRewardDialog(context, 200, 10, rewardLevel);
+                            final reward = await UserProfile.claimLevelReward(u.uid, tierIndex: lastClaimedLevel);
+                            if (context.mounted && reward != null) {
+                              final coins = reward['type'] == 'coins' ? reward['amount'] as int : 0;
+                              _showRewardDialog(context, coins, 0, rewardLevel);
                             }
                           },
                         )
