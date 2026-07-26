@@ -1,6 +1,5 @@
-// Placeholder — sera généré par FlutterFire CLI après configuration Firebase
-// Commande : flutterfire configure --project=<votre-projet-firebase>
-// Ce fichier sera remplacé automatiquement par la commande ci-dessus
+// Firebase configuration for La Pyramide
+// Generated via FlutterFire CLI
 
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
@@ -23,8 +22,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // ⚠️ REMPLACE CES VALEURS par celles de ta console Firebase
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDtpyczBVkbTsGqbNuZyyFEGZ-b3dOFLvI',
     appId: '1:545021164365:android:fbf3f4d308ff5df7271504',
@@ -33,8 +30,6 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://la-pyramide-54588-default-rtdb.firebaseio.com',
     storageBucket: 'la-pyramide-54588.firebasestorage.app',
   );
-
-  // Elles seront générées automatiquement avec : flutterfire configure
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCJEqGQ7BUn8p1fvBf7yp_-5epR89TX5S4',

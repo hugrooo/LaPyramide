@@ -21,6 +21,59 @@ class QuestsScreen extends ConsumerStatefulWidget {
   ConsumerState<QuestsScreen> createState() => _QuestsScreenState();
 }
 
+// Définitions locales des quêtes (métadonnées)
+const Map<String, Map<String, dynamic>> _questDefinitions = {
+  'playGames': {
+    'label': 'Jouer des parties',
+    'icon': Icons.sports_esports_rounded,
+    'target': 3,
+    'reward': 50,
+    'rewardType': 'coins',
+  },
+  'winBluff': {
+    'label': 'Gagner un bluff',
+    'icon': Icons.psychology_rounded,
+    'target': 1,
+    'reward': 30,
+    'rewardType': 'coins',
+  },
+  'giveDrinks': {
+    'label': 'Distribuer des gorgées',
+    'icon': Icons.local_bar_rounded,
+    'target': 10,
+    'reward': 40,
+    'rewardType': 'coins',
+  },
+  'playOnline': {
+    'label': 'Jouer en ligne',
+    'icon': Icons.wifi_rounded,
+    'target': 2,
+    'reward': 60,
+    'rewardType': 'coins',
+  },
+  'winGames': {
+    'label': 'Gagner des parties',
+    'icon': Icons.emoji_events_rounded,
+    'target': 2,
+    'reward': 5,
+    'rewardType': 'diamonds',
+  },
+  'useJoker': {
+    'label': 'Utiliser un joker',
+    'icon': Icons.auto_fix_high_rounded,
+    'target': 1,
+    'reward': 20,
+    'rewardType': 'coins',
+  },
+  'inviteFriend': {
+    'label': 'Inviter un ami',
+    'icon': Icons.person_add_rounded,
+    'target': 1,
+    'reward': 3,
+    'rewardType': 'diamonds',
+  },
+};
+
 class _QuestsScreenState extends ConsumerState<QuestsScreen> {
   bool _isChestOpening = false;
   Timer? _countdownTimer;
@@ -392,6 +445,195 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                                 ],
                               ),
                       ),
+
+                      // --- Section Quêtes Quotidiennes ---
+                      const SizedBox(height: 32),
+                      Center(
+                        child: Text(
+                          'QUÊTES QUOTIDIENNES',
+                          style: TextStyle(
+                              color: PyraTheme.primaryYellow,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.5),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      if (quests.isEmpty)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: Text(
+                              'Aucune quête disponible pour le moment.\nReviens plus tard !',
+                              style: TextStyle(
+                                  color: Colors.white.withOpacity(0.5),
+                                  fontSize: 13),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      else
+                        ...quests.entries.map((entry) {
+                          final questId = entry.key;
+                          final questData = entry.value;
+                          final int progress =
+                              (questData['progress'] as num? ?? 0).toInt();
+                          final bool claimed = questData['claimed'] == true;
+                          final def = _questDefinitions[questId];
+                          final String label =
+                              def?['label'] ?? questId;
+                          final IconData icon =
+                              def?['icon'] ?? Icons.star_rounded;
+                          final int target =
+                              (def?['target'] as int?) ?? 1;
+                          final int reward =
+                              (def?['reward'] as int?) ?? 20;
+                          final String rewardType =
+                              def?['rewardType'] ?? 'coins';
+                          final double progressRatio =
+                              (progress / target).clamp(0.0, 1.0);
+                          final bool isCompleted = progress >= target;
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: GlassContainer(
+                              padding: const EdgeInsets.all(14),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: claimed
+                                    ? Colors.white.withOpacity(0.1)
+                                    : isCompleted
+                                        ? Colors.greenAccent.withOpacity(0.5)
+                                        : PyraTheme.primaryPurple
+                                            .withOpacity(0.3),
+                              ),
+                              child: Opacity(
+                                opacity: claimed ? 0.5 : 1.0,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 36,
+                                          height: 36,
+                                          decoration: BoxDecoration(
+                                            color: (isCompleted
+                                                    ? Colors.greenAccent
+                                                    : PyraTheme.primaryPurple)
+                                                .withOpacity(0.15),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Icon(
+                                            claimed
+                                                ? Icons.check_circle_rounded
+                                                : icon,
+                                            color: claimed
+                                                ? Colors.white38
+                                                : isCompleted
+                                                    ? Colors.greenAccent
+                                                    : PyraTheme.primaryPurple,
+                                            size: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                label,
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                claimed
+                                                    ? 'Réclamée !'
+                                                    : '$progress / $target',
+                                                style: TextStyle(
+                                                    color: claimed
+                                                        ? Colors.white38
+                                                        : Colors.white70,
+                                                    fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        // Reward badge
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 5),
+                                          decoration: BoxDecoration(
+                                            color: (rewardType == 'diamonds'
+                                                    ? PyraTheme.primaryPurple
+                                                    : PyraTheme.primaryYellow)
+                                                .withOpacity(0.15),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: (rewardType == 'diamonds'
+                                                      ? PyraTheme.primaryPurple
+                                                      : PyraTheme.primaryYellow)
+                                                  .withOpacity(0.3),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                '+$reward',
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Icon(
+                                                rewardType == 'diamonds'
+                                                    ? Icons.diamond_rounded
+                                                    : Icons
+                                                        .monetization_on_rounded,
+                                                color: rewardType == 'diamonds'
+                                                    ? PyraTheme.primaryPurple
+                                                    : PyraTheme.primaryYellow,
+                                                size: 14,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    // Progress bar
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(6),
+                                      child: LinearProgressIndicator(
+                                        value: progressRatio,
+                                        minHeight: 6,
+                                        backgroundColor:
+                                            Colors.white.withOpacity(0.08),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          claimed
+                                              ? Colors.white24
+                                              : isCompleted
+                                                  ? Colors.greenAccent
+                                                  : PyraTheme.primaryPink,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
                     ],
                   ),
                 ),

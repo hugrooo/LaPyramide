@@ -5,7 +5,7 @@ class LeaderboardService {
 
   Future<void> savePlayerStats(
       String userId, String name, int sips, int bluffsWon) async {
-    final ref = _db.ref('leaderboard/$userId');
+    final ref = _db.ref('users/$userId');
     final snapshot = await ref.get();
 
     int totalSips = sips;
@@ -21,8 +21,7 @@ class LeaderboardService {
       }
     }
 
-    await ref.set({
-      'name': name,
+    await ref.update({
       'totalSips': totalSips,
       'totalBluffs': totalBluffs,
       'lastUpdated': ServerValue.timestamp,

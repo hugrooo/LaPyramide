@@ -131,6 +131,7 @@ class PublicProfileScreen extends ConsumerWidget {
                         'toxic' => 'Toxique 🧪',
                         'clubbing' => 'Clubbing 🪩',
                         'demon' => 'Démoniaque 😈',
+                        'galaxy' => 'Galaxy 🌌',
                         'vip' => 'VIP Diamant 💎',
                         _ => 'Classique Rouge 🟥',
                       };

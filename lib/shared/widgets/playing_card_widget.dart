@@ -297,6 +297,17 @@ class PlayingCardWidget extends ConsumerWidget {
         centerSymbol = '😈';
         bgPattern = '🔥\n👹';
         break;
+      case 'galaxy':
+        bgGradient = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0D0221), Color(0xFF1B0A3C), Color(0xFF0D0221)],
+        );
+        borderColor = const Color(0xFF7C4DFF);
+        centerGlowColor = const Color(0xFFB388FF);
+        centerSymbol = '🌌';
+        bgPattern = '✨\n🌠';
+        break;
       case 'classic':
       default:
         bgGradient = const LinearGradient(

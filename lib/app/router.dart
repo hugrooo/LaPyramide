@@ -241,8 +241,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         path: '/lobby/online',
         name: 'onlineLobby',
-        pageBuilder: (context, state) =>
-            _slideRight(context, state, const OnlineLobbyScreen()),
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final initialRoomCode = extra?['roomCode'] as String?;
+          return _slideRight(
+            context,
+            state,
+            OnlineLobbyScreen(initialRoomCode: initialRoomCode),
+          );
+        },
       ),
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,

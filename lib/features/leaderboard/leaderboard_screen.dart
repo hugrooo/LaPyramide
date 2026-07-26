@@ -43,6 +43,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
             'selectedBorder': val['selectedBorder']?.toString() ?? 'classic',
             'xp': (val['xp'] as int?) ?? 0,
             'level': (val['level'] as int?) ?? 1,
+            'totalSips': (val['totalSips'] as int?) ?? 0,
+            'totalBluffs': (val['totalBluffs'] as int?) ?? 0,
           };
         }).toList();
 
@@ -199,6 +201,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
     final String selectedBorder = player['selectedBorder'] ?? 'classic';
     final int xp = player['xp'] ?? 0;
     final int level = player['level'] ?? 1;
+    final int totalSips = player['totalSips'] ?? 0;
+    final int totalBluffs = player['totalBluffs'] ?? 0;
 
     final isFirst = rank == 1;
 
@@ -269,6 +273,13 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                   style: TextStyle(
                       color: color, fontSize: 10, fontWeight: FontWeight.bold),
                 ),
+                if (totalSips > 0 || totalBluffs > 0) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    '🥤 $totalSips  🃏 $totalBluffs',
+                    style: const TextStyle(color: Colors.white54, fontSize: 10),
+                  ),
+                ],
               ],
             ),
           ),
@@ -284,6 +295,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
     final String selectedBorder = player['selectedBorder'] ?? 'classic';
     final int xp = player['xp'] ?? 0;
     final int level = player['level'] ?? 1;
+    final int totalSips = player['totalSips'] ?? 0;
+    final int totalBluffs = player['totalBluffs'] ?? 0;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -342,6 +355,11 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                     fontWeight: FontWeight.w900,
                   ),
                 ),
+                if (totalSips > 0 || totalBluffs > 0)
+                  Text(
+                    '🥤 $totalSips  🃏 $totalBluffs',
+                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                  ),
               ],
             ),
           ],

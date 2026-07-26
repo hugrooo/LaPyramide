@@ -129,6 +129,75 @@ class AvatarWithBorder extends StatelessWidget {
       )
           .animate(onPlay: (c) => c.repeat())
           .shimmer(duration: 1500.ms, color: Colors.white, angle: 1.0);
+    } else if (borderType == 'flamme') {
+      avatarChild = Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.deepOrange.withOpacity(0.6),
+              blurRadius: 14,
+              spreadRadius: 3,
+            ),
+            BoxShadow(
+              color: Colors.yellow.withOpacity(0.3),
+              blurRadius: 8,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFF6D00), Color(0xFFFF1744), Color(0xFFFFAB00)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: avatarChild,
+        ),
+      )
+          .animate(onPlay: (c) => c.repeat(reverse: true))
+          .scale(
+              duration: 600.ms,
+              begin: const Offset(1, 1),
+              end: const Offset(1.04, 1.04))
+          .then()
+          .shimmer(duration: 1200.ms, color: Colors.yellow.withOpacity(0.6));
+    } else if (borderType == 'diamant') {
+      avatarChild = Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF80DEEA).withOpacity(0.5),
+              blurRadius: 14,
+              spreadRadius: 3,
+            ),
+            BoxShadow(
+              color: Colors.white.withOpacity(0.3),
+              blurRadius: 6,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              colors: [Color(0xFF80DEEA), Color(0xFFE0F7FA), Color(0xFF80DEEA)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: avatarChild,
+        ),
+      )
+          .animate(onPlay: (c) => c.repeat())
+          .shimmer(duration: 2000.ms, color: Colors.white, angle: 0.8);
     }
 
     if (showLevel && level != null) {

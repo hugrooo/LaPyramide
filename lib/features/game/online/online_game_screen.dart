@@ -50,9 +50,16 @@ class OnlineGameScreen extends ConsumerWidget {
             final int xpBluffs = me.bluffsWon * 15;
             final int totalXp = xpBase + xpDrinks + xpBluffs;
 
-            // Appliquer dans Firebase
+            // Coins: 20 base + 2 per penalty given + 5 per bluff won
+            final int coinsBase = 20;
+            final int coinsDrinks = me.drinksGiven * 2;
+            final int coinsBluffs = me.bluffsWon * 5;
+            final int totalCoins = coinsBase + coinsDrinks + coinsBluffs;
+
+            // Appliquer dans Firebase (VIP bonus +50% applied inside)
             UserProfile.addGameRewards(
-                user.uid, totalXp, me.drinksGiven, me.bluffsWon);
+                user.uid, totalXp, me.drinksGiven, me.bluffsWon,
+                addedCoins: totalCoins);
 
             // Pop-up Résumé
             showDialog(

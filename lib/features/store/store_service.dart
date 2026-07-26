@@ -14,7 +14,7 @@ class StoreService {
   bool _isInitialized = false;
 
   static const String _apiKeyAndroid = 'goog_placeholder_api_key';
-  static const String _apiKeyIOS = 'appl_placeholder_api_key';
+  static const String _apiKeyIOS = 'appl_UhDMyaJAFJPCYfnzxwkqBzwNhWo';
 
   static const String vipEntitlementId = 'premium';
 

@@ -88,10 +88,11 @@ class PushNotificationService {
     if (message.data.containsKey('roomCode')) {
       final roomCode = message.data['roomCode'];
       if (roomCode != null && rootNavigatorKey.currentContext != null) {
-        // Naviguer vers le salon
-        rootNavigatorKey.currentContext!.pushNamed('onlineLobby');
-        // Idéalement on devrait préremplir le code ou rejoindre automatiquement
-        // Mais pour simplifier, on emmène juste sur l'écran du salon en ligne.
+        // Naviguer vers le salon avec le code pré-rempli pour rejoindre automatiquement
+        rootNavigatorKey.currentContext!.pushNamed(
+          'onlineLobby',
+          extra: {'roomCode': roomCode},
+        );
       }
     }
   }

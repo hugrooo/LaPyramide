@@ -310,6 +310,7 @@ class LevelScreen extends ConsumerWidget {
         'emoji': '😈',
         'color': Color(0xFFFF4500)
       },
+      'galaxy': {'name': 'Galaxy', 'emoji': '🌌', 'color': Color(0xFF7C4DFF)},
       'vip': {'name': 'VIP Diamant', 'emoji': '💎', 'color': Color(0xFF80DEEA)},
     };
     HapticFeedback.mediumImpact();
@@ -391,6 +392,8 @@ class LevelScreen extends ConsumerWidget {
       'classic': {'name': 'Sans Cadre', 'color': Colors.grey},
       'neon': {'name': 'Néon Fluo ⚡', 'color': Color(0xFF00F5FF)},
       'fire': {'name': 'Feu Ardent 🔥', 'color': Colors.orange},
+      'flamme': {'name': 'Flamme 🔥', 'color': Color(0xFFFF6D00)},
+      'diamant': {'name': 'Diamant 💎', 'color': Color(0xFF80DEEA)},
       'gold': {'name': 'Or Massif 👑', 'color': Color(0xFFFFD700)},
     };
     HapticFeedback.mediumImpact();
@@ -582,6 +585,7 @@ class LevelScreen extends ConsumerWidget {
       'toxic' => 'Toxique 🧪',
       'clubbing' => 'Clubbing 🪩',
       'demon' => 'Démoniaque 😈',
+      'galaxy' => 'Galaxy 🌌',
       'vip' => 'VIP Diamant 💎',
       _ => 'Classique Rouge 🟥',
     };

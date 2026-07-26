@@ -150,7 +150,12 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
           final me = next.players.isNotEmpty ? next.players.first : null;
           final xpDrinks = (me?.drinksGiven ?? 0) * 5;
           final xpBluffs = (me?.bluffsWon ?? 0) * 10;
-          UserProfile.addGameRewards(user.uid, 30 + xpDrinks + xpBluffs, me?.drinksGiven ?? 0, me?.bluffsWon ?? 0);
+          // Coins: 10 base + 2 per penalty given + 3 per bluff won
+          final coinsDrinks = (me?.drinksGiven ?? 0) * 2;
+          final coinsBluffs = (me?.bluffsWon ?? 0) * 3;
+          final totalCoins = 10 + coinsDrinks + coinsBluffs;
+          UserProfile.addGameRewards(user.uid, 30 + xpDrinks + xpBluffs, me?.drinksGiven ?? 0, me?.bluffsWon ?? 0,
+              addedCoins: totalCoins);
         }
       }
     });

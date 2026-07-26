@@ -24,7 +24,9 @@ import '../profile/user_profile_provider.dart';
 import '../../shared/widgets/card_3d_showcase.dart';
 
 class OnlineLobbyScreen extends ConsumerStatefulWidget {
-  const OnlineLobbyScreen({super.key});
+  final String? initialRoomCode;
+
+  const OnlineLobbyScreen({super.key, this.initialRoomCode});
 
   @override
   ConsumerState<OnlineLobbyScreen> createState() => _OnlineLobbyScreenState();
@@ -34,6 +36,18 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
   final TextEditingController _codeController = TextEditingController();
   bool _isLoading = false;
   GameSettings _settings = const GameSettings();
+
+  @override
+  void initState() {
+    super.initState();
+    // Si un code de salon est fourni (ex: depuis une notification d'invitation),
+    // rejoindre automatiquement le salon après le premier frame.
+    if (widget.initialRoomCode != null && widget.initialRoomCode!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _joinRoom(widget.initialRoomCode!.trim().toUpperCase());
+      });
+    }
+  }
 
   @override
   void dispose() {

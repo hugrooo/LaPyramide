@@ -14,7 +14,6 @@ import '../profile/user_profile_provider.dart';
 import 'store_service.dart';
 import '../../shared/widgets/card_3d_showcase.dart';
 import '../auth/auth_service.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 enum StoreTab { coins, jokers, cosmetics, vip }
 
@@ -334,6 +333,19 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         ),
         const SizedBox(height: 16),
         _buildItemPurchaseCard(
+          id: 'galaxy',
+          title: 'Dos Galaxy 🌌',
+          desc: 'Un dos de carte aux couleurs de la galaxie. Exclusif Pass de Combat.',
+          cost: 500,
+          currency: 'diamonds',
+          icon: Icons.auto_awesome_rounded,
+          iconColor: const Color(0xFF7C4DFF),
+          ownedCount: cardBacksOwned.contains('galaxy') ? 1 : 0,
+          type: 'cardBack',
+          isOwned: cardBacksOwned.contains('galaxy'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
           id: 'vip',
           title: 'Dos VIP Diamant 💎',
           desc: 'L\'ultime dos de carte. Brillez de mille feux.',
@@ -488,6 +500,32 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           ownedCount: bordersOwned.contains('fire') ? 1 : 0,
           type: 'border',
           isOwned: bordersOwned.contains('fire'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'flamme',
+          title: 'Cadre Flamme 🔥',
+          desc: 'Un cadre ardent aux couleurs du feu. Exclusif Pass de Combat.',
+          cost: 400,
+          currency: 'coins',
+          icon: Icons.whatshot_rounded,
+          iconColor: const Color(0xFFFF6D00),
+          ownedCount: bordersOwned.contains('flamme') ? 1 : 0,
+          type: 'border',
+          isOwned: bordersOwned.contains('flamme'),
+        ),
+        const SizedBox(height: 16),
+        _buildItemPurchaseCard(
+          id: 'diamant',
+          title: 'Cadre Diamant 💎',
+          desc: 'Le cadre ultime en cristal pur. Exclusif Pass de Combat.',
+          cost: 300,
+          currency: 'diamonds',
+          icon: Icons.diamond_rounded,
+          iconColor: const Color(0xFF80DEEA),
+          ownedCount: bordersOwned.contains('diamant') ? 1 : 0,
+          type: 'border',
+          isOwned: bordersOwned.contains('diamant'),
         ),
         const SizedBox(height: 16),
         _buildItemPurchaseCard(
@@ -724,98 +762,9 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 
-  Future<void> _simulatePurchase(
-      String title, int coins, int diamonds, String price) async {
-    showDialog(
-      context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: GlassContainer(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                coins > 0 ? Icons.monetization_on_rounded : Icons.diamond_rounded,
-                color: coins > 0 ? PyraTheme.primaryYellow : PyraTheme.primaryPurple,
-                size: 80,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Simulation d\'achat',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Voulez-vous simuler l\'achat du pack de ${coins > 0 ? "$coins pièces" : "$diamonds diamants"} pour $price ?',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white12),
-                    onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Annuler',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: PyraTheme.primaryPurple),
-                    onPressed: () async {
-                      Navigator.pop(ctx);
-                      final user = ref.read(authServiceProvider).currentUser;
-                      if (user == null || user.isAnonymous) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                                'Veuillez vous connecter pour simuler cet achat.'),
-                            backgroundColor: Colors.redAccent));
-                        return;
-                      }
-
-                      if (coins > 0) {
-                        final dbRef = FirebaseDatabase.instance
-                            .ref('users/${user.uid}/coins');
-                        final snap = await dbRef.get();
-                        final val = (snap.value as int?) ?? 0;
-                        await dbRef.set(val + coins);
-                      } else if (diamonds > 0) {
-                        final dbRef = FirebaseDatabase.instance
-                            .ref('users/${user.uid}/diamonds');
-                        final snap = await dbRef.get();
-                        final val = (snap.value as int?) ?? 0;
-                        await dbRef.set(val + diamonds);
-                      }
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              'Achat simulé réussi : +${coins > 0 ? "$coins pièces" : "$diamonds diamants"} !'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    },
-                    child: const Text('Acheter',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   void _triggerVipPurchase() {
     if (kIsWeb) {
-      _simulateVipPurchase('4,99 €');
+      _showStoreUnavailable();
       return;
     }
     final packages = _offerings?.current?.availablePackages ?? [];
@@ -829,244 +778,36 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     if (vipPackage != null) {
       ref.read(storeServiceProvider).buyPackage(vipPackage);
     } else {
-      _simulateVipPurchase('4,99 €');
+      _showStoreUnavailable();
     }
   }
 
-  Future<void> _simulateVipPurchase(String price) async {
-    showDialog(
-      context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: GlassContainer(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.workspace_premium_rounded,
-                color: Color(0xFFFFD700),
-                size: 80,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Simulation d\'abonnement',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Voulez-vous simuler la souscription à Pyra VIP pour $price ?',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white12),
-                    onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Annuler',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: PyraTheme.primaryPurple),
-                    onPressed: () async {
-                      Navigator.pop(ctx);
-                      final user = ref.read(authServiceProvider).currentUser;
-                      if (user == null || user.isAnonymous) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                                'Veuillez vous connecter pour simuler cet achat.'),
-                            backgroundColor: Colors.redAccent));
-                        return;
-                      }
-
-                      final dbRef =
-                          FirebaseDatabase.instance.ref('users/${user.uid}');
-                      final snapshot = await dbRef.get();
-                      if (snapshot.exists && snapshot.value is Map) {
-                        final data = snapshot.value as Map;
-                        final currentCoins =
-                            (data['coins'] as num?)?.toInt() ?? 0;
-                        final currentDiamonds =
-                            (data['diamonds'] as num?)?.toInt() ?? 0;
-
-                        List<dynamic> titles = data['titles'] is List
-                            ? List<dynamic>.from(data['titles'])
-                            : ['Novice 🐣'];
-                        List<dynamic> borders = data['bordersOwned'] is List
-                            ? List<dynamic>.from(data['bordersOwned'])
-                            : ['classic'];
-
-                        if (!titles.contains('Dieu de la Pyramide 👁️')) {
-                          titles.add('Dieu de la Pyramide 👁️');
-                        }
-                        if (!borders.contains('gold')) borders.add('gold');
-
-                        await dbRef.update({
-                          'isVip': true,
-                          'vipExpireDate': DateTime.now()
-                              .add(const Duration(days: 30))
-                              .toIso8601String(),
-                          'coins': currentCoins + 500,
-                          'diamonds': currentDiamonds + 100,
-                          'titles': titles,
-                          'bordersOwned': borders,
-                        });
-                      } else {
-                        await dbRef.update({
-                          'isVip': true,
-                          'vipExpireDate': DateTime.now()
-                              .add(const Duration(days: 30))
-                              .toIso8601String(),
-                          'coins': 500,
-                          'diamonds': 100,
-                          'titles': ['Novice 🐣', 'Dieu de la Pyramide 👁️'],
-                          'bordersOwned': ['classic', 'gold'],
-                        });
-                      }
-
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                                'Abonnement VIP simulé avec succès ! +500 Pièces & +100 Diamants.'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    },
-                    child: const Text('S\'abonner',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  void _showStoreUnavailable() {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Boutique indisponible — veuillez réessayer plus tard.'),
+      backgroundColor: Colors.redAccent,
+    ));
   }
 
-  // Improved product card: big emoji+amount on the left, optional value badge top-right
-  Widget _buildMockProductCard({
-    required String title,
-    required String description,
-    required String price,
-    required int coins,
-    required int diamonds,
-    String? badgeLabel,
-    Color? badgeColor,
-  }) {
-    final bool isCoins = coins > 0;
-    final int amount = isCoins ? coins : diamonds;
-    final Color accentColor =
-        isCoins ? PyraTheme.primaryYellow : PyraTheme.primaryPurple;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: GlassContainer(
-        padding: const EdgeInsets.all(16),
-        child: Stack(
-          children: [
-            Row(
-              children: [
-                // Large emoji + amount display
-                Container(
-                  width: 66,
-                  height: 66,
-                  decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: accentColor.withOpacity(0.3)),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(isCoins ? '🪙' : '💎',
-                          style: const TextStyle(fontSize: 26)),
-                      const SizedBox(height: 2),
-                      Text(
-                        '$amount',
-                        style: TextStyle(
-                          color: accentColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        description,
-                        style: TextStyle(
-                            color: Colors.white.withOpacity(0.55),
-                            fontSize: 12),
-                        maxLines: 2,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                PulsarButton(
-                  width: null,
-                  text: price,
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                  fontSize: 14,
-                  gradient: isCoins
-                      ? PyraTheme.cyanGradient
-                      : PyraTheme.purplePinkGradient,
-                  onPressed: () =>
-                      _simulatePurchase(title, coins, diamonds, price),
-                ),
-              ],
-            ),
-            // Optional value badge (top-right)
-            if (badgeLabel != null)
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: badgeColor ?? Colors.orange,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    badgeLabel,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
+  Widget _buildStoreUnavailableMessage() {
+    return GlassContainer(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      borderRadius: BorderRadius.circular(16),
+      child: Row(
+        children: [
+          Icon(Icons.cloud_off_rounded,
+              color: Colors.white.withOpacity(0.5), size: 28),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              'Boutique indisponible — vérifiez votre connexion',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 14,
               ),
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1085,35 +826,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         .toList();
 
     if (kIsWeb || coinPackages.isEmpty) {
-      return Column(
-        children: [
-          _buildMockProductCard(
-            title: 'Pack de 100 Pièces',
-            description: 'Idéal pour s\'offrir son premier Joker Miroir.',
-            price: '0,99 €',
-            coins: 100,
-            diamonds: 0,
-          ),
-          _buildMockProductCard(
-            title: 'Pack de 500 Pièces',
-            description: 'Contient de quoi débloquer plusieurs Jokers de valeur.',
-            price: '3,99 €',
-            coins: 500,
-            diamonds: 0,
-            badgeLabel: 'POPULAIRE',
-            badgeColor: Colors.orange,
-          ),
-          _buildMockProductCard(
-            title: 'Pack de 1200 Pièces',
-            description: 'Le meilleur rapport qualité/prix pour régner sur le jeu.',
-            price: '7,99 €',
-            coins: 1200,
-            diamonds: 0,
-            badgeLabel: 'MEILLEURE VALEUR',
-            badgeColor: Colors.green,
-          ),
-        ],
-      );
+      return _buildStoreUnavailableMessage();
     }
 
     return Column(
@@ -1133,35 +846,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         .toList();
 
     if (kIsWeb || diamondPackages.isEmpty) {
-      return Column(
-        children: [
-          _buildMockProductCard(
-            title: 'Poignée de 50 Diamants',
-            description: 'Permet de s\'acheter un dos de carte classique premium.',
-            price: '1,99 €',
-            coins: 0,
-            diamonds: 50,
-          ),
-          _buildMockProductCard(
-            title: 'Coffre de 250 Diamants',
-            description: 'Contient de quoi s\'offrir des dos de cartes animés stylés.',
-            price: '7,99 €',
-            coins: 0,
-            diamonds: 250,
-            badgeLabel: 'POPULAIRE',
-            badgeColor: Colors.orange,
-          ),
-          _buildMockProductCard(
-            title: 'Trésor de 600 Diamants',
-            description: 'Pour s\'acheter les plus beaux dos Cyberpunk et Pirate.',
-            price: '14,99 €',
-            coins: 0,
-            diamonds: 600,
-            badgeLabel: 'MEILLEURE VALEUR',
-            badgeColor: Colors.green,
-          ),
-        ],
-      );
+      return _buildStoreUnavailableMessage();
     }
 
     return Column(
@@ -1435,7 +1120,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
               const SizedBox(height: 12),
               GestureDetector(
                 onTap: () {
-                  // Pour l'instant simule l'achat du pass
+                  if (kIsWeb) {
+                    _showStoreUnavailable();
+                    return;
+                  }
                   final user = ref.read(authServiceProvider).currentUser;
                   if (user == null || user.isAnonymous) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -1443,65 +1131,20 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                         backgroundColor: Colors.redAccent));
                     return;
                   }
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => Dialog(
-                      backgroundColor: Colors.transparent,
-                      child: GlassContainer(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text('🏆', style: TextStyle(fontSize: 56)),
-                            const SizedBox(height: 12),
-                            const Text('Pass de Combat',
-                                style: TextStyle(color: Colors.white, fontSize: 20,
-                                    fontWeight: FontWeight.w900)),
-                            const SizedBox(height: 8),
-                            const Text('2,99 € / mois\nAnnulable à tout moment',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4)),
-                            const SizedBox(height: 24),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(ctx),
-                                  child: const Text('Annuler',
-                                      style: TextStyle(color: Colors.white54)),
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: PyraTheme.primaryPurple),
-                                  onPressed: () async {
-                                    Navigator.pop(ctx);
-                                    // Simulation : marque le pass comme actif
-                                    final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
-                                    await dbRef.update({
-                                      'battlePassActive': true,
-                                      'battlePassExpire': DateTime.now()
-                                          .add(const Duration(days: 30))
-                                          .toIso8601String(),
-                                    });
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Pass de Combat activé ! Toutes les récompenses premium débloquées.'),
-                                          backgroundColor: Colors.green,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: const Text('S\'abonner',
-                                      style: TextStyle(color: Colors.white)),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
+                  final packages = _offerings?.current?.availablePackages ?? [];
+                  Package? battlePassPackage;
+                  for (var p in packages) {
+                    if (p.storeProduct.identifier.contains('battle_pass') ||
+                        p.storeProduct.identifier.contains('pass_combat')) {
+                      battlePassPackage = p;
+                      break;
+                    }
+                  }
+                  if (battlePassPackage != null) {
+                    ref.read(storeServiceProvider).buyPackage(battlePassPackage);
+                  } else {
+                    _showStoreUnavailable();
+                  }
                 },
                 child: Container(
                   width: double.infinity,

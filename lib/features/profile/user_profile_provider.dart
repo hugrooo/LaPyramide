@@ -173,19 +173,31 @@ class UserProfile {
   }
 
   static Future<void> addGameRewards(
-      String uid, int addedXp, int addedDrinks, int addedBluffs) async {
+      String uid, int addedXp, int addedDrinks, int addedBluffs,
+      {int addedCoins = 0}) async {
     final dbRef = FirebaseDatabase.instance.ref('users/$uid');
     final snapshot = await dbRef.get();
 
     if (snapshot.exists && snapshot.value is Map) {
       final data = snapshot.value as Map<dynamic, dynamic>;
+      final bool isVip = data['isVip'] == true;
+
+      // VIP bonus: +50% XP and coins
+      int effectiveXp = addedXp;
+      int effectiveCoins = addedCoins;
+      if (isVip) {
+        effectiveXp = (addedXp * 1.5).round();
+        effectiveCoins = (addedCoins * 1.5).round();
+      }
+
       int currentXp = (data['xp'] as num? ?? 0).toInt();
       int currentLevel = (data['level'] as num? ?? 1).toInt();
       int currentDrinks = (data['drinksGiven'] as num? ?? 0).toInt();
       int currentBluffs = (data['bluffWins'] as num? ?? 0).toInt();
       int currentGamesPlayed = (data['gamesPlayed'] as num? ?? 0).toInt();
+      int currentCoins = (data['coins'] as num? ?? 0).toInt();
 
-      currentXp += addedXp;
+      currentXp += effectiveXp;
 
       // Level up logic
       while (currentXp >= currentLevel * 100) {
@@ -199,6 +211,7 @@ class UserProfile {
         'drinksGiven': currentDrinks + addedDrinks,
         'bluffWins': currentBluffs + addedBluffs,
         'gamesPlayed': currentGamesPlayed + 1,
+        'coins': currentCoins + effectiveCoins,
       });
     }
   }

@@ -43,7 +43,7 @@ class MinigamesHubScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Text(
-                              '4 jeux disponibles',
+                              '1 jeu disponible — 3 a venir',
                               style: TextStyle(
                                 color: PyraTheme.primaryPink,
                                 fontSize: 12,
