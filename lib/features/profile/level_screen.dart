@@ -358,6 +358,7 @@ class LevelScreen extends ConsumerWidget {
                       skinId: backId,
                       width: 40,
                       height: 56,
+                      showControls: false,
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -1087,6 +1088,7 @@ class LevelScreen extends ConsumerWidget {
                                   skinId: profile.activeCardBack,
                                   width: 44,
                                   height: 62,
+                                  showControls: false,
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(

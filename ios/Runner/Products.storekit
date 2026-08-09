@@ -1,0 +1,176 @@
+{
+  "identifier" : "PYRAMIDE_PARTY_STOREKIT",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "1001",
+      "localizations" : [
+        {
+          "description" : "500 Pièces pour la Pyramide",
+          "displayName" : "Bourse de 500 Pièces",
+          "locale" : "fr"
+        }
+      ],
+      "productID" : "com.pyramideparty.coins.500",
+      "referenceName" : "500 Coins",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "2.49",
+      "familyShareable" : false,
+      "internalID" : "1002",
+      "localizations" : [
+        {
+          "description" : "1500 Pièces (+20% Gratuit)",
+          "displayName" : "Sac de 1500 Pièces",
+          "locale" : "fr"
+        }
+      ],
+      "productID" : "com.pyramideparty.coins.1500",
+      "referenceName" : "1500 Coins",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "6.99",
+      "familyShareable" : false,
+      "internalID" : "1003",
+      "localizations" : [
+        {
+          "description" : "5000 Pièces (+50% Gratuit)",
+          "displayName" : "Coffre-fort de 5000 Pièces",
+          "locale" : "fr"
+        }
+      ],
+      "productID" : "com.pyramideparty.coins.5000",
+      "referenceName" : "5000 Coins",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "14.99",
+      "familyShareable" : false,
+      "internalID" : "1004",
+      "localizations" : [
+        {
+          "description" : "15000 Pièces de la Pyramide",
+          "displayName" : "Trésor de 15000 Pièces",
+          "locale" : "fr"
+        }
+      ],
+      "productID" : "com.pyramideparty.coins.15000",
+      "referenceName" : "15000 Coins",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1.49",
+      "familyShareable" : false,
+      "internalID" : "2001",
+      "localizations" : [
+        {
+          "description" : "50 Diamants pour objets rares",
+          "displayName" : "Poignée de 50 Diamants",
+          "locale" : "fr"
+        }
+      ],
+      "productID" : "com.pyramideparty.diamonds.50",
+      "referenceName" : "50 Diamonds",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "3.99",
+      "familyShareable" : false,
+      "internalID" : "2002",
+      "localizations" : [
+        {
+          "description" : "150 Diamants (+15% Bonus)",
+          "displayName" : "Sac de 150 Diamants",
+          "locale" : "fr"
+        }
+      ],
+      "productID" : "com.pyramideparty.diamonds.150",
+      "referenceName" : "150 Diamonds",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "2003",
+      "localizations" : [
+        {
+          "description" : "500 Diamants de la Pyramide",
+          "displayName" : "Coffre de 500 Diamants",
+          "locale" : "fr"
+        }
+      ],
+      "productID" : "com.pyramideparty.diamonds.500",
+      "referenceName" : "500 Diamonds",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "3001",
+      "localizations" : [
+        {
+          "description" : "Accès Premium à toutes les récompenses de la Saison",
+          "displayName" : "Pass de Combat Saison 1",
+          "locale" : "fr"
+        }
+      ],
+      "productID" : "com.pyramideparty.pass.season1",
+      "referenceName" : "Battle Pass Season 1",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "fr_FR",
+    "_storefront" : "FRA",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "4000",
+      "localizations" : [
+
+      ],
+      "name" : "VIP Subscriptions",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "4001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "+500 pièces/mois, cosmétiques exclusifs, sans pub et bonus XP",
+              "displayName" : "Club VIP Mensuel",
+              "locale" : "fr"
+            }
+          ],
+          "productID" : "com.pyramideparty.vip.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "VIP Monthly Subscription",
+          "subscriptionGroupID" : "4000",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

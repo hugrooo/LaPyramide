@@ -167,20 +167,58 @@ class _NavBarItem extends StatelessWidget {
       },
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive ? PyraTheme.primaryCyan.withValues(alpha: 0.12) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isActive ? PyraTheme.primaryCyan.withValues(alpha: 0.3) : Colors.transparent,
+            width: 1,
+          ),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: PyraTheme.primaryCyan.withValues(alpha: 0.2),
+                    blurRadius: 10,
+                  )
+                ]
+              : null,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 4),
+            AnimatedScale(
+              scale: isActive ? 1.15 : 1.0,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutBack,
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(height: 3),
             Text(
               label,
               style: TextStyle(
                 color: color,
                 fontSize: 10,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
+                fontWeight: isActive ? FontWeight.w900 : FontWeight.w600,
+                letterSpacing: isActive ? 0.3 : 0,
+              ),
+            ),
+            const SizedBox(height: 2),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              width: isActive ? 4 : 0,
+              height: isActive ? 4 : 0,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: PyraTheme.primaryCyan,
+                boxShadow: [
+                  BoxShadow(
+                    color: PyraTheme.primaryCyan.withValues(alpha: 0.8),
+                    blurRadius: 4,
+                  ),
+                ],
               ),
             ),
           ],

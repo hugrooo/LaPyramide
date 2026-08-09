@@ -333,6 +333,7 @@ class PublicProfileScreen extends ConsumerWidget {
                                   skinId: profile.activeCardBack,
                                   width: 48,
                                   height: 68,
+                                  showControls: false,
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(

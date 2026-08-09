@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,8 +7,8 @@ import '../../app/theme.dart';
 import '../../features/game/models/card_model.dart';
 import '../../features/profile/user_profile_provider.dart';
 
-/// Widget d'affichage d'une carte individuelle (face recto ou verso)
-class PlayingCardWidget extends ConsumerWidget {
+/// Widget d'affichage d'une carte individuelle (face recto ou verso) avec animations 3D
+class PlayingCardWidget extends ConsumerStatefulWidget {
   final PyraCard? card;
   final bool faceUp;
   final bool isHighlighted;
@@ -16,6 +17,7 @@ class PlayingCardWidget extends ConsumerWidget {
   final double height;
   final VoidCallback? onTap;
   final String? overrideSkin;
+  final bool animateFlip;
 
   const PlayingCardWidget({
     super.key,
@@ -27,56 +29,158 @@ class PlayingCardWidget extends ConsumerWidget {
     this.height = 84,
     this.onTap,
     this.overrideSkin,
+    this.animateFlip = true,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final activeCardBack = overrideSkin ??
+  ConsumerState<PlayingCardWidget> createState() => _PlayingCardWidgetState();
+}
+
+class _PlayingCardWidgetState extends ConsumerState<PlayingCardWidget>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _scaleController;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+      reverseDuration: const Duration(milliseconds: 150),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails _) {
+    if (widget.onTap == null) return;
+    _scaleController.forward();
+    HapticFeedback.selectionClick();
+  }
+
+  void _onTapUp(TapUpDetails _) {
+    _scaleController.reverse();
+  }
+
+  void _onTapCancel() {
+    _scaleController.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final activeCardBack = widget.overrideSkin ??
         ref.watch(userProfileProvider).value?.activeCardBack ??
         'classic';
 
-    return GestureDetector(
-      onTap: onTap != null
-          ? () {
-              HapticFeedback.selectionClick();
-              onTap!();
-            }
-          : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            if (isHighlighted)
-              BoxShadow(
-                color: PyraTheme.primaryYellow.withOpacity(0.8),
-                blurRadius: 16,
-                spreadRadius: 3,
-              ),
-            if (isSelected)
-              BoxShadow(
-                color: PyraTheme.primaryPurple.withOpacity(0.8),
-                blurRadius: 16,
-                spreadRadius: 3,
-              ),
-            PyraTheme.cardShadow,
-          ],
-          border: Border.all(
-            color: isHighlighted
-                ? PyraTheme.primaryYellow
-                : isSelected
-                    ? PyraTheme.primaryPurple
-                    : Colors.white.withOpacity(0.1),
-            width: isHighlighted || isSelected ? 2.5 : 1,
-          ),
+    final glowColor = widget.isHighlighted
+        ? PyraTheme.primaryYellow
+        : widget.isSelected
+            ? PyraTheme.primaryPurple
+            : null;
+
+    final cardBody = AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: widget.width,
+      height: widget.height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          if (glowColor != null)
+            BoxShadow(
+              color: glowColor.withValues(alpha: 0.8),
+              blurRadius: 16,
+              spreadRadius: 3,
+            ),
+          PyraTheme.cardShadow,
+        ],
+        border: Border.all(
+          color: glowColor ?? Colors.white.withValues(alpha: 0.1),
+          width: glowColor != null ? 2.5 : 1,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(9),
-          child: faceUp && card != null
-              ? _buildFront(card!)
-              : _buildBack(activeCardBack),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(9),
+        child: widget.faceUp && widget.card != null
+            ? _buildFront(widget.card!)
+            : _buildBack(activeCardBack),
+      ),
+    );
+
+    if (!widget.animateFlip) {
+      return GestureDetector(
+        onTapDown: _onTapDown,
+        onTapUp: _onTapUp,
+        onTapCancel: _onTapCancel,
+        onTap: widget.onTap,
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: cardBody,
+        ),
+      );
+    }
+
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      onTap: widget.onTap,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: TweenAnimationBuilder<double>(
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOutCubic,
+          tween: Tween<double>(begin: 0, end: widget.faceUp ? 1.0 : 0.0),
+          builder: (context, val, child) {
+            final angle = val * math.pi;
+            final isFront = val >= 0.5;
+            final transformMatrix = Matrix4.identity()
+              ..setEntry(3, 2, 0.0015)
+              ..rotateY(angle);
+
+            return Transform(
+              transform: transformMatrix,
+              alignment: Alignment.center,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: widget.width,
+                height: widget.height,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    if (glowColor != null)
+                      BoxShadow(
+                        color: glowColor.withValues(alpha: 0.8),
+                        blurRadius: 16,
+                        spreadRadius: 3,
+                      ),
+                    PyraTheme.cardShadow,
+                  ],
+                  border: Border.all(
+                    color: glowColor ?? Colors.white.withValues(alpha: 0.1),
+                    width: glowColor != null ? 2.5 : 1,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(9),
+                  child: Transform(
+                    transform: isFront ? (Matrix4.identity()..rotateY(math.pi)) : Matrix4.identity(),
+                    alignment: Alignment.center,
+                    child: isFront && widget.card != null
+                        ? _buildFront(widget.card!)
+                        : _buildBack(activeCardBack),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -104,7 +208,7 @@ class PlayingCardWidget extends ConsumerWidget {
               child: Text(
                 c.suit.emoji,
                 style: TextStyle(
-                  fontSize: width * 0.9,
+                  fontSize: widget.width * 0.9,
                   height: 1,
                 ),
               ),
@@ -132,7 +236,7 @@ class PlayingCardWidget extends ConsumerWidget {
             child: Text(
               c.suit.emoji,
               style: TextStyle(
-                fontSize: width * 0.4,
+                fontSize: widget.width * 0.4,
               ),
             ),
           ),
@@ -333,7 +437,7 @@ class PlayingCardWidget extends ConsumerWidget {
               child: Text(
                 bgPattern,
                 style: TextStyle(
-                  fontSize: style == 'retro' ? width * 0.4 : width * 0.6,
+                  fontSize: style == 'retro' ? widget.width * 0.4 : widget.width * 0.6,
                   height: 0.8,
                   fontFamily: style == 'retro' ? 'Courier' : null,
                   fontWeight: FontWeight.bold,
@@ -346,13 +450,13 @@ class PlayingCardWidget extends ConsumerWidget {
           // Cadre central
           Center(
             child: Container(
-              margin: EdgeInsets.all(width * 0.1),
+              margin: EdgeInsets.all(widget.width * 0.1),
               decoration: BoxDecoration(
                 borderRadius:
-                    BorderRadius.circular(style == 'retro' ? 0 : width * 0.1),
+                    BorderRadius.circular(style == 'retro' ? 0 : widget.width * 0.1),
                 border: Border.all(
                   color: borderColor.withOpacity(0.5),
-                  width: width * 0.025 > 1.0 ? width * 0.025 : 1.0,
+                  width: widget.width * 0.025 > 1.0 ? widget.width * 0.025 : 1.0,
                 ),
                 gradient: RadialGradient(
                   colors: [
@@ -366,7 +470,7 @@ class PlayingCardWidget extends ConsumerWidget {
                 child: Text(centerSymbol,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: style == 'beta' ? width * 0.23 : width * 0.36,
+                      fontSize: style == 'beta' ? widget.width * 0.23 : widget.width * 0.36,
                       fontWeight:
                           style == 'beta' ? FontWeight.bold : FontWeight.normal,
                       color: style == 'beta' ? const Color(0xFFE040FB) : null,

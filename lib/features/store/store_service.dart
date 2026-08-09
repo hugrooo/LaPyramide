@@ -18,13 +18,17 @@ class StoreService {
 
   static const String vipEntitlementId = 'premium';
 
-  static const String pack100Id = 'com.lapyramide.pack100';
-  static const String pack500Id = 'com.lapyramide.pack500';
-  static const String pack1200Id = 'com.lapyramide.pack1200';
-  static const String diamonds50Id = 'com.lapyramide.diamonds50';
-  static const String diamonds250Id = 'com.lapyramide.diamonds250';
-  static const String diamonds600Id = 'com.lapyramide.diamonds600';
-  static const String subVipMonthlyId = 'com.lapyramide.sub_vip_monthly';
+  static const String coins500Id = 'com.pyramideparty.coins.500';
+  static const String coins1500Id = 'com.pyramideparty.coins.1500';
+  static const String coins5000Id = 'com.pyramideparty.coins.5000';
+  static const String coins15000Id = 'com.pyramideparty.coins.15000';
+
+  static const String diamonds50Id = 'com.pyramideparty.diamonds.50';
+  static const String diamonds150Id = 'com.pyramideparty.diamonds.150';
+  static const String diamonds500Id = 'com.pyramideparty.diamonds.500';
+
+  static const String subVipMonthlyId = 'com.pyramideparty.vip.monthly';
+  static const String battlePassSeason1Id = 'com.pyramideparty.pass.season1';
 
   StoreService(this._ref);
 
@@ -40,10 +44,8 @@ class StoreService {
       PurchasesConfiguration configuration;
       if (defaultTargetPlatform == TargetPlatform.android) {
         configuration = PurchasesConfiguration(_apiKeyAndroid);
-      } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-        configuration = PurchasesConfiguration(_apiKeyIOS);
       } else {
-        return;
+        configuration = PurchasesConfiguration(_apiKeyIOS);
       }
 
       await Purchases.configure(configuration);
@@ -70,23 +72,33 @@ class StoreService {
 
   Future<Offerings?> fetchOfferings() async {
     if (kIsWeb) return null;
+    await init();
     try {
-      await init();
-      return await Purchases.getOfferings();
+      final offerings = await Purchases.getOfferings();
+      return offerings;
     } catch (e) {
       print("Erreur de récupération des Offerings RevenueCat: $e");
       return null;
     }
   }
 
-  /// Restauration des achats (Obligation Apple Store)
-  Future<CustomerInfo?> restorePurchases() async {
+  Future<CustomerInfo?> getCustomerInfo() async {
     if (kIsWeb) return null;
+    await init();
     try {
-      await init();
+      return await Purchases.getCustomerInfo();
+    } catch (e) {
+      print("Erreur de récupération CustomerInfo: $e");
+      return null;
+    }
+  }
+
+  Future<void> restorePurchases() async {
+    if (kIsWeb) return;
+    await init();
+    try {
       final customerInfo = await Purchases.restorePurchases();
       await _updateVipStatusFromCustomerInfo(customerInfo);
-      return customerInfo;
     } catch (e) {
       print("Erreur lors de la restauration des achats: $e");
       rethrow;
@@ -150,14 +162,18 @@ class StoreService {
 
     int coinsToAdd = 0;
     int diamondsToAdd = 0;
+    bool unlockBattlePass = false;
 
-    if (productID.contains('pack100') || productID.contains('coin100') || productID == pack100Id) coinsToAdd = 100;
-    if (productID.contains('pack500') || productID.contains('coin500') || productID == pack500Id) coinsToAdd = 500;
-    if (productID.contains('pack1200') || productID.contains('coin1200') || productID == pack1200Id) coinsToAdd = 1200;
+    if (productID.contains('coins.500') || productID.contains('pack500') || productID == coins500Id) coinsToAdd = 500;
+    if (productID.contains('coins.1500') || productID.contains('pack1500') || productID == coins1500Id) coinsToAdd = 1500;
+    if (productID.contains('coins.5000') || productID.contains('pack5000') || productID == coins5000Id) coinsToAdd = 5000;
+    if (productID.contains('coins.15000') || productID.contains('pack15000') || productID == coins15000Id) coinsToAdd = 15000;
 
-    if (productID.contains('diamonds50') || productID == diamonds50Id) diamondsToAdd = 50;
-    if (productID.contains('diamonds250') || productID == diamonds250Id) diamondsToAdd = 250;
-    if (productID.contains('diamonds600') || productID == diamonds600Id) diamondsToAdd = 600;
+    if (productID.contains('diamonds.50') || productID == diamonds50Id) diamondsToAdd = 50;
+    if (productID.contains('diamonds.150') || productID == diamonds150Id) diamondsToAdd = 150;
+    if (productID.contains('diamonds.500') || productID == diamonds500Id) diamondsToAdd = 500;
+
+    if (productID.contains('pass.season1') || productID == battlePassSeason1Id) unlockBattlePass = true;
 
     final userDbRef = FirebaseDatabase.instance.ref('users/${user.uid}');
 

@@ -877,6 +877,7 @@ class _OnlineLobbyScreenState extends ConsumerState<OnlineLobbyScreen> {
                                       skinId: player.activeCardBack,
                                       width: 28,
                                       height: 38,
+                                      showControls: false,
                                     ),
                                   ),
                                 ],

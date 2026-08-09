@@ -199,9 +199,12 @@ class AuthService {
     if (user == null) return;
     final uid = user.uid;
 
-    // 1. Supprimer les données utilisateur dans la base de données
+    // 1. Supprimer les données utilisateur en cascade dans la base de données
     try {
       await _db.ref('users/$uid').remove();
+      await _db.ref('friends/$uid').remove();
+      await _db.ref('friend_requests/$uid').remove();
+      await _db.ref('user_fcm_tokens/$uid').remove();
     } catch (e) {
       debugPrint('Erreur lors de la suppression DB: $e');
     }

@@ -8,6 +8,8 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../app/theme.dart';
 import '../../shared/widgets/animated_background.dart';
 import '../../shared/widgets/glass_container.dart';
+import '../../shared/widgets/playing_card_widget.dart';
+import '../../shared/widgets/card_3d_showcase.dart';
 import '../auth/auth_service.dart';
 import '../profile/user_profile_provider.dart';
 import 'season_service.dart';
@@ -16,6 +18,7 @@ class BattlePassTier {
   final int tier;
   final String reward;
   final String emoji;
+  final String? cardSkinId;
   final bool isPremium;
   final Color accentColor;
 
@@ -23,6 +26,7 @@ class BattlePassTier {
     required this.tier,
     required this.reward,
     required this.emoji,
+    this.cardSkinId,
     this.isPremium = false,
     this.accentColor = PyraTheme.primaryCyan,
   });
@@ -34,12 +38,12 @@ const _tiers = [
   BattlePassTier(tier: 3, reward: '100 Coins', emoji: '🪙', accentColor: PyraTheme.primaryGreen),
   BattlePassTier(tier: 4, reward: 'Joker Bouclier', emoji: '🛡️', accentColor: PyraTheme.primaryBlue),
   BattlePassTier(tier: 5, reward: '200 Coins', emoji: '💰', accentColor: PyraTheme.primaryGreen),
-  BattlePassTier(tier: 6, reward: 'Dos "Néon"', emoji: '🃏', isPremium: true, accentColor: PyraTheme.primaryPurple),
+  BattlePassTier(tier: 6, reward: 'Dos "Néon"', emoji: '⚡', cardSkinId: 'neon', isPremium: true, accentColor: PyraTheme.primaryPurple),
   BattlePassTier(tier: 7, reward: '500 Coins', emoji: '🪙', isPremium: true, accentColor: PyraTheme.primaryYellow),
   BattlePassTier(tier: 8, reward: 'Titre "Vétéran"', emoji: '⭐', isPremium: true, accentColor: PyraTheme.primaryOrange),
   BattlePassTier(tier: 9, reward: 'Bordure "Flamme"', emoji: '🔥', isPremium: true, accentColor: PyraTheme.primaryOrange),
   BattlePassTier(tier: 10, reward: '1 000 Coins', emoji: '🪙', isPremium: true, accentColor: PyraTheme.primaryYellow),
-  BattlePassTier(tier: 11, reward: 'Dos "Galaxy"', emoji: '🌌', isPremium: true, accentColor: PyraTheme.primaryPurple),
+  BattlePassTier(tier: 11, reward: 'Dos "Galaxy"', emoji: '🌌', cardSkinId: 'galaxy', isPremium: true, accentColor: PyraTheme.primaryPurple),
   BattlePassTier(tier: 12, reward: 'Titre "Champion"', emoji: '🏆', isPremium: true, accentColor: PyraTheme.primaryYellow),
   BattlePassTier(tier: 13, reward: '500 Coins', emoji: '💰', isPremium: true, accentColor: PyraTheme.primaryPink),
   BattlePassTier(tier: 14, reward: '2 000 Coins', emoji: '💰', isPremium: true, accentColor: PyraTheme.primaryYellow),
@@ -359,6 +363,54 @@ class _BattlePassScreenState extends ConsumerState<BattlePassScreen>
     ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1);
   }
 
+  void _showCardPreviewDialog(BuildContext context, BattlePassTier tier) {
+    if (tier.cardSkinId == null) return;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: PyraTheme.bgCard,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: tier.accentColor.withValues(alpha: 0.4)),
+        ),
+        title: Center(
+          child: Text(
+            tier.reward,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Card3DShowcase(skinId: tier.cardSkinId!, width: 120, height: 168),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Récompense du Tier ${tier.tier} (${tier.isPremium ? "Pass Premium" : "Pass Gratuit"})',
+                style: const TextStyle(color: Colors.white60, fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: tier.accentColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Fermer', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildNextRewardBanner(int currentTier, int lastClaimed, int level) {
     // Y a-t-il des récompenses à réclamer ?
     final pendingCount = currentTier - lastClaimed;
@@ -427,13 +479,20 @@ class _BattlePassScreenState extends ConsumerState<BattlePassScreen>
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: nextTier.accentColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: nextTier.accentColor.withValues(alpha: 0.3)),
               ),
-              child: Text(nextTier.emoji, style: const TextStyle(fontSize: 24)),
+              child: nextTier.cardSkinId != null
+                  ? PlayingCardWidget(
+                      faceUp: false,
+                      overrideSkin: nextTier.cardSkinId,
+                      width: 28,
+                      height: 40,
+                    )
+                  : Text(nextTier.emoji, style: const TextStyle(fontSize: 24)),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -622,7 +681,30 @@ class _BattlePassScreenState extends ConsumerState<BattlePassScreen>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(tier.emoji, style: TextStyle(fontSize: (isCurrent || canClaim) ? 36 : 30)),
+                  if (tier.cardSkinId != null)
+                    GestureDetector(
+                      onTap: () => _showCardPreviewDialog(context, tier),
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: tier.accentColor.withValues(alpha: 0.5),
+                              blurRadius: 10,
+                            )
+                          ],
+                        ),
+                        child: PlayingCardWidget(
+                          faceUp: false,
+                          overrideSkin: tier.cardSkinId,
+                          width: (isCurrent || canClaim) ? 40 : 34,
+                          height: (isCurrent || canClaim) ? 56 : 48,
+                        ),
+                      ),
+                    )
+                  else
+                    Text(tier.emoji, style: TextStyle(fontSize: (isCurrent || canClaim) ? 36 : 30)),
                   const SizedBox(height: 6),
                   Text(
                     tier.reward,

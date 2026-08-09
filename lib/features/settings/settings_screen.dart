@@ -12,10 +12,10 @@ import 'package:app_settings/app_settings.dart';
 import '../../app/theme.dart';
 import '../../shared/widgets/animated_background.dart';
 import '../../shared/widgets/glass_container.dart';
-import '../../shared/widgets/pulsar_button.dart';
 import '../auth/auth_service.dart';
 import '../profile/user_profile_provider.dart';
 import '../store/store_service.dart';
+import '../store/redeem_service.dart';
 import 'settings_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -26,7 +26,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  String _appVersion = 'v1.0.4+5 (Build 42)';
+  String _appVersion = 'v1.0.4 (Build 42)';
 
   @override
   void initState() {
@@ -56,8 +56,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.redAccent : PyraTheme.primaryCyan,
+        content: Row(
+          children: [
+            Icon(isError ? Icons.error_outline_rounded : Icons.check_circle_rounded, color: Colors.white, size: 20),
+            const SizedBox(width: 10),
+            Expanded(child: Text(message, style: const TextStyle(fontWeight: FontWeight.bold))),
+          ],
+        ),
+        backgroundColor: isError ? Colors.redAccent.shade400 : PyraTheme.primaryCyan,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 3),
       ),
     );
@@ -69,31 +78,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: PyraTheme.bgCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+        ),
         title: const Row(
           children: [
             Icon(Icons.logout_rounded, color: PyraTheme.primaryYellow),
-            SizedBox(width: 8),
-            Text('Déconnexion', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            SizedBox(width: 10),
+            Text('Déconnexion', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
           ],
         ),
         content: const Text(
           'Êtes-vous sûr de vouloir vous déconnecter de votre compte ?',
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(color: Colors.white70, fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler', style: TextStyle(color: Colors.white)),
+            child: const Text('Annuler', style: TextStyle(color: Colors.white60)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryYellow),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: PyraTheme.primaryYellow,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
             onPressed: () async {
               Navigator.pop(context);
               await ref.read(authServiceProvider).signOut();
               if (mounted) context.goNamed('auth');
             },
-            child: const Text('Se déconnecter', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            child: const Text('Se déconnecter', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -105,26 +121,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: PyraTheme.bgCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.3)),
+        ),
         title: const Row(
           children: [
-            Icon(Icons.warning_rounded, color: Colors.redAccent),
-            SizedBox(width: 8),
-            Text('Zone Rouge : Supprimer le compte',
-                style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16)),
+            Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 26),
+            SizedBox(width: 10),
+            Text('Supprimer mon compte', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w900)),
           ],
         ),
         content: const Text(
-          'Cette action est irréversible et supprimera définitivement votre profil, votre progression, vos statistiques, vos pièces et vos éléments débloqués dans la base de données.\n\nVoulez-vous vraiment continuer ?',
-          style: TextStyle(color: Colors.white70),
+          'Cette action est irréversible et supprimera définitivement votre profil, vos statistiques, vos pièces et vos éléments débloqués dans la base de données.\n\nVoulez-vous vraiment continuer ?',
+          style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler', style: TextStyle(color: Colors.white)),
+            child: const Text('Annuler', style: TextStyle(color: Colors.white60)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
             onPressed: () async {
               Navigator.pop(context);
               try {
@@ -134,7 +156,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 _showSnackBar(e.toString().replaceAll('Exception: ', ''), isError: true);
               }
             },
-            child: const Text('Supprimer définitivement', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: const Text('Supprimer définitivement', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -147,32 +169,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: PyraTheme.bgCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: PyraTheme.primaryPink.withValues(alpha: 0.3)),
+        ),
         title: const Row(
           children: [
             Icon(Icons.card_giftcard_rounded, color: PyraTheme.primaryPink),
-            SizedBox(width: 8),
-            Text('Code Promo / Redeem', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            SizedBox(width: 10),
+            Text('Code Promo / Redeem', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'Entrez votre code promo pour débloquer des récompenses ou des offres spéciales.',
+              'Entrez votre code promo pour débloquer des récompenses ou offres exclusives.',
               style: TextStyle(color: Colors.white70, fontSize: 13),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: codeController,
               textCapitalization: TextCapitalization.characters,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 2),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 2),
               decoration: InputDecoration(
                 hintText: 'EX: PYRAMIDE2026',
                 hintStyle: const TextStyle(color: Colors.white30, letterSpacing: 1),
                 filled: true,
                 fillColor: Colors.white.withValues(alpha: 0.08),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
               ),
             ),
           ],
@@ -183,16 +208,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: const Text('Annuler', style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: PyraTheme.primaryPurple),
-            onPressed: () {
+            style: ElevatedButton.styleFrom(
+              backgroundColor: PyraTheme.primaryPurple,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+            onPressed: () async {
               final code = codeController.text.trim();
               Navigator.pop(context);
               if (code.isEmpty) return;
-              if (code.toUpperCase() == 'PYRAMIDE2026') {
-                _showSnackBar('🎉 Code valide ! +100 Pièces ajoutées à votre compte.');
-              } else {
-                _showSnackBar('Code promo invalide ou expiré.', isError: true);
-              }
+              final user = ref.read(authServiceProvider).currentUser;
+              if (user == null) return;
+              final result = await RedeemService.redeemCode(rawCode: code, uid: user.uid);
+              _showSnackBar(result.message, isError: !result.success);
             },
             child: const Text('Valider', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
@@ -209,15 +236,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final user = ref.watch(authStateChangesProvider).value;
 
     String authMethod = 'Déconnecté';
+    Color authBadgeColor = PyraTheme.primaryCyan;
     if (user != null) {
       if (user.isAnonymous) {
         authMethod = 'Compte Invité ⚠️';
+        authBadgeColor = PyraTheme.primaryYellow;
       } else if (user.providerData.any((p) => p.providerId == 'google.com')) {
-        authMethod = 'Google (${user.email ?? user.displayName ?? "Connecté"})';
+        authMethod = 'Google';
+        authBadgeColor = PyraTheme.primaryPink;
       } else if (user.providerData.any((p) => p.providerId == 'apple.com')) {
         authMethod = 'Apple ID';
+        authBadgeColor = Colors.white;
       } else {
-        authMethod = user.email ?? 'Email & Mot de passe';
+        authMethod = user.email ?? 'Email';
+        authBadgeColor = PyraTheme.primaryCyan;
       }
     }
 
@@ -229,187 +261,335 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
+                // ── Header Bar ───────────────────────────────────────────────
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
                   sliver: SliverToBoxAdapter(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-                          onPressed: () => context.pop(),
+                        GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            context.pop();
+                          },
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withValues(alpha: 0.08),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                            ),
+                            child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                          ),
                         ),
-                        const Text(
-                          '⚙️ Paramètres',
-                          style: TextStyle(
+                        const SizedBox(width: 14),
+                        ShaderMask(
+                          shaderCallback: (bounds) => PyraTheme.cyanGradient.createShader(bounds),
+                          child: const Text(
+                            'Paramètres',
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 24,
+                              fontSize: 26,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 1.2),
+                              letterSpacing: 1.1,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 48),
                       ],
                     ),
                   ),
                 ),
+
                 SliverPadding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      // ── 1. COMPTE & DONNÉES UTILISATEUR ─────────────────────
-                      _SettingsGroup(
-                        title: 'COMPTE & IDENTITÉ',
-                        children: [
-                          if (profile != null && user != null) ...[
-                            ListTile(
-                              leading: Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: PyraTheme.bgSurface,
-                                  border: Border.all(color: PyraTheme.primaryCyan.withValues(alpha: 0.4), width: 2),
+                      // ── 1. CARTE PROFIL ET COMPTE ───────────────────────────
+                      if (profile != null && user != null)
+                        GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            context.pushNamed('level');
+                          },
+                          child: GlassContainer(
+                            padding: const EdgeInsets.all(18),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: PyraTheme.primaryCyan.withValues(alpha: 0.3), width: 1.5),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    // Avatar avec lueur
+                                    Container(
+                                      width: 58,
+                                      height: 58,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: PyraTheme.bgSurface,
+                                        border: Border.all(color: PyraTheme.primaryCyan, width: 2),
+                                        boxShadow: PyraTheme.glowCyan,
+                                      ),
+                                      child: Center(child: Text(profile.emoji, style: const TextStyle(fontSize: 28))),
+                                    ),
+                                    const SizedBox(width: 14),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  profile.name ?? user.displayName ?? 'Joueur Pyramide',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w900,
+                                                    fontSize: 17,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                                decoration: BoxDecoration(
+                                                  color: authBadgeColor.withValues(alpha: 0.15),
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  border: Border.all(color: authBadgeColor.withValues(alpha: 0.4)),
+                                                ),
+                                                child: Text(
+                                                  authMethod,
+                                                  style: TextStyle(
+                                                    color: authBadgeColor,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                                decoration: BoxDecoration(
+                                                  gradient: PyraTheme.purplePinkGradient,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                ),
+                                                child: Text(
+                                                  profile.activeTitle.toUpperCase(),
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w900,
+                                                    letterSpacing: 1.2,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                'Niveau ${profile.level}',
+                                                style: const TextStyle(
+                                                  color: PyraTheme.primaryCyan,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w900,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Icon(Icons.arrow_forward_ios_rounded, color: PyraTheme.primaryCyan, size: 16),
+                                  ],
                                 ),
-                                child: Center(child: Text(profile.emoji, style: const TextStyle(fontSize: 22))),
-                              ),
-                              title: Text(
-                                profile.name ?? user.displayName ?? 'Joueur Pyramide',
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16),
-                              ),
-                              subtitle: Text(
-                                authMethod,
-                                style: TextStyle(
-                                  color: user.isAnonymous ? PyraTheme.primaryYellow : Colors.white60,
-                                  fontSize: 12,
-                                  fontWeight: user.isAnonymous ? FontWeight.bold : FontWeight.normal,
+                                const SizedBox(height: 14),
+                                // Progress Bar XP
+                                Stack(
+                                  children: [
+                                    Container(
+                                      height: 6,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white10,
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                    ),
+                                    FractionallySizedBox(
+                                      widthFactor: (profile.xp / (profile.level * 100)).clamp(0.0, 1.0),
+                                      child: Container(
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          gradient: PyraTheme.cyanGradient,
+                                          borderRadius: BorderRadius.circular(3),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: PyraTheme.primaryCyan.withValues(alpha: 0.6),
+                                              blurRadius: 6,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              trailing: const Icon(Icons.arrow_forward_ios_rounded, color: PyraTheme.primaryCyan, size: 14),
-                              onTap: () => context.pushNamed('level'),
+                              ],
                             ),
-                            if (user.isAnonymous) ...[
-                              const Divider(color: Colors.white10, height: 1),
-                              Container(
-                                color: PyraTheme.primaryYellow.withValues(alpha: 0.1),
-                                child: ListTile(
-                                  leading: const Icon(Icons.phonelink_setup_rounded, color: PyraTheme.primaryYellow),
-                                  title: const Text('Lier mon compte (Sauvegarder)',
-                                      style: TextStyle(color: PyraTheme.primaryYellow, fontWeight: FontWeight.bold)),
-                                  subtitle: const Text('Évite de perdre ta progression et tes achats',
-                                      style: TextStyle(color: Colors.white60, fontSize: 11)),
-                                  trailing: const Icon(Icons.arrow_forward_ios_rounded, color: PyraTheme.primaryYellow, size: 14),
-                                  onTap: () => context.pushNamed('auth'),
+                          ),
+                        ).animate().fadeIn(delay: 50.ms).slideY(begin: 0.1),
+
+                      // Bannières spécifiques si compte Invité
+                      if (user != null && user.isAnonymous) ...[
+                        const SizedBox(height: 12),
+                        GestureDetector(
+                          onTap: () {
+                            HapticFeedback.mediumImpact();
+                            context.pushNamed('auth');
+                          },
+                          child: GlassContainer(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: PyraTheme.primaryYellow.withValues(alpha: 0.5)),
+                            child: Row(
+                              children: [
+                                const Text('🛡️', style: TextStyle(fontSize: 24)),
+                                const SizedBox(width: 12),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Lier mon compte (Sauvegarde)',
+                                        style: TextStyle(color: PyraTheme.primaryYellow, fontWeight: FontWeight.w900, fontSize: 14),
+                                      ),
+                                      Text(
+                                        'Conserve ta progression et tes pièces en sécurité !',
+                                        style: TextStyle(color: Colors.white70, fontSize: 11),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                            const Divider(color: Colors.white10, height: 1),
-                            ListTile(
-                              leading: const Icon(Icons.logout_rounded, color: Colors.white70),
-                              title: const Text('Se déconnecter',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                              onTap: _showLogoutDialog,
+                                const Icon(Icons.arrow_forward_ios_rounded, color: PyraTheme.primaryYellow, size: 14),
+                              ],
                             ),
-                          ],
-                        ],
-                      ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.1),
+                          ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+                                begin: const Offset(1, 1),
+                                end: const Offset(1.02, 1.02),
+                                duration: 2.seconds,
+                              ),
+                        ),
+                      ],
                       const SizedBox(height: 24),
 
                       // ── 2. AUDIO & GAMEPLAY ───────────────────────────────
-                      _SettingsGroup(
-                        title: 'AUDIO & GAMEPLAY',
+                      _SleekSettingGroup(
+                        title: 'AUDIO & AMBIANCE',
+                        accentColor: PyraTheme.primaryCyan,
                         children: [
-                          _SettingTile(
+                          _SleekSwitchTile(
                             icon: Icons.music_note_rounded,
-                            label: 'Musique de fond',
+                            iconColor: PyraTheme.primaryCyan,
+                            title: 'Musique de fond',
                             value: settings.musicEnabled,
                             onChanged: (v) => settingsNotifier.toggleMusic(v),
                           ),
                           if (settings.musicEnabled)
-                            _VolumeSliderTile(
+                            _SleekSliderTile(
                               icon: Icons.volume_down_rounded,
                               label: 'Volume Musique',
                               value: settings.musicVolume,
+                              accentColor: PyraTheme.primaryCyan,
                               onChanged: (v) => settingsNotifier.updateMusicVolume(v),
                             ),
                           const Divider(color: Colors.white10, height: 1),
-                          _SettingTile(
+                          _SleekSwitchTile(
                             icon: Icons.volume_up_rounded,
-                            label: 'Effets Sonores (SFX)',
+                            iconColor: PyraTheme.primaryPink,
+                            title: 'Effets Sonores (SFX)',
                             value: settings.soundEnabled,
                             onChanged: (v) => settingsNotifier.toggleSound(v),
                           ),
                           if (settings.soundEnabled)
-                            _VolumeSliderTile(
+                            _SleekSliderTile(
                               icon: Icons.graphic_eq_rounded,
                               label: 'Volume SFX',
                               value: settings.sfxVolume,
+                              accentColor: PyraTheme.primaryPink,
                               onChanged: (v) => settingsNotifier.updateSfxVolume(v),
                             ),
                           const Divider(color: Colors.white10, height: 1),
-                          _SettingTile(
+                          _SleekSwitchTile(
                             icon: Icons.headset_rounded,
-                            label: 'Audio en arrière-plan',
-                            subtitle: 'Autoriser la musique à coexister avec Spotify/Apple Music',
+                            iconColor: PyraTheme.primaryPurple,
+                            title: 'Audio en arrière-plan',
+                            subtitle: 'Autoriser la musique de l\'app à coexister avec Spotify / Apple Music',
                             value: settings.allowBgAudio,
                             onChanged: (v) => settingsNotifier.toggleAllowBgAudio(v),
                           ),
                           const Divider(color: Colors.white10, height: 1),
-                          _SettingTile(
+                          _SleekSwitchTile(
                             icon: Icons.vibration_rounded,
-                            label: 'Vibrations (Retour Haptique)',
+                            iconColor: PyraTheme.primaryOrange,
+                            title: 'Vibrations (Retour Haptique)',
                             value: settings.vibrationEnabled,
                             onChanged: (v) => settingsNotifier.toggleVibration(v),
                           ),
                         ],
-                      ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
+                      ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1),
                       const SizedBox(height: 24),
 
                       // ── 3. NOTIFICATIONS & SOCIAL ─────────────────────────
-                      _SettingsGroup(
+                      _SleekSettingGroup(
                         title: 'NOTIFICATIONS & SOCIAL',
+                        accentColor: PyraTheme.primaryPurple,
                         children: [
-                          _SettingTile(
+                          _SleekSwitchTile(
                             icon: Icons.notifications_active_rounded,
-                            label: 'Notifications Push',
+                            iconColor: PyraTheme.primaryPurple,
+                            title: 'Notifications Push',
                             value: settings.pushGlobal,
                             onChanged: (v) => settingsNotifier.togglePushGlobal(v),
                           ),
                           if (settings.pushGlobal) ...[
-                            _SettingTile(
+                            _SleekSwitchTile(
                               icon: Icons.timer_rounded,
-                              label: 'Rappels de partie & Tours',
+                              iconColor: PyraTheme.primaryCyan,
+                              title: 'Rappels de partie & Tours',
                               value: settings.pushReminders,
                               onChanged: (v) => settingsNotifier.togglePushReminders(v),
                             ),
-                            _SettingTile(
+                            _SleekSwitchTile(
                               icon: Icons.people_outline_rounded,
-                              label: 'Invitations d\'amis & Défis',
+                              iconColor: PyraTheme.primaryPink,
+                              title: 'Invitations d\'amis & Défis',
                               value: settings.pushFriends,
                               onChanged: (v) => settingsNotifier.togglePushFriends(v),
                             ),
-                            _SettingTile(
+                            _SleekSwitchTile(
                               icon: Icons.card_giftcard_rounded,
-                              label: 'Bonus & Événements',
+                              iconColor: PyraTheme.primaryYellow,
+                              title: 'Bonus & Événements',
                               value: settings.pushEvents,
                               onChanged: (v) => settingsNotifier.togglePushEvents(v),
                             ),
                           ],
                           const Divider(color: Colors.white10, height: 1),
-                          ListTile(
-                            leading: const Icon(Icons.settings_phone_rounded, color: PyraTheme.primaryCyan),
-                            title: const Text('Réglages Notifications (OS)',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            subtitle: const Text('Gérer les autorisations système iOS',
-                                style: TextStyle(color: Colors.white54, fontSize: 11)),
+                          _SleekActionTile(
+                            icon: Icons.settings_phone_rounded,
+                            iconColor: PyraTheme.primaryCyan,
+                            title: 'Réglages Notifications (OS)',
+                            subtitle: 'Gérer les autorisations système iOS',
                             trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
                             onTap: () {
                               AppSettings.openAppSettings(type: AppSettingsType.notification);
                             },
                           ),
                           const Divider(color: Colors.white10, height: 1),
-                          _SettingTile(
+                          _SleekSwitchTile(
                             icon: Icons.visibility_rounded,
-                            label: 'Statut en ligne public',
+                            iconColor: PyraTheme.primaryGreen,
+                            title: 'Statut en ligne public',
                             value: settings.isOnlineVisible,
                             onChanged: (v) {
                               settingsNotifier.toggleIsOnlineVisible(v);
@@ -418,9 +598,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               }
                             },
                           ),
-                          _SettingTile(
-                            icon: Icons.person_add_disabled_rounded,
-                            label: 'Autoriser les demandes d\'amis',
+                          _SleekSwitchTile(
+                            icon: Icons.person_add_rounded,
+                            iconColor: PyraTheme.primaryYellow,
+                            title: 'Autoriser les demandes d\'amis',
                             value: settings.allowFriendRequests,
                             onChanged: (v) {
                               settingsNotifier.toggleAllowFriendRequests(v);
@@ -430,17 +611,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             },
                           ),
                         ],
-                      ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
+                      ).animate().fadeIn(delay: 250.ms).slideY(begin: 0.1),
                       const SizedBox(height: 24),
 
                       // ── 4. MONÉTISATION & ACHATS ──────────────────────────
-                      _SettingsGroup(
-                        title: 'MONÉTISATION & ACHATS',
+                      _SleekSettingGroup(
+                        title: 'BOUTIQUE & ACHATS',
+                        accentColor: PyraTheme.primaryPink,
                         children: [
-                          ListTile(
-                            leading: const Icon(Icons.restore_rounded, color: PyraTheme.primaryCyan),
-                            title: const Text('Restaurer les achats',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          _SleekActionTile(
+                            icon: Icons.restore_rounded,
+                            iconColor: PyraTheme.primaryCyan,
+                            title: 'Restaurer les achats',
                             trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 14),
                             onTap: () async {
                               _showSnackBar('Restauration des achats en cours...');
@@ -453,10 +635,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             },
                           ),
                           const Divider(color: Colors.white10, height: 1),
-                          ListTile(
-                            leading: const Icon(Icons.subscriptions_rounded, color: PyraTheme.primaryPurple),
-                            title: const Text('Gérer mes abonnements Store',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          _SleekActionTile(
+                            icon: Icons.subscriptions_rounded,
+                            iconColor: PyraTheme.primaryPurple,
+                            title: 'Gérer mes abonnements Store',
                             trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
                             onTap: () {
                               if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -467,27 +649,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             },
                           ),
                           const Divider(color: Colors.white10, height: 1),
-                          ListTile(
-                            leading: const Icon(Icons.card_giftcard_rounded, color: PyraTheme.primaryPink),
-                            title: const Text('Code Promo / Redeem',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          _SleekActionTile(
+                            icon: Icons.card_giftcard_rounded,
+                            iconColor: PyraTheme.primaryPink,
+                            title: 'Code Promo / Redeem',
                             trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 14),
                             onTap: _showRedeemCodeDialog,
                           ),
                         ],
-                      ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
+                      ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.1),
                       const SizedBox(height: 24),
 
-                      // ── 5. SUPPORT, CACHE & MENTIONS LÉGALES ─────────────
-                      _SettingsGroup(
+                      // ── 5. SUPPORT, CACHE & INFOS ─────────────────────────
+                      _SleekSettingGroup(
                         title: 'SUPPORT & INFOS LÉGALES',
+                        accentColor: PyraTheme.primaryYellow,
                         children: [
                           if (user != null) ...[
-                            ListTile(
-                              leading: const Icon(Icons.fingerprint_rounded, color: PyraTheme.primaryCyan),
-                              title: const Text('ID Utilisateur (UID)',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                              subtitle: Text(user.uid, style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                            _SleekActionTile(
+                              icon: Icons.fingerprint_rounded,
+                              iconColor: PyraTheme.primaryCyan,
+                              title: 'ID Utilisateur (UID)',
+                              subtitle: user.uid,
                               trailing: const Icon(Icons.copy_rounded, color: PyraTheme.primaryCyan, size: 18),
                               onTap: () {
                                 Clipboard.setData(ClipboardData(text: user.uid));
@@ -496,12 +679,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                             const Divider(color: Colors.white10, height: 1),
                           ],
-                          ListTile(
-                            leading: const Icon(Icons.cleaning_services_rounded, color: PyraTheme.primaryYellow),
-                            title: const Text('Vider le cache local',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            subtitle: const Text('Réinitialise les fichiers temporaires sans toucher à votre profil',
-                                style: TextStyle(color: Colors.white54, fontSize: 11)),
+                          _SleekActionTile(
+                            icon: Icons.cleaning_services_rounded,
+                            iconColor: PyraTheme.primaryYellow,
+                            title: 'Vider le cache local',
+                            subtitle: 'Réinitialise les fichiers temporaires sans toucher au profil',
                             onTap: () async {
                               PaintingBinding.instance.imageCache.clear();
                               PaintingBinding.instance.imageCache.clearLiveImages();
@@ -510,10 +692,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             },
                           ),
                           const Divider(color: Colors.white10, height: 1),
-                          ListTile(
-                            leading: const Icon(Icons.help_outline_rounded, color: PyraTheme.primaryYellow),
-                            title: const Text('Revoir le tutoriel',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          _SleekActionTile(
+                            icon: Icons.help_outline_rounded,
+                            iconColor: PyraTheme.primaryOrange,
+                            title: 'Revoir le tutoriel',
                             trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 14),
                             onTap: () {
                               settingsNotifier.resetTutorial();
@@ -521,10 +703,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             },
                           ),
                           const Divider(color: Colors.white10, height: 1),
-                          ListTile(
-                            leading: const Icon(Icons.bug_report_rounded, color: PyraTheme.primaryPink),
-                            title: const Text('Signaler un bug / Support',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          _SleekActionTile(
+                            icon: Icons.bug_report_rounded,
+                            iconColor: PyraTheme.primaryPink,
+                            title: 'Signaler un bug / Support',
                             trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
                             onTap: () {
                               final uid = user?.uid ?? 'Non connecté';
@@ -534,39 +716,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             },
                           ),
                           const Divider(color: Colors.white10, height: 1),
-                          ListTile(
-                            leading: const Icon(Icons.privacy_tip_rounded, color: PyraTheme.primaryCyan),
-                            title: const Text('Politique de confidentialité',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          _SleekActionTile(
+                            icon: Icons.privacy_tip_rounded,
+                            iconColor: PyraTheme.primaryCyan,
+                            title: 'Politique de confidentialité',
                             trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
                             onTap: () => _launchUrl('https://pyramideparty.fr/privacy'),
                           ),
                           const Divider(color: Colors.white10, height: 1),
-                          ListTile(
-                            leading: const Icon(Icons.description_rounded, color: Colors.white70),
-                            title: const Text('Conditions d\'utilisation (CGU)',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          _SleekActionTile(
+                            icon: Icons.description_rounded,
+                            iconColor: Colors.white70,
+                            title: 'Conditions d\'utilisation (CGU)',
                             trailing: const Icon(Icons.open_in_new_rounded, color: Colors.white30, size: 16),
                             onTap: () => _launchUrl('https://pyramideparty.fr/terms'),
                           ),
                         ],
-                      ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
+                      ).animate().fadeIn(delay: 450.ms).slideY(begin: 0.1),
                       const SizedBox(height: 24),
 
                       // ── ZONE ROUGE (SUPPRESSION DE COMPTE) ─────────────────
-                      _SettingsGroup(
+                      _SleekSettingGroup(
                         title: 'ZONE ROUGE',
-                        borderColor: Colors.redAccent.withValues(alpha: 0.4),
+                        accentColor: Colors.redAccent,
                         children: [
-                          ListTile(
-                            leading: const Icon(Icons.delete_forever_rounded, color: Colors.redAccent),
-                            title: const Text('Supprimer mon compte & mes données',
-                                style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                          _SleekActionTile(
+                            icon: Icons.delete_forever_rounded,
+                            iconColor: Colors.redAccent,
+                            title: 'Supprimer mon compte & mes données',
+                            titleColor: Colors.redAccent,
                             trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.redAccent, size: 14),
                             onTap: _showDeleteAccountDialog,
                           ),
                         ],
-                      ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1),
+                      ).animate().fadeIn(delay: 550.ms).slideY(begin: 0.1),
                       const SizedBox(height: 32),
 
                       // ── FOOTER & VERSION ──────────────────────────────────
@@ -579,14 +762,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 color: PyraTheme.primaryCyan,
                                 fontWeight: FontWeight.w900,
                                 fontSize: 13,
-                                letterSpacing: 2,
+                                letterSpacing: 2.5,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _appVersion,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: PyraTheme.textMuted, fontSize: 12),
+                            const SizedBox(height: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.05),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                              ),
+                              child: Text(
+                                _appVersion,
+                                style: const TextStyle(color: PyraTheme.textMuted, fontSize: 11, fontWeight: FontWeight.w600),
+                              ),
                             ),
                           ],
                         ),
@@ -604,12 +794,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 }
 
-class _SettingsGroup extends StatelessWidget {
-  final String title;
-  final List<Widget> children;
-  final Color? borderColor;
+// ── Composants Reutilisables Sleek UI ─────────────────────────────────────────
 
-  const _SettingsGroup({required this.title, required this.children, this.borderColor});
+class _SleekSettingGroup extends StatelessWidget {
+  final String title;
+  final Color accentColor;
+  final List<Widget> children;
+
+  const _SleekSettingGroup({
+    required this.title,
+    required this.accentColor,
+    required this.children,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -618,19 +814,36 @@ class _SettingsGroup extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 12, bottom: 8),
-          child: Text(
-            title,
-            style: const TextStyle(
-                color: PyraTheme.primaryPurple,
-                fontWeight: FontWeight.w900,
-                fontSize: 12,
-                letterSpacing: 2),
+          child: Row(
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: accentColor,
+                  boxShadow: [
+                    BoxShadow(color: accentColor.withValues(alpha: 0.8), blurRadius: 6),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  color: accentColor,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 11,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
           ),
         ),
         GlassContainer(
           borderRadius: BorderRadius.circular(24),
           padding: EdgeInsets.zero,
-          border: borderColor != null ? Border.all(color: borderColor!) : null,
+          border: Border.all(color: accentColor.withValues(alpha: 0.2), width: 1),
           child: Material(
             color: Colors.transparent,
             child: Column(children: children),
@@ -641,16 +854,90 @@ class _SettingsGroup extends StatelessWidget {
   }
 }
 
-class _SettingTile extends StatelessWidget {
+class _SleekActionTile extends StatelessWidget {
   final IconData icon;
-  final String label;
+  final Color iconColor;
+  final String title;
+  final String? subtitle;
+  final Color? titleColor;
+  final Widget? trailing;
+  final VoidCallback onTap;
+
+  const _SleekActionTile({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    this.subtitle,
+    this.titleColor,
+    this.trailing,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(24),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: iconColor.withValues(alpha: 0.12),
+                border: Border.all(color: iconColor.withValues(alpha: 0.3), width: 1),
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: titleColor ?? Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle!,
+                      style: const TextStyle(color: Colors.white54, fontSize: 11),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (trailing != null) trailing!,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SleekSwitchTile extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
   final String? subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
 
-  const _SettingTile({
+  const _SleekSwitchTile({
     required this.icon,
-    required this.label,
+    required this.iconColor,
+    required this.title,
     this.subtitle,
     required this.value,
     required this.onChanged,
@@ -659,33 +946,50 @@ class _SettingTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 24),
-          const SizedBox(width: 16),
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: iconColor.withValues(alpha: 0.12),
+              border: Border.all(color: iconColor.withValues(alpha: 0.3), width: 1),
+            ),
+            child: Icon(icon, color: iconColor, size: 20),
+          ),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
                 if (subtitle != null) ...[
                   const SizedBox(height: 2),
-                  Text(subtitle!,
-                      style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                  Text(
+                    subtitle!,
+                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                  ),
                 ],
               ],
             ),
           ),
           Switch.adaptive(
             value: value,
-            onChanged: onChanged,
-            activeColor: PyraTheme.primaryPurple,
-            activeTrackColor: PyraTheme.primaryPurple.withValues(alpha: 0.5),
+            onChanged: (v) {
+              HapticFeedback.lightImpact();
+              onChanged(v);
+            },
+            activeColor: iconColor,
+            activeTrackColor: iconColor.withValues(alpha: 0.4),
           ),
         ],
       ),
@@ -693,47 +997,69 @@ class _SettingTile extends StatelessWidget {
   }
 }
 
-class _VolumeSliderTile extends StatelessWidget {
+class _SleekSliderTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final double value;
+  final Color accentColor;
   final ValueChanged<double> onChanged;
 
-  const _VolumeSliderTile({
+  const _SleekSliderTile({
     required this.icon,
     required this.label,
     required this.value,
+    required this.accentColor,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: Colors.white, size: 22),
-              const SizedBox(width: 16),
-              Text(label,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold)),
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: accentColor.withValues(alpha: 0.12),
+                ),
+                child: Icon(icon, color: accentColor, size: 18),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const Spacer(),
-              Text('${(value * 100).toInt()}%',
-                  style: const TextStyle(color: PyraTheme.primaryCyan, fontSize: 13, fontWeight: FontWeight.bold)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${(value * 100).toInt()}%',
+                  style: TextStyle(color: accentColor, fontSize: 12, fontWeight: FontWeight.w900),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 4),
           SliderTheme(
             data: SliderThemeData(
-              activeTrackColor: PyraTheme.primaryCyan,
+              activeTrackColor: accentColor,
               inactiveTrackColor: Colors.white10,
               thumbColor: Colors.white,
-              overlayColor: PyraTheme.primaryCyan.withValues(alpha: 0.2),
+              overlayColor: accentColor.withValues(alpha: 0.2),
               trackHeight: 4,
             ),
             child: Slider(

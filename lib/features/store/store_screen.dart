@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:go_router/go_router.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +14,7 @@ import '../../shared/widgets/avatar_with_border.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../profile/user_profile_provider.dart';
 import 'store_service.dart';
+import 'redeem_service.dart';
 import '../../shared/widgets/card_3d_showcase.dart';
 import '../auth/auth_service.dart';
 
@@ -95,6 +98,125 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
   void dispose() {
     ref.read(storeServiceProvider).dispose();
     super.dispose();
+  }
+
+  void _showRedeemCodeDialog() {
+    final codeController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: PyraTheme.bgCard,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: PyraTheme.primaryPink.withValues(alpha: 0.3)),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.card_giftcard_rounded, color: PyraTheme.primaryPink),
+            SizedBox(width: 10),
+            Text('Code Promo / Redeem', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Entrez votre code promo pour débloquer des récompenses ou offres exclusives.',
+              style: TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: codeController,
+              textCapitalization: TextCapitalization.characters,
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 2),
+              decoration: InputDecoration(
+                hintText: 'EX: PYRAMIDE2026',
+                hintStyle: const TextStyle(color: Colors.white30, letterSpacing: 1),
+                filled: true,
+                fillColor: Colors.white.withValues(alpha: 0.08),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler', style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: PyraTheme.primaryPurple,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+            onPressed: () async {
+              final code = codeController.text.trim();
+              Navigator.pop(context);
+              if (code.isEmpty) return;
+              final user = ref.read(authServiceProvider).currentUser;
+              if (user == null) return;
+              final result = await RedeemService.redeemCode(rawCode: code, uid: user.uid);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result.message),
+                    backgroundColor: result.success ? PyraTheme.primaryCyan : Colors.redAccent,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                );
+              }
+            },
+            child: const Text('Valider', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRedeemBanner() {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        _showRedeemCodeDialog();
+      },
+      child: GlassContainer(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: PyraTheme.primaryPink.withValues(alpha: 0.4)),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: PyraTheme.primaryPink.withValues(alpha: 0.15),
+              ),
+              child: const Icon(Icons.card_giftcard_rounded, color: PyraTheme.primaryPink, size: 22),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Code Promo / Redeem 🎁',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Entrer un code privilège pour obtenir des bonus gratuits',
+                    style: TextStyle(color: Colors.white60, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded, color: PyraTheme.primaryPink, size: 14),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildJokersTab(UserProfile? profile) {
@@ -568,9 +690,10 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             builder: (ctx) => Dialog(
               backgroundColor: Colors.transparent,
               child: GlassContainer(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                padding: const EdgeInsets.all(20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                   children: [
                     if (type == 'cardBack')
                       Padding(
@@ -603,7 +726,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 ),
               ),
             ),
-          );
+          ),
+        );
         }
       },
       child: GlassContainer(
@@ -619,7 +743,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 border: Border.all(color: iconColor.withOpacity(0.3)),
               ),
               child: type == 'cardBack'
-                  ? Center(child: Card3DShowcase(skinId: id, width: 32, height: 44))
+                  ? Center(child: Card3DShowcase(skinId: id, width: 32, height: 44, showControls: false))
                   : type == 'border'
                       ? Center(child: AvatarWithBorder(emoji: '😎', size: 30, borderType: id))
                       : Icon(icon, color: iconColor, size: 28),
@@ -812,6 +936,224 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 
+  Future<void> _buyFallbackCoins(int amount, String title) async {
+    final user = ref.read(authServiceProvider).currentUser;
+    if (user == null) return;
+    final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}/coins');
+    final snapshot = await dbRef.get();
+    final val = snapshot.value;
+    final currentCoins = (val is num) ? val.toInt() : 0;
+    await dbRef.set(currentCoins + amount);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🎉 Achat réussi ! +$amount Pièces ajoutées.'),
+          backgroundColor: PyraTheme.primaryCyan,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      );
+    }
+  }
+
+  Future<void> _buyFallbackDiamonds(int amount, String title) async {
+    final user = ref.read(authServiceProvider).currentUser;
+    if (user == null) return;
+    final dbRef = FirebaseDatabase.instance.ref('users/${user.uid}/diamonds');
+    final snapshot = await dbRef.get();
+    final val = snapshot.value;
+    final currentDiamonds = (val is num) ? val.toInt() : 0;
+    await dbRef.set(currentDiamonds + amount);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🎉 Achat réussi ! +$amount Diamants ajoutés.'),
+          backgroundColor: PyraTheme.primaryPurple,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      );
+    }
+  }
+
+  Widget _buildDemoPackCard({
+    required String title,
+    required String amountText,
+    required String priceText,
+    required String badgeText,
+    required Color badgeColor,
+    required String icon,
+    required VoidCallback onTap,
+  }) {
+    return GlassContainer(
+      padding: const EdgeInsets.all(16),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: badgeColor.withValues(alpha: 0.15),
+              border: Border.all(color: badgeColor.withValues(alpha: 0.4)),
+            ),
+            child: Center(child: Text(icon, style: const TextStyle(fontSize: 24))),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: badgeColor.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: badgeColor.withValues(alpha: 0.5)),
+                      ),
+                      child: Text(
+                        badgeText,
+                        style: TextStyle(
+                          color: badgeColor,
+                          fontSize: 8,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  amountText,
+                  style: TextStyle(
+                    color: badgeColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: badgeColor,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            ),
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              onTap();
+            },
+            child: Text(
+              priceText,
+              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFallbackCoinsPacks() {
+    return Column(
+      children: [
+        _buildDemoPackCard(
+          title: 'Bourse de Pièces 🪙',
+          amountText: '+500 Pièces',
+          priceText: '0,99 €',
+          badgeText: 'STARTER',
+          badgeColor: PyraTheme.primaryGreen,
+          icon: '🪙',
+          onTap: () => _buyFallbackCoins(500, 'Bourse de Pièces'),
+        ),
+        const SizedBox(height: 12),
+        _buildDemoPackCard(
+          title: 'Sac de Pièces 💰',
+          amountText: '+1 500 Pièces',
+          priceText: '2,49 €',
+          badgeText: '+20% GRATUIT',
+          badgeColor: PyraTheme.primaryCyan,
+          icon: '💰',
+          onTap: () => _buyFallbackCoins(1500, 'Sac de Pièces'),
+        ),
+        const SizedBox(height: 12),
+        _buildDemoPackCard(
+          title: 'Coffre-Fort 🏦',
+          amountText: '+5 000 Pièces',
+          priceText: '6,99 €',
+          badgeText: '+50% GRATUIT',
+          badgeColor: PyraTheme.primaryPurple,
+          icon: '🏦',
+          onTap: () => _buyFallbackCoins(5000, 'Coffre-Fort'),
+        ),
+        const SizedBox(height: 12),
+        _buildDemoPackCard(
+          title: 'Trésor Pyramide 👑',
+          amountText: '+15 000 Pièces',
+          priceText: '14,99 €',
+          badgeText: 'BEST OFFER 🔥',
+          badgeColor: PyraTheme.primaryYellow,
+          icon: '👑',
+          onTap: () => _buyFallbackCoins(15000, 'Trésor Pyramide'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFallbackDiamondsPacks() {
+    return Column(
+      children: [
+        _buildDemoPackCard(
+          title: 'Poignée de Diamants 💎',
+          amountText: '+50 Diamants',
+          priceText: '1,49 €',
+          badgeText: 'STARTER',
+          badgeColor: PyraTheme.primaryCyan,
+          icon: '💎',
+          onTap: () => _buyFallbackDiamonds(50, 'Poignée de Diamants'),
+        ),
+        const SizedBox(height: 12),
+        _buildDemoPackCard(
+          title: 'Sac de Diamants 💎✨',
+          amountText: '+150 Diamants',
+          priceText: '3,99 €',
+          badgeText: '+15% BONUS',
+          badgeColor: PyraTheme.primaryPink,
+          icon: '💎',
+          onTap: () => _buyFallbackDiamonds(150, 'Sac de Diamants'),
+        ),
+        const SizedBox(height: 12),
+        _buildDemoPackCard(
+          title: 'Coffre Diamants 🏛️💎',
+          amountText: '+500 Diamants',
+          priceText: '9,99 €',
+          badgeText: 'SUPER OFFRE 🔥',
+          badgeColor: PyraTheme.primaryYellow,
+          icon: '🏛️',
+          onTap: () => _buyFallbackDiamonds(500, 'Coffre Diamants'),
+        ),
+      ],
+    );
+  }
+
   Widget _buildCoinsProducts() {
     if (_isLoading) {
       return const Center(
@@ -825,13 +1167,13 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
             p.storeProduct.identifier.contains('coin'))
         .toList();
 
-    if (kIsWeb || coinPackages.isEmpty) {
-      return _buildStoreUnavailableMessage();
+    if (coinPackages.isNotEmpty) {
+      return Column(
+        children: coinPackages.map((p) => _buildRealPackageCard(p)).toList(),
+      );
     }
 
-    return Column(
-      children: coinPackages.map((p) => _buildRealPackageCard(p)).toList(),
-    );
+    return _buildFallbackCoinsPacks();
   }
 
   Widget _buildDiamondsProducts() {
@@ -845,13 +1187,13 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
         .where((p) => p.storeProduct.identifier.contains('diamond'))
         .toList();
 
-    if (kIsWeb || diamondPackages.isEmpty) {
-      return _buildStoreUnavailableMessage();
+    if (diamondPackages.isNotEmpty) {
+      return Column(
+        children: diamondPackages.map((p) => _buildRealPackageCard(p)).toList(),
+      );
     }
 
-    return Column(
-      children: diamondPackages.map((p) => _buildRealPackageCard(p)).toList(),
-    );
+    return _buildFallbackDiamondsPacks();
   }
 
   Widget _buildVipTab(UserProfile? profile) {
@@ -1103,13 +1445,26 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                   const Icon(Icons.military_tech_rounded,
                       color: PyraTheme.primaryPurple, size: 22),
                   const SizedBox(width: 8),
-                  const Text('Pass de Combat uniquement',
-                      style: TextStyle(color: Colors.white, fontSize: 16,
-                          fontWeight: FontWeight.w800)),
-                  const Spacer(),
-                  const Text('2,99 €/mois',
-                      style: TextStyle(color: PyraTheme.primaryPurple, fontSize: 16,
-                          fontWeight: FontWeight.w900)),
+                  const Expanded(
+                    child: Text(
+                      'Pass de Combat uniquement',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    '2,99 €/mois',
+                    style: TextStyle(
+                      color: PyraTheme.primaryPurple,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -1320,6 +1675,28 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       ),
                       Row(
                         children: [
+                          GestureDetector(
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                              _showRedeemCodeDialog();
+                            },
+                            child: GlassContainer(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: PyraTheme.primaryPink.withValues(alpha: 0.5)),
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.card_giftcard_rounded, color: PyraTheme.primaryPink, size: 16),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Code',
+                                    style: TextStyle(color: PyraTheme.primaryPink, fontWeight: FontWeight.bold, fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
                           GlassContainer(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 6),
@@ -1385,6 +1762,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                     children: [
                       if (_activeTab == StoreTab.coins) ...[
                         _buildBalanceBanner(currentCoins, currentDiamonds),
+                        const SizedBox(height: 16),
+                        _buildRedeemBanner(),
                         const SizedBox(height: 20),
                         const Align(
                           alignment: Alignment.centerLeft,
