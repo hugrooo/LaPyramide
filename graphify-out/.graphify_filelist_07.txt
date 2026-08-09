@@ -1,0 +1,5 @@
+/Users/hugo/LaPyramide/assets/images/final_logo_raw.png
+/Users/hugo/LaPyramide/assets/images/home_mascot.png
+/Users/hugo/LaPyramide/assets/images/logo_neon.png
+/Users/hugo/LaPyramide/ios/Pods/GoogleSignIn/GoogleSignIn/Sources/Resources/google.png
+/Users/hugo/LaPyramide/ios/Pods/GoogleSignIn/GoogleSignIn/Sources/Resources/google@2x.png

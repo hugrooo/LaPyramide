@@ -1,0 +1,16 @@
+/Users/hugo/LaPyramide/ios/Pods/GTMAppAuth/README.md
+/Users/hugo/LaPyramide/ios/Pods/GTMSessionFetcher/README.md
+/Users/hugo/LaPyramide/ios/Pods/GoogleDataTransport/README.md
+/Users/hugo/LaPyramide/ios/Pods/GoogleSignIn/README.md
+/Users/hugo/LaPyramide/ios/Pods/GoogleUtilities/README.md
+/Users/hugo/LaPyramide/ios/Pods/PromisesObjC/README.md
+/Users/hugo/LaPyramide/ios/Pods/RecaptchaInterop/README.md
+/Users/hugo/LaPyramide/ios/Pods/leveldb-library/README.md
+/Users/hugo/LaPyramide/ios/Pods/nanopb/LICENSE.txt
+/Users/hugo/LaPyramide/ios/Pods/nanopb/README.md
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md
+/Users/hugo/LaPyramide/web/index.html
+/Users/hugo/LaPyramide/web-policy/index.html
+/Users/hugo/LaPyramide/windows/CMakeLists.txt
+/Users/hugo/LaPyramide/windows/flutter/CMakeLists.txt
+/Users/hugo/LaPyramide/windows/runner/CMakeLists.txt

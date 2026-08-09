@@ -51,9 +51,13 @@ class PushNotificationService {
       await _initLocalNotifications();
 
       // 3. Récupérer le token FCM et le sauvegarder
-      String? token = await _fcm.getToken();
-      if (token != null) {
-        _saveTokenToDatabase(token);
+      try {
+        String? token = await _fcm.getToken();
+        if (token != null) {
+          _saveTokenToDatabase(token);
+        }
+      } catch (e) {
+        debugPrint('APNS / FCM token non disponible (Simulateur iOS): $e');
       }
 
       // Écouter les changements de token

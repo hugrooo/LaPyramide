@@ -1,0 +1,5 @@
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/LaunchBackground.imageset/background.png
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png

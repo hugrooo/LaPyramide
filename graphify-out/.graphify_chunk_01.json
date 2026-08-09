@@ -1,0 +1,677 @@
+{
+  "nodes": [
+    {
+      "id": "app_la_pyramide",
+      "label": "la_pyramide",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": {
+        "description": "Le jeu de cartes La Pyramide — version mobile iOS & Android",
+        "version": "1.0.4+5",
+        "sdk_constraint": ">=3.2.0 <4.0.0",
+        "publish_to": "none"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_flutter",
+      "label": "flutter (SDK)",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "source": "sdk" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_flutter_localizations",
+      "label": "flutter_localizations",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "source": "sdk" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_flutter_riverpod",
+      "label": "flutter_riverpod",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^2.5.1", "category": "state_management" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_riverpod_annotation",
+      "label": "riverpod_annotation",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^2.3.5", "category": "state_management" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_go_router",
+      "label": "go_router",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^13.2.0", "category": "navigation" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_firebase_core",
+      "label": "firebase_core",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^3.0.0", "category": "firebase" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_firebase_auth",
+      "label": "firebase_auth",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^5.0.0", "category": "firebase" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_firebase_database",
+      "label": "firebase_database",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^11.0.0", "category": "firebase" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_firebase_messaging",
+      "label": "firebase_messaging",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^15.0.0", "category": "firebase" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_flutter_local_notifications",
+      "label": "flutter_local_notifications",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^17.2.0", "category": "notifications" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_google_sign_in",
+      "label": "google_sign_in",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^6.2.1", "category": "authentication" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_sign_in_with_apple",
+      "label": "sign_in_with_apple",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^6.1.1", "category": "authentication" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_google_fonts",
+      "label": "google_fonts",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^6.2.1", "category": "ui" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_flutter_animate",
+      "label": "flutter_animate",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^4.5.0", "category": "ui" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_animated_text_kit",
+      "label": "animated_text_kit",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^4.2.2", "category": "ui" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_lottie",
+      "label": "lottie",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^3.1.2", "category": "ui" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_audioplayers",
+      "label": "audioplayers",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^6.1.0", "category": "audio" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_intl",
+      "label": "intl",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^0.20.2", "category": "utils" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_shared_preferences",
+      "label": "shared_preferences",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^2.2.3", "category": "utils" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_uuid",
+      "label": "uuid",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^4.4.0", "category": "utils" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_cached_network_image",
+      "label": "cached_network_image",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^3.4.0", "category": "utils" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_qr_flutter",
+      "label": "qr_flutter",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^4.1.0", "category": "utils" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_mobile_scanner",
+      "label": "mobile_scanner",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^7.2.0", "category": "utils" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_confetti",
+      "label": "confetti",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^0.8.0", "category": "ui" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_in_app_purchase",
+      "label": "in_app_purchase",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^3.2.3", "category": "monetization" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_purchases_flutter",
+      "label": "purchases_flutter (RevenueCat)",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^8.1.1", "category": "monetization" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_url_launcher",
+      "label": "url_launcher",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^6.3.2", "category": "utils" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "dep_flutter_timezone",
+      "label": "flutter_timezone",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^5.1.0", "category": "utils" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "devdep_flutter_test",
+      "label": "flutter_test (dev)",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "source": "sdk", "category": "dev" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "devdep_flutter_lints",
+      "label": "flutter_lints (dev)",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^3.0.0", "category": "dev" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "devdep_build_runner",
+      "label": "build_runner (dev)",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^2.4.9", "category": "dev" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "devdep_riverpod_generator",
+      "label": "riverpod_generator (dev)",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^2.4.0", "category": "dev" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "devdep_flutter_launcher_icons",
+      "label": "flutter_launcher_icons (dev)",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^0.13.1", "category": "dev" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "devdep_flutter_native_splash",
+      "label": "flutter_native_splash (dev)",
+      "type": "dependency",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "version": "^2.4.1", "category": "dev" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "asset_images_dir",
+      "label": "assets/images/",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "type": "asset_directory" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "asset_animations_dir",
+      "label": "assets/animations/",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "type": "asset_directory" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "asset_sounds_dir",
+      "label": "assets/sounds/",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "type": "asset_directory" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "config_launcher_icons",
+      "label": "flutter_launcher_icons config",
+      "type": "concept",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": {
+        "android": "launcher_icon",
+        "ios": true,
+        "image_path": "assets/images/app_icon_solid.png",
+        "adaptive_icon_background": "#180D2B",
+        "min_sdk_android": 21
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "config_native_splash",
+      "label": "flutter_native_splash config",
+      "type": "concept",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": {
+        "color": "#180D2B",
+        "ios": true,
+        "android": true
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "web_index_html",
+      "label": "web/index.html",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/web/index.html",
+      "properties": {
+        "title": "Pyramideparty",
+        "apple_mobile_web_app_title": "Pyramideparty",
+        "background_color": "#180D2B",
+        "manifest": "manifest.json",
+        "bootstrap_script": "flutter_bootstrap.js"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "web_meta_ios",
+      "label": "iOS PWA meta tags",
+      "type": "concept",
+      "source_file": "/Users/hugo/LaPyramide/web/index.html",
+      "properties": {
+        "apple_mobile_web_app_capable": "yes",
+        "apple_mobile_web_app_status_bar_style": "black-translucent"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "web_splash_script",
+      "label": "splash-screen-script (removeSplashFromWeb)",
+      "type": "concept",
+      "source_file": "/Users/hugo/LaPyramide/web/index.html",
+      "properties": { "function": "removeSplashFromWeb" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_app_icon_solid",
+      "label": "app_icon_solid.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/assets/images/app_icon_solid.png",
+      "properties": {
+        "description": "Neon-glowing pyramid of playing cards (spades, hearts, diamonds, clubs) on dark blue/purple background. Used as app launcher icon.",
+        "style": "neon_glow",
+        "theme_color": "#180D2B"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_auth_character",
+      "label": "auth_character.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/assets/images/auth_character.png",
+      "properties": {
+        "description": "3D chibi-style character with blue/grey hair sitting on a beanbag, holding a glowing smartphone. Purple/pink neon background. Used on authentication screen.",
+        "style": "3d_cartoon",
+        "role": "mascot_auth_screen"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_coming_soon_trophy",
+      "label": "coming_soon_trophy.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/assets/images/coming_soon_trophy.png",
+      "properties": {
+        "description": "Golden trophy cup with a star on top, surrounded by gold and purple stars and confetti on a deep purple background. Used on coming-soon feature screen.",
+        "style": "3d_render",
+        "role": "coming_soon_illustration"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_final_logo_raw",
+      "label": "final_logo_raw.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/assets/images/final_logo_raw.png",
+      "properties": {
+        "description": "App Store icon variant: neon playing-card pyramid with rounded-rect mask on dark background. App Store submission asset (same motif as app_icon_solid).",
+        "style": "neon_glow",
+        "role": "store_icon"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_home_mascot",
+      "label": "home_mascot.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/assets/images/home_mascot.png",
+      "properties": {
+        "description": "Neon pyramid triangle outline with rows of playing cards arranged in pyramid layout: Ace at apex, Kings in row 2, Queens/Jacks/10s/9s/8s in base row. Home screen hero illustration showing the card game layout.",
+        "style": "neon_glow",
+        "role": "home_screen_illustration"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_logo_neon",
+      "label": "logo_neon.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/assets/images/logo_neon.png",
+      "properties": {
+        "description": "Isometric pyramid logo split diagonally: left side glowing pink/magenta neon, right side glowing cyan neon, on deep dark purple background. Primary brand logo.",
+        "style": "neon_glow_isometric",
+        "role": "brand_logo"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_media_patched",
+      "label": "media_patched.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/media_patched.png",
+      "properties": {
+        "description": "In-game screenshot showing the card revelation phase ('Revelation!'). Pyramid of face-down cards on dark background with one card flipped (club Ace). Shows penalty badge ('1 penalite'), host caption 'L hote retourne les cartes...', player hand at bottom, and emoji chat button. French UI.",
+        "style": "screenshot",
+        "role": "marketing_media_asset",
+        "language": "fr"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_web_favicon",
+      "label": "web/favicon.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/web/favicon.png",
+      "properties": {
+        "description": "Default Flutter logo (blue F/chevron mark) — placeholder favicon for web build, not yet customized for Pyramideparty.",
+        "style": "flutter_default_placeholder",
+        "role": "web_favicon"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_web_icon_192",
+      "label": "web/icons/Icon-192.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/web/icons/Icon-192.png",
+      "properties": {
+        "description": "Default Flutter logo at 192x192px — PWA standard icon. Not yet customized.",
+        "size": "192x192",
+        "role": "pwa_icon_standard",
+        "style": "flutter_default_placeholder"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_web_icon_512",
+      "label": "web/icons/Icon-512.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/web/icons/Icon-512.png",
+      "properties": {
+        "description": "Default Flutter logo at 512x512px — PWA large icon. Not yet customized.",
+        "size": "512x512",
+        "role": "pwa_icon_large",
+        "style": "flutter_default_placeholder"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_web_icon_maskable_192",
+      "label": "web/icons/Icon-maskable-192.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/web/icons/Icon-maskable-192.png",
+      "properties": {
+        "description": "Default Flutter logo at 192x192px maskable format — PWA maskable standard icon. Not yet customized.",
+        "size": "192x192",
+        "role": "pwa_icon_maskable_standard",
+        "style": "flutter_default_placeholder"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "img_web_icon_maskable_512",
+      "label": "web/icons/Icon-maskable-512.png",
+      "type": "component",
+      "source_file": "/Users/hugo/LaPyramide/web/icons/Icon-maskable-512.png",
+      "properties": {
+        "description": "Default Flutter logo at 512x512px maskable format — PWA maskable large icon. Not yet customized.",
+        "size": "512x512",
+        "role": "pwa_icon_maskable_large",
+        "style": "flutter_default_placeholder"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "concept_firebase_backend",
+      "label": "Firebase Backend",
+      "type": "concept",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": {
+        "services": ["authentication", "realtime_database", "push_notifications"]
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "concept_monetization",
+      "label": "In-App Purchases / Monetization",
+      "type": "concept",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": {
+        "providers": ["Apple IAP (in_app_purchase)", "RevenueCat (purchases_flutter)"]
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "concept_auth",
+      "label": "Authentication",
+      "type": "concept",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": {
+        "providers": ["Google Sign-In", "Sign in with Apple", "Firebase Auth"]
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "concept_state_management",
+      "label": "State Management (Riverpod)",
+      "type": "concept",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": { "framework": "Riverpod", "code_gen": "riverpod_generator + build_runner" },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "concept_qr_lobby",
+      "label": "QR Code Lobby Join",
+      "type": "feature",
+      "source_file": "/Users/hugo/LaPyramide/pubspec.yaml",
+      "properties": {
+        "description": "Players can join a game lobby by generating or scanning a QR code",
+        "deps": ["qr_flutter", "mobile_scanner"]
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "concept_brand_visual",
+      "label": "Brand Visual Identity",
+      "type": "concept",
+      "source_file": "/Users/hugo/LaPyramide/assets/images/logo_neon.png",
+      "properties": {
+        "style": "neon_glow",
+        "palette": "pink + cyan neon on dark purple (#180D2B)",
+        "motifs": ["pyramid", "playing_cards"]
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "concept_game_revelation",
+      "label": "Card Revelation Phase",
+      "type": "feature",
+      "source_file": "/Users/hugo/LaPyramide/media_patched.png",
+      "properties": {
+        "description": "Phase where the host flips pyramid cards one by one; players bluff or challenge and receive penalties",
+        "ui_elements": ["pyramid_layout", "penalty_badge", "player_hand", "emoji_chat_button"],
+        "language": "fr"
+      },
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "concept_web_pwa",
+      "label": "Progressive Web App (PWA)",
+      "type": "feature",
+      "source_file": "/Users/hugo/LaPyramide/web/index.html",
+      "properties": {
+        "description": "Web build with PWA manifest, iOS web-app meta tags, splash screen removal logic, and PWA icons"
+      },
+      "confidence": "EXTRACTED"
+    }
+  ],
+  "edges": [
+    { "source": "app_la_pyramide", "target": "dep_flutter", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_flutter_localizations", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_flutter_riverpod", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_riverpod_annotation", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_go_router", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_firebase_core", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_firebase_auth", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_firebase_database", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_firebase_messaging", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_flutter_local_notifications", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_google_sign_in", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_sign_in_with_apple", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_google_fonts", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_flutter_animate", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_animated_text_kit", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_lottie", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_audioplayers", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_intl", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_shared_preferences", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_uuid", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_cached_network_image", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_qr_flutter", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_mobile_scanner", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_confetti", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_in_app_purchase", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_purchases_flutter", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_url_launcher", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "dep_flutter_timezone", "relation": "depends_on", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "asset_images_dir", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "asset_animations_dir", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "app_la_pyramide", "target": "asset_sounds_dir", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "asset_images_dir", "target": "img_app_icon_solid", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "asset_images_dir", "target": "img_auth_character", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "asset_images_dir", "target": "img_coming_soon_trophy", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "asset_images_dir", "target": "img_final_logo_raw", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "asset_images_dir", "target": "img_home_mascot", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "asset_images_dir", "target": "img_logo_neon", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "config_launcher_icons", "target": "img_app_icon_solid", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "config_launcher_icons", "target": "devdep_flutter_launcher_icons", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "config_native_splash", "target": "devdep_flutter_native_splash", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "dep_flutter_riverpod", "target": "concept_state_management", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_riverpod_annotation", "target": "concept_state_management", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "devdep_riverpod_generator", "target": "concept_state_management", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_firebase_auth", "target": "concept_firebase_backend", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_firebase_database", "target": "concept_firebase_backend", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_firebase_messaging", "target": "concept_firebase_backend", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_google_sign_in", "target": "concept_auth", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_sign_in_with_apple", "target": "concept_auth", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_firebase_auth", "target": "concept_auth", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_in_app_purchase", "target": "concept_monetization", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_purchases_flutter", "target": "concept_monetization", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_qr_flutter", "target": "concept_qr_lobby", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_mobile_scanner", "target": "concept_qr_lobby", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "img_logo_neon", "target": "concept_brand_visual", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "img_app_icon_solid", "target": "concept_brand_visual", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "img_final_logo_raw", "target": "concept_brand_visual", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "web_index_html", "target": "concept_web_pwa", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "web_index_html", "target": "web_meta_ios", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "web_index_html", "target": "web_splash_script", "relation": "contains", "confidence": "EXTRACTED" },
+    { "source": "web_index_html", "target": "img_web_favicon", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "web_index_html", "target": "img_web_icon_192", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "concept_web_pwa", "target": "img_web_icon_192", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "concept_web_pwa", "target": "img_web_icon_512", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "concept_web_pwa", "target": "img_web_icon_maskable_192", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "concept_web_pwa", "target": "img_web_icon_maskable_512", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "img_media_patched", "target": "concept_game_revelation", "relation": "implements", "confidence": "EXTRACTED" },
+    { "source": "dep_audioplayers", "target": "asset_sounds_dir", "relation": "uses", "confidence": "EXTRACTED" },
+    { "source": "dep_lottie", "target": "asset_animations_dir", "relation": "uses", "confidence": "EXTRACTED" }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

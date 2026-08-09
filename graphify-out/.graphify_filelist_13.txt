@@ -1,0 +1,5 @@
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png
+/Users/hugo/LaPyramide/media_patched.png
+/Users/hugo/LaPyramide/web/favicon.png
+/Users/hugo/LaPyramide/web/icons/Icon-192.png
+/Users/hugo/LaPyramide/web/icons/Icon-512.png

@@ -200,8 +200,7 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18)),
                         const SizedBox(width: 6),
-                        const Icon(Icons.monetization_on_rounded,
-                            color: PyraTheme.primaryYellow, size: 20),
+                        const Text('🪙', style: TextStyle(fontSize: 18)),
                       ],
                     ),
                   ),
@@ -223,8 +222,7 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18)),
                         const SizedBox(width: 6),
-                        const Icon(Icons.diamond_rounded,
-                            color: PyraTheme.primaryPurple, size: 20),
+                        const Text('💎', style: TextStyle(fontSize: 18)),
                       ],
                     ),
                   ),
@@ -304,8 +302,7 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13)),
                                 const SizedBox(width: 4),
-                                const Icon(Icons.monetization_on_rounded,
-                                    color: PyraTheme.primaryYellow, size: 14),
+                                const Text('🪙', style: TextStyle(fontSize: 13)),
                               ],
                             ),
                           ),
@@ -322,8 +319,7 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13)),
                                 const SizedBox(width: 4),
-                                const Icon(Icons.diamond_rounded,
-                                    color: PyraTheme.primaryPurple, size: 14),
+                                const Text('💎', style: TextStyle(fontSize: 13)),
                               ],
                             ),
                           ),
@@ -594,15 +590,11 @@ class _QuestsScreenState extends ConsumerState<QuestsScreen> {
                                                     fontSize: 12),
                                               ),
                                               const SizedBox(width: 4),
-                                              Icon(
+                                              Text(
                                                 rewardType == 'diamonds'
-                                                    ? Icons.diamond_rounded
-                                                    : Icons
-                                                        .monetization_on_rounded,
-                                                color: rewardType == 'diamonds'
-                                                    ? PyraTheme.primaryPurple
-                                                    : PyraTheme.primaryYellow,
-                                                size: 14,
+                                                    ? '💎'
+                                                    : '🪙',
+                                                style: const TextStyle(fontSize: 13),
                                               ),
                                             ],
                                           ),

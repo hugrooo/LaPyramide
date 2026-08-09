@@ -160,25 +160,25 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/home',
             name: 'home',
             pageBuilder: (context, state) =>
-                _fadeTransition(context, state, const HomeScreen()),
+                const NoTransitionPage(child: HomeScreen()),
           ),
           GoRoute(
             path: '/rules',
             name: 'rules',
             pageBuilder: (context, state) =>
-                _fadeTransition(context, state, const RulesScreen()),
+                const NoTransitionPage(child: RulesScreen()),
           ),
           GoRoute(
             path: '/leaderboard',
             name: 'leaderboard',
             pageBuilder: (context, state) =>
-                _fadeTransition(context, state, const LeaderboardScreen()),
+                const NoTransitionPage(child: LeaderboardScreen()),
           ),
           GoRoute(
             path: '/settings',
             name: 'settings',
             pageBuilder: (context, state) =>
-                _fadeTransition(context, state, const SettingsScreen()),
+                const NoTransitionPage(child: SettingsScreen()),
           ),
           GoRoute(
             path: '/store',
@@ -194,14 +194,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               final scrollToBetaGifts = extra != null && extra['scrollToBetaGifts'] == true;
               final scrollToTitle = extra != null && extra['scrollToTitle'] == true;
 
-              return _fadeTransition(
-                context, 
-                state, 
-                StoreScreen(
+              return NoTransitionPage(
+                child: StoreScreen(
                   initialTab: initialTab,
                   scrollToBetaGifts: scrollToBetaGifts,
                   scrollToTitle: scrollToTitle,
-                )
+                ),
               );
             },
           ),

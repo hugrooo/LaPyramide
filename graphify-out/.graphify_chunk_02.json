@@ -1,0 +1,147 @@
+{
+  "nodes": [
+    {
+      "id": "android_launcher_icons",
+      "label": "Android Launcher Icons",
+      "type": "asset",
+      "source_file": "android/app/src/main/res/",
+      "confidence": "EXTRACTED",
+      "description": "Complete set of Android launcher icons for Pyramide Party, covering all standard density buckets (mdpi/hdpi/xhdpi/xxhdpi/xxxhdpi) in both mipmap and drawable resource directories."
+    },
+    {
+      "id": "android_multi_density",
+      "label": "Multi-density Icon Set (mdpi/hdpi/xhdpi/xxhdpi/xxxhdpi)",
+      "type": "concept",
+      "source_file": "android/app/src/main/res/",
+      "confidence": "EXTRACTED",
+      "description": "Android density-qualified resource directories providing the same icon artwork at 5 pixel densities to render correctly on all screen sizes and pixel densities."
+    },
+    {
+      "id": "android_adaptive_icon",
+      "label": "Android Adaptive Icon",
+      "type": "concept",
+      "source_file": "android/app/src/main/res/drawable-v21/",
+      "confidence": "EXTRACTED",
+      "description": "Android adaptive icon system (API 21+) compositing a separate foreground layer over a background layer, enabling system-driven shape masks (circle, squircle, etc.)."
+    },
+    {
+      "id": "ic_launcher_foreground",
+      "label": "Launcher Icon Foreground Layer — Neon Card Pyramid",
+      "type": "asset",
+      "source_file": "android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png",
+      "confidence": "EXTRACTED",
+      "description": "Custom foreground layer depicting a neon-glowing pyramid composed of playing cards (hearts, spades, diamonds suits) arranged in a triangular stack against a dark purple/galaxy background. Uses pink, yellow and purple neon-glow color palette matching the Pyramide Party brand. Provided at hdpi/mdpi/xhdpi/xxhdpi/xxxhdpi densities."
+    },
+    {
+      "id": "adaptive_icon_background",
+      "label": "Adaptive Icon Background Layer — Solid Black",
+      "type": "asset",
+      "source_file": "android/app/src/main/res/drawable/background.png",
+      "confidence": "EXTRACTED",
+      "description": "Solid black background layer for the Android adaptive icon. Used by both drawable/ (legacy) and drawable-v21/ (API 21+) resource directories so the foreground neon pyramid stands out with maximum contrast."
+    },
+    {
+      "id": "launcher_icon_branded",
+      "label": "Branded Launcher Icon — Pyramid Card Game",
+      "type": "asset",
+      "source_file": "android/app/src/main/res/mipmap-hdpi/launcher_icon.png",
+      "confidence": "EXTRACTED",
+      "description": "Full-composition branded app icon showing a pyramid of playing cards (4-3-2-1 stacked rows) with neon glow effects on a dark blue/purple starfield background. Present in mipmap-hdpi/mdpi/xhdpi/xxhdpi/xxxhdpi. This is the primary visual identity icon used on the Android home screen."
+    },
+    {
+      "id": "ic_launcher_default_flutter",
+      "label": "Default Flutter ic_launcher (unbranded)",
+      "type": "asset",
+      "source_file": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "confidence": "EXTRACTED",
+      "description": "Standard Flutter default launcher icon showing the blue Flutter logo chevron. Present in mipmap-hdpi/mdpi/xhdpi/xxhdpi/xxxhdpi. Appears to be the unmodified Flutter scaffold icon — likely superseded by launcher_icon.png and ic_launcher_foreground for actual use but not yet removed."
+    },
+    {
+      "id": "visual_identity_neon_pyramid",
+      "label": "Visual Identity: Neon Pyramid of Cards",
+      "type": "concept",
+      "source_file": "android/app/src/main/res/",
+      "confidence": "EXTRACTED",
+      "description": "Core visual branding motif of Pyramide Party: a triangular pyramid built from playing cards with neon-colored outlines (pink/purple/yellow) against a dark space background. Consistent across launcher_icon.png and ic_launcher_foreground.png."
+    },
+    {
+      "id": "playing_card_suit_iconography",
+      "label": "Playing Card Suit Iconography (Hearts, Spades, Diamonds)",
+      "type": "concept",
+      "source_file": "android/app/src/main/res/",
+      "confidence": "EXTRACTED",
+      "description": "The launcher icon artwork prominently features the four playing card suits — hearts, spades, and diamonds are clearly visible on card faces within the pyramid — directly referencing the game's card-based mechanics."
+    }
+  ],
+  "edges": [
+    {
+      "source": "android_launcher_icons",
+      "target": "android_multi_density",
+      "relation": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "android_launcher_icons",
+      "target": "android_adaptive_icon",
+      "relation": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "android_adaptive_icon",
+      "target": "ic_launcher_foreground",
+      "relation": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "android_adaptive_icon",
+      "target": "adaptive_icon_background",
+      "relation": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "android_launcher_icons",
+      "target": "launcher_icon_branded",
+      "relation": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "android_launcher_icons",
+      "target": "ic_launcher_default_flutter",
+      "relation": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "launcher_icon_branded",
+      "target": "visual_identity_neon_pyramid",
+      "relation": "depicts",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ic_launcher_foreground",
+      "target": "visual_identity_neon_pyramid",
+      "relation": "depicts",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "visual_identity_neon_pyramid",
+      "target": "playing_card_suit_iconography",
+      "relation": "contains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "app_pyramide_party",
+      "target": "android_launcher_icons",
+      "relation": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ic_launcher_default_flutter",
+      "target": "launcher_icon_branded",
+      "relation": "superseded_by",
+      "confidence": "EXTRACTED"
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

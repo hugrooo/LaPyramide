@@ -79,6 +79,20 @@ class StoreService {
     }
   }
 
+  /// Restauration des achats (Obligation Apple Store)
+  Future<CustomerInfo?> restorePurchases() async {
+    if (kIsWeb) return null;
+    try {
+      await init();
+      final customerInfo = await Purchases.restorePurchases();
+      await _updateVipStatusFromCustomerInfo(customerInfo);
+      return customerInfo;
+    } catch (e) {
+      print("Erreur lors de la restauration des achats: $e");
+      rethrow;
+    }
+  }
+
   Future<void> buyPackage(Package package) async {
     if (kIsWeb) return;
     try {

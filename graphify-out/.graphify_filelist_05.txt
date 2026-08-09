@@ -1,0 +1,5 @@
+/Users/hugo/LaPyramide/android/app/src/main/res/mipmap-mdpi/launcher_icon.png
+/Users/hugo/LaPyramide/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+/Users/hugo/LaPyramide/android/app/src/main/res/mipmap-xhdpi/launcher_icon.png
+/Users/hugo/LaPyramide/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+/Users/hugo/LaPyramide/android/app/src/main/res/mipmap-xxhdpi/launcher_icon.png

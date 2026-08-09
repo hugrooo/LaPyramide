@@ -1,0 +1,1 @@
+{"nodes": [{"id": "web_pwa", "label": "PWA Web App", "type": "component", "source_file": "web/index.html", "confidence": "EXTRACTED"}], "edges": [], "hyperedges": []}

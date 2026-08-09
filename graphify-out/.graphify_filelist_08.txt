@@ -1,0 +1,5 @@
+/Users/hugo/LaPyramide/ios/Pods/GoogleSignIn/GoogleSignIn/Sources/Resources/google@3x.png
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png
+/Users/hugo/LaPyramide/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png

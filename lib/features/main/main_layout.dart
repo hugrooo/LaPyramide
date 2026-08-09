@@ -29,32 +29,7 @@ class MainLayout extends StatelessWidget {
     return Scaffold(
       backgroundColor: PyraTheme.bgDark,
       extendBody: true, // Allow content to flow under the transparent nav bar
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 350),
-        switchInCurve: Curves.easeOutCubic,
-        switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (Widget child, Animation<double> animation) {
-          final offsetAnimation = Tween<Offset>(
-            begin: const Offset(0.0, 0.05),
-            end: Offset.zero,
-          ).animate(animation);
-          final fadeAnimation =
-              Tween<double>(begin: 0.0, end: 1.0).animate(animation);
-
-          return FadeTransition(
-            opacity: fadeAnimation,
-            child: SlideTransition(
-              position: offsetAnimation,
-              child: child,
-            ),
-          );
-        },
-        child: Container(
-          // La clé unique permet de redéclencher l'animation
-          key: ValueKey<String>(location.split('?').first),
-          child: child,
-        ),
-      ),
+      body: child,
       bottomNavigationBar: _GlassBottomNavBar(
         currentIndex: currentIndex,
         onTap: (index) {

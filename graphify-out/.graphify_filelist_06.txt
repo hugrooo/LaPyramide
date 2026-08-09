@@ -1,0 +1,5 @@
+/Users/hugo/LaPyramide/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+/Users/hugo/LaPyramide/android/app/src/main/res/mipmap-xxxhdpi/launcher_icon.png
+/Users/hugo/LaPyramide/assets/images/app_icon_solid.png
+/Users/hugo/LaPyramide/assets/images/auth_character.png
+/Users/hugo/LaPyramide/assets/images/coming_soon_trophy.png

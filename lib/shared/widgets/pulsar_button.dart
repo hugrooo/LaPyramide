@@ -164,6 +164,7 @@ class _PulsarButtonState extends State<PulsarButton>
                           fontSize: computedFontSize,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0.5,
+                          height: 1.2,
                         ),
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,

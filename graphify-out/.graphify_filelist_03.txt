@@ -1,0 +1,5 @@
+/Users/hugo/LaPyramide/android/app/src/main/res/drawable-hdpi/ic_launcher_foreground.png
+/Users/hugo/LaPyramide/android/app/src/main/res/drawable-mdpi/ic_launcher_foreground.png
+/Users/hugo/LaPyramide/android/app/src/main/res/drawable-v21/background.png
+/Users/hugo/LaPyramide/android/app/src/main/res/drawable-xhdpi/ic_launcher_foreground.png
+/Users/hugo/LaPyramide/android/app/src/main/res/drawable-xxhdpi/ic_launcher_foreground.png

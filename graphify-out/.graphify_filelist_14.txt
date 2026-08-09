@@ -1,0 +1,2 @@
+/Users/hugo/LaPyramide/web/icons/Icon-maskable-192.png
+/Users/hugo/LaPyramide/web/icons/Icon-maskable-512.png

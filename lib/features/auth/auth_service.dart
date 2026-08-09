@@ -173,6 +173,53 @@ class AuthService {
     }
   }
 
+  /// Connexion Anonyme (Mode Invité)
+  Future<UserCredential> signInAnonymously() async {
+    final cred = await _auth.signInAnonymously();
+    if (cred.user != null) {
+      final snapshot = await _db.ref('users/${cred.user!.uid}/level').get();
+      if (!snapshot.exists) {
+        await _db.ref('users/${cred.user!.uid}').set({
+          'name': 'Invité_${cred.user!.uid.substring(0, 5)}',
+          'searchName': 'invité_${cred.user!.uid.substring(0, 5)}',
+          'level': 1,
+          'xp': 0,
+          'coins': 100,
+          'diamonds': 10,
+          'lastLogin': ServerValue.timestamp,
+        });
+      }
+    }
+    return cred;
+  }
+
+  /// Suppression complète et réelle du compte (exigence App Store / Google Play)
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    final uid = user.uid;
+
+    // 1. Supprimer les données utilisateur dans la base de données
+    try {
+      await _db.ref('users/$uid').remove();
+    } catch (e) {
+      debugPrint('Erreur lors de la suppression DB: $e');
+    }
+
+    // 2. Supprimer le compte Firebase Auth
+    try {
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        throw Exception('Veuillez vous reconnecter avant de pouvoir supprimer votre compte.');
+      }
+      rethrow;
+    }
+
+    // 3. Déconnexion propre
+    await signOut();
+  }
+
   /// Déconnexion
   Future<void> signOut() async {
     if (!kIsWeb) {
