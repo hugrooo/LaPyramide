@@ -1227,8 +1227,8 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
           '+500 Pièces/mois, cosmétiques légendaires, +50% gains, sans pub.'),
       (Icons.military_tech_rounded, Color(0xFFE040FB), 'Pass de Combat inclus',
           'Toutes les 15 récompenses du pass débloquées — tiers gratuits ET premium.'),
-      (Icons.savings_rounded, Color(0xFF69F0AE), 'Économisez 2,98 €/mois',
-          'VIP (4,99€) + Pass (2,99€) séparément = 7,98€. Offre groupée : 4,99€.'),
+      (Icons.savings_rounded, Color(0xFF69F0AE), 'Économisez 1,99 €/mois',
+          'VIP (4,99€) + Pass (2,99€) séparément = 7,98€. Offre groupée : 5,99€.'),
     ];
 
     return Column(
@@ -1276,7 +1276,7 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text('4,99 €',
+                        const Text('5,99 €',
                             style: TextStyle(color: Colors.white, fontSize: 38,
                                 fontWeight: FontWeight.w900, height: 1.0)),
                         const SizedBox(width: 8),
