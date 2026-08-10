@@ -23,12 +23,16 @@ flutter pub get
 
 # Install/Update CocoaPods via Homebrew to prevent outdated version bugs on Xcode Cloud.
 echo "Installing/Updating CocoaPods..."
-HOMEBREW_NO_AUTO_UPDATE=1 brew install cocoapods
+HOMEBREW_NO_AUTO_UPDATE=1 brew install cocoapods || true
 
 # Install CocoaPods dependencies.
 cd ios
 pod install
 
+# Fix readlink -f in CocoaPods framework scripts for Xcode Cloud
+find "Pods/Target Support Files" -type f -name "*.sh" -exec sed -i '' 's/readlink -f/readlink/g' {} +
+
 # Generate Flutter iOS files (Generated.xcconfig, etc) so Xcode can build.
 cd ..
 flutter build ios --config-only
+
