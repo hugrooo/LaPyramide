@@ -21,6 +21,9 @@ flutter precache --ios
 # Install dependencies.
 flutter pub get
 
+# Generate Flutter iOS files (Generated.xcconfig, etc) BEFORE pod install so Flutter doesn't overwrite CocoaPods scripts later.
+flutter build ios --config-only
+
 # Install/Update CocoaPods via Homebrew to prevent outdated version bugs on Xcode Cloud.
 echo "Installing/Updating CocoaPods..."
 HOMEBREW_NO_AUTO_UPDATE=1 brew install cocoapods || true
@@ -29,10 +32,10 @@ HOMEBREW_NO_AUTO_UPDATE=1 brew install cocoapods || true
 cd ios
 pod install
 
-# Fix readlink -f in CocoaPods framework scripts for Xcode Cloud
+# Disable User Script Sandboxing & fix readlink -f in CocoaPods scripts (MUST be the final step after pod install and flutter build).
+echo "ENABLE_USER_SCRIPT_SANDBOXING = NO" >> "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+echo "ENABLE_USER_SCRIPT_SANDBOXING = NO" >> "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+echo "ENABLE_USER_SCRIPT_SANDBOXING = NO" >> "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"
 find "Pods/Target Support Files" -type f -name "*.sh" -exec sed -i '' 's/readlink -f/readlink/g' {} +
 
-# Generate Flutter iOS files (Generated.xcconfig, etc) so Xcode can build.
-cd ..
-flutter build ios --config-only
 
