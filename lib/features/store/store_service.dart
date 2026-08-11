@@ -108,8 +108,8 @@ class StoreService {
   Future<void> buyPackage(Package package) async {
     if (kIsWeb) return;
     try {
-      final customerInfo = await Purchases.purchasePackage(package);
-      await _updateVipStatusFromCustomerInfo(customerInfo);
+      final purchaseResult = await Purchases.purchasePackage(package);
+      await _updateVipStatusFromCustomerInfo(purchaseResult.customerInfo);
       await _deliverNonSubscriptionProductIfNeeded(package.storeProduct.identifier);
     } catch (e) {
       print("Erreur d'achat de package: $e");

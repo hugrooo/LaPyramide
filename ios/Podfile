@@ -28,7 +28,7 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
+  use_frameworks! :linkage => :static
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
@@ -51,12 +51,21 @@ post_install do |installer|
     end
   end
 
-  # Correction de l'erreur readlink -f dans les scripts de frameworks CocoaPods sur macOS / Xcode Cloud
+  # Correction des scripts de frameworks CocoaPods sur macOS / Xcode Cloud
   pods_path = File.join(installer.sandbox.root, 'Target Support Files')
   Dir.glob("#{pods_path}/*/*.sh").each do |file|
     content = File.read(file)
+    modified = false
     if content.include?('readlink -f')
-      File.write(file, content.gsub('readlink -f', 'readlink'))
+      content = content.gsub('readlink -f', 'readlink')
+      modified = true
+    end
+    if content.include?('if [ -L "${source}" ]; then')
+      content = content.gsub('if [ -L "${source}" ]; then', "if [ -z \"${source:-}\" ]; then return 0; fi\n  if [ -L \"${source}\" ]; then")
+      modified = true
+    end
+    if modified
+      File.write(file, content)
     end
   end
 end

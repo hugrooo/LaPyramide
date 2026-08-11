@@ -41,9 +41,10 @@ find "Pods/Target Support Files" -type f -name "*.xcconfig" -exec sh -c '
   echo "CODE_SIGNING_ALLOWED = NO" >> "$1"
   echo "CODE_SIGNING_REQUIRED = NO" >> "$1"
   echo "DEVELOPMENT_TEAM = 8YCPB87Z72" >> "$1"
-' _ {} \;
 find "Pods/Target Support Files" -type f -name "*.sh" -exec sed -i '' 's/readlink -f/readlink/g' {} +
 find "Pods/Target Support Files" -type f -name "Pods-Runner-resources.sh" -exec sed -i '' 's/exit 1/true/g' {} +
+find "Pods/Target Support Files" -type f -name "Pods-Runner-frameworks.sh" -exec sed -i '' 's/if \[ -L "${source}" \]; then/if [ -z "${source:-}" ]; then return 0; fi\n  if [ -L "${source}" ]; then/g' {} +
+
 
 
 
