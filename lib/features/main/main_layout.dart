@@ -169,7 +169,7 @@ class _NavBarItem extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
         decoration: BoxDecoration(
           color: isActive ? PyraTheme.primaryCyan.withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
@@ -196,13 +196,18 @@ class _NavBarItem extends StatelessWidget {
               child: Icon(icon, color: color, size: 22),
             ),
             const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w900 : FontWeight.w600,
-                letterSpacing: isActive ? 0.3 : 0,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                softWrap: false,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 10,
+                  fontWeight: isActive ? FontWeight.w900 : FontWeight.w600,
+                  letterSpacing: isActive ? 0.2 : 0,
+                ),
               ),
             ),
             const SizedBox(height: 2),
