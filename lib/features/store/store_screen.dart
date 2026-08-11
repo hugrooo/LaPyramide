@@ -1642,6 +1642,19 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
     );
   }
 
+  String _formatCompactNumber(int number) {
+    if (number >= 1000000) {
+      return '${(number / 1000000).toStringAsFixed(1).replaceAll('.0', '')}M';
+    }
+    if (number >= 100000) {
+      return '${(number / 1000).toStringAsFixed(1).replaceAll('.0', '')}k';
+    }
+    return number.toString().replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]} ',
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProfileAsync = ref.watch(userProfileProvider);
@@ -1660,20 +1673,28 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                 // Top Bar
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
                       const Expanded(
-                        child: Text(
-                          'Boutique',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.2),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Boutique',
+                            maxLines: 1,
+                            softWrap: false,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.0),
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 6),
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           GestureDetector(
                             onTap: () {
@@ -1681,50 +1702,55 @@ class _StoreScreenState extends ConsumerState<StoreScreen> {
                               _showRedeemCodeDialog();
                             },
                             child: GlassContainer(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(color: PyraTheme.primaryPink.withValues(alpha: 0.5)),
                               child: const Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.card_giftcard_rounded, color: PyraTheme.primaryPink, size: 16),
-                                  SizedBox(width: 4),
+                                  Icon(Icons.card_giftcard_rounded, color: PyraTheme.primaryPink, size: 15),
+                                  SizedBox(width: 3),
                                   Text(
                                     'Code',
-                                    style: TextStyle(color: PyraTheme.primaryPink, fontWeight: FontWeight.bold, fontSize: 12),
+                                    style: TextStyle(color: PyraTheme.primaryPink, fontWeight: FontWeight.bold, fontSize: 11),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           GlassContainer(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
+                                horizontal: 8, vertical: 6),
                             borderRadius: BorderRadius.circular(16),
                             child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('$currentCoins',
+                                Text(_formatCompactNumber(currentCoins),
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 13)),
-                                const Text('🪙', style: TextStyle(fontSize: 13)),
+                                        fontSize: 12)),
+                                const SizedBox(width: 2),
+                                const Text('🪙', style: TextStyle(fontSize: 12)),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           GlassContainer(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
+                                horizontal: 8, vertical: 6),
                             borderRadius: BorderRadius.circular(16),
                             child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('$currentDiamonds',
+                                Text(_formatCompactNumber(currentDiamonds),
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 13)),
-                                const Text('💎', style: TextStyle(fontSize: 13)),
+                                        fontSize: 12)),
+                                const SizedBox(width: 2),
+                                const Text('💎', style: TextStyle(fontSize: 12)),
                               ],
                             ),
                           ),
